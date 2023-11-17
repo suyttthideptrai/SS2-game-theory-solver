@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import InputPage from "./pages/inputPage";
+import InputPageMatchingTheory from "./pages/MatchingTheory/inputPage";
 import InputProcessingPage from "./pages/inputProcessingPage";
 import GuidePage from "./pages/guidePage";
 import OutputPage from "./pages/outputPage";
@@ -36,6 +37,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<InputPage />} />
+            <Route path="/matching-theory/input" element={<InputPageMatchingTheory />} />
             <Route path="/input" element={<InputPage />} />
             <Route path="/guide" element={<GuidePage />} />
             <Route path="/input-processing" element={<InputProcessingPage />} />
