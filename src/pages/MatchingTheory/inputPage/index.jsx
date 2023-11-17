@@ -139,7 +139,6 @@ export default function InputPage() {
                         let individual = {
                             name: individualName,
                             set: set,
-                            characteristics: characteristics,
                             argument: argument
                         };
 
