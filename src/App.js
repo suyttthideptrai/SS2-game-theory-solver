@@ -38,11 +38,12 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<InputPage />} />
+            <Route path="/matching-theory/" element={<InputPageMatchingTheory />} />
             <Route path="/matching-theory/input" element={<InputPageMatchingTheory />} />
             <Route path="/input" element={<InputPage />} />
             <Route path="/guide" element={<GuidePage />} />
             <Route path="/input-processing" element={<InputProcessingPage />} />
-            <Route path="/matching-theory/input-processing" element={<InputProcessingPage />} />
+            <Route path="/matching-theory/input-processing" element={<InputProcessingPageMatchingTheory />} />
             <Route path="/result" element={<OutputPage />} />
             <Route path='/insights' element={<InsightPage />} />
             <Route path="*" element={<InputPage />} />

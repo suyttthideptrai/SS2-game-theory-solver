@@ -62,7 +62,7 @@ export default function InputPage() {
                     }
                 })
 
-                navigate('/input-processing')
+                navigate('/matching-theory/input-processing')
             };
             reader.readAsBinaryString(file);
 
