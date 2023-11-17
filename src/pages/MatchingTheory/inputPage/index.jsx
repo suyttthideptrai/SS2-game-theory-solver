@@ -52,13 +52,13 @@ export default function InputPage() {
                 const problemInfo = await loadIndividual(workbook, 0);
                 setAppData({
                     problem: {
-                        nameOfProblem: loadIndividual.problemName,
-                        numberOfChars: loadIndividual.characteristicNum,
-                        numberOfSets: loadIndividual.setNum,
-                        numberOfIndividuals: loadIndividual.individualNum,
-                        characteristics: loadIndividual.characteristics,
-                        individuals: loadIndividual.individual,
-                        fitnessFunction: loadIndividual.fitnessFunction,
+                        nameOfProblem: problemInfo.problemName,
+                        numberOfChars: problemInfo.characteristicNum,
+                        numberOfSets: problemInfo.setNum,
+                        numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
+                        characteristics: problemInfo.characteristics,
+                        individuals: problemInfo.individuals,
+                        fitnessFunction: problemInfo.fitnessFunction,
                     }
                 })
 
@@ -153,7 +153,7 @@ export default function InputPage() {
                 problemName,
                 characteristicNum,
                 setNum,
-                individualNum,
+                totalNumberOfIndividuals,
                 characteristics,
                 individuals,
                 fitnessFunction   
