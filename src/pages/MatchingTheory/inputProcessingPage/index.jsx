@@ -22,7 +22,7 @@ export default function InputProcessingPage() {
     const [maxTimeParam, setMaxTimeParam] = useState(5000)
 
     const { displayPopup } = useContext(PopupContext)
-   
+    console.log(appData.problem);
     useEffect(() => {
         if (appData && appData.problem) {
             document.title = appData.problem.name;
@@ -47,12 +47,11 @@ export default function InputProcessingPage() {
             }
         
             const body = {
-                nameOfProblem: appData.problem.nameOfProblem,
-                numberOfChars: appData.problem.numberOfChars,
-                numberOfSets: appData.problem.numberOfSets,
+                problemName: appData.problem.nameOfProblem,
+                setNumber: appData.problem.numberOfSets,
                 //numberOfSets: appData.stableMatchingProblem.sets.length,
-                numberOfIndividuals: appData.problem.numberOfIndividuals,
-
+                individualNumber: appData.problem.numberOfIndividuals,
+                allPropertyName: appData.problem.characteristics,
                 // mapping over the individuals directly from appData.stableMatchingProblem 
                 // and creating a new array of objects based on the properties of each individual. 
                 // This assumes that appData.stableMatchingProblem directly contains an array of individuals
@@ -60,7 +59,7 @@ export default function InputProcessingPage() {
                 individuals: appData.problem.individuals.map(individual => ({
                     name: individual.name,
                     set: individual.set,
-                    characteristics: [...individual.characteristics],
+                    
                     argument: individual.argument.map((arg) => [...arg]),
                 })),
                 fitnessFunction: appData.problem.fitnessFunction,
