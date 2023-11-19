@@ -47,18 +47,18 @@ export default function InputProcessingPage() {
 
             const requestBody = {
                 problemName: appData.problem.nameOfProblem,
-                setNumber: appData.problem.numberOfSets,
+                numberOfSets: appData.problem.numberOfSets,
                 //numberOfSets: appData.stableMatchingProblem.sets.length,
-                individualNumber: appData.problem.numberOfIndividuals,
-                allPropertyName: appData.problem.characteristics,
+                numberOfIndividuals: appData.problem.numberOfIndividuals,
+                allPropertyNames: appData.problem.characteristics,
                 // mapping over the individuals directly from appData.stableMatchingProblem 
                 // and creating a new array of objects based on the properties of each individual. 
                 // This assumes that appData.stableMatchingProblem directly contains an array of individuals
 
-                individuals: appData.problem.individuals.map(individual => ({
-                    name: individual.name,
-                    set: individual.set,
-                    argument: individual.argument.map((arg) => [...arg]),
+                Individuals: appData.problem.individuals.map(Individual => ({
+                    IndividualName: Individual.name,
+                    IndividualSet: Individual.set,
+                    Properties: Individual.argument.map((arg) => [...arg]),
                 })),
                 fitnessFunction: appData.problem.fitnessFunction,
                 // algorithm: algorithm,

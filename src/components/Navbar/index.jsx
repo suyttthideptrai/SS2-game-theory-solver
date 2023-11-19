@@ -20,7 +20,8 @@ export default function Header() {
                 <div className="container">
                     <div className="app-name" onClick={backToHome}>Game Theory Solver</div>
                     <div className="nav-item-container">
-                        <Link to='/' className={path == "/" ? "nav-item highlight" : 'nav-item'}>Home</Link>
+                        <Link to='/' className={path == "/" ? "nav-item highlight" : 'nav-item'}>Home</Link> 
+                        <Link to='/matching-theory/input' className={path == "/" ? "nav-item highlight" : 'nav-item'}>Matching Problem</Link>
                         <Link to='/guide' className={path == "/guide" ? "nav-item highlight" : 'nav-item'}>Guide</Link>
                         <div className={path == "/about" ? "nav-item highlight" : 'nav-item'}>About</div>
                     </div>
