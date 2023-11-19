@@ -53,7 +53,6 @@ export default function InputPage() {
                 setAppData({
                     problem: {
                         nameOfProblem: problemInfo.problemName,
-                        numberOfChars: problemInfo.characteristicNum,
                         numberOfSets: problemInfo.setNum,
                         numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
                         characteristics: problemInfo.characteristics,

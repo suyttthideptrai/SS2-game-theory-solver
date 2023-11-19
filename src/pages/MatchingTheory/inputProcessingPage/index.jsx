@@ -69,7 +69,7 @@ export default function InputProcessingPage() {
             }
             setBody(requestBody);
             setIsLoading(true);
-            console.log("MAKE a POST request to: ", JSON.stringify(body, null, 2));
+            console.log("MAKE a POST request to: ", JSON.stringify(requestBody, null, 2));
             const res = await axios.post(
                 `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
                 body
@@ -94,9 +94,9 @@ export default function InputProcessingPage() {
             setIsLoading(false);
             navigate('/result')
         } catch (err) {
-            console.log(err);
-            setIsLoading(false);
-            displayPopup("Running failed", "Please check the dataset and try again or contact the admin!", true)
+            // console.log(err);
+            // setIsLoading(false);
+            // displayPopup("Running failed", "Please check the dataset and try again or contact the admin!", true)
         }
 
     }
