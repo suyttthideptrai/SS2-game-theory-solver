@@ -45,7 +45,7 @@ export default function InputPage() {
 
     const navigate = useNavigate();
     //check if the uploaded file is an excel file
-    useEffect(() => {
+        useEffect(() => {
         if (excelFile) {
             const extension = excelFile.name.split(".").pop();
 

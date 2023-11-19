@@ -22,13 +22,13 @@ export default function InputProcessingPage() {
     const [maxTimeParam, setMaxTimeParam] = useState(5000)
 
     const { displayPopup } = useContext(PopupContext)
-    console.log(appData.problem);
+    const [body, setBody] = useState(null);
     useEffect(() => {
         if (appData && appData.problem) {
             document.title = appData.problem.name;
         }
     }, [appData?.problem]);
-    
+
     const handleChange = (event) => {
         setAlgorithm(event.target.value);
     }
@@ -38,15 +38,14 @@ export default function InputProcessingPage() {
             <NothingToShow />
         )
     }
-    console.log(appData.problem);
     const handleSolveNow = async () => {
         try {
             if (!appData || !appData.problem) {
                 displayPopup("Error", "Stable Matching Problem data is missing.", true);
                 return;
             }
-        
-            const body = {
+
+            const requestBody = {
                 problemName: appData.problem.nameOfProblem,
                 setNumber: appData.problem.numberOfSets,
                 //numberOfSets: appData.stableMatchingProblem.sets.length,
@@ -55,7 +54,7 @@ export default function InputProcessingPage() {
                 // mapping over the individuals directly from appData.stableMatchingProblem 
                 // and creating a new array of objects based on the properties of each individual. 
                 // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-            
+
                 individuals: appData.problem.individuals.map(individual => ({
                     name: individual.name,
                     set: individual.set,
@@ -68,8 +67,9 @@ export default function InputProcessingPage() {
                 // generation: generationParam,
                 // maxTime: maxTimeParam,
             }
+            setBody(requestBody);
             setIsLoading(true);
-            console.log("MAKE a POST request to: ", body);
+            console.log("MAKE a POST request to: ", JSON.stringify(body, null, 2));
             const res = await axios.post(
                 `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
                 body
@@ -139,26 +139,34 @@ export default function InputProcessingPage() {
         //             <option value="IBEA">IBEA</option>
         //         </select>
         //     </div>
+        <div>
 
             <p className="solve-now-btn" onClick={handleSolveNow}>Solve now</p>
-            // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
+            {body && (
+                <div>
+                    <h3>JSON Data to backend:</h3>
+                    <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre>
+                </div>
+            )}
+        </div>
+        // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
 
-    //         {/* <div className="player-container">
-    //         {appData.problem && appData.problem.individuals.map((individual, index) => (
-    //     <div key={index}>
-    //       <p className="individual-info">
-    //         <span className="bold">Name:</span> {individual.name}, 
-    //         <span className="bold"> Set:</span> {individual.set}
-    //       </p>
-    //       <p className="characteristics-info">
-    //         <span className="bold">Characteristics:</span> {individual.characteristics.join(', ')}
-    //       </p>
-    //       <p className="argument-info">
-    //         <span className="bold">Argument:</span> {JSON.stringify(individual.argument)}
-    //       </p>
-    //     </div>
-    //   ))}
-    //         </div> */}
+        //         {/* <div className="player-container">
+        //         {appData.problem && appData.problem.individuals.map((individual, index) => (
+        //     <div key={index}>
+        //       <p className="individual-info">
+        //         <span className="bold">Name:</span> {individual.name}, 
+        //         <span className="bold"> Set:</span> {individual.set}
+        //       </p>
+        //       <p className="characteristics-info">
+        //         <span className="bold">Characteristics:</span> {individual.characteristics.join(', ')}
+        //       </p>
+        //       <p className="argument-info">
+        //         <span className="bold">Argument:</span> {JSON.stringify(individual.argument)}
+        //       </p>
+        //     </div>
+        //   ))}
+        //         </div> */}
         // </div>
     )
 }

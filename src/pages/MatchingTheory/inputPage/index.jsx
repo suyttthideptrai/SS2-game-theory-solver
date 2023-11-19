@@ -155,7 +155,7 @@ export default function InputPage() {
                 totalNumberOfIndividuals,
                 characteristics,
                 individuals,
-                fitnessFunction   
+                fitnessFunction
             };
         } catch (error) {
             displayPopup("Something went wrong!", errorMessage, true)
@@ -176,15 +176,45 @@ export default function InputPage() {
             }
         }
     }, [excelFile]);
+
+    const handleDrop = (event) => {
+        event.preventDefault();
+        setExcelFile(event.dataTransfer.files[0]);
+        event.target.classList.remove("dragging")
+    }
+
+    const handleOnDragEnter = (event) => {
+        event.preventDefault()
+        event.target.classList.add("dragging")
+    }
+
+    const handleOnDragLeave = (event) => {
+        event.preventDefault()
+        event.target.classList.remove("dragging")
+    }
+
+    const handleFileInput = (event) => {
+        setExcelFile(event.target.files[0]);
+    };
+
+
     return (
-        <div>
-            <input type="file" onChange={(e) => setExcelFile(e.target.files[0])} />
-            {excelFile && (
-                <div>
-                    <h3>Excel Data:</h3>
-                    <pre>{JSON.stringify(excelFile, null, 2)}</pre>
-                </div>
-            )}
+        <div className='input-page'>
+            <div className="guide-box">
+                <p>Get the Excel file template, input your data, then drag & drop it to the box below</p>
+                <Link to='/guide' className='guide-link' onClick={e => setGuideSectionIndex(9)}> Learn more on how to input to file Excel</Link>
+            </div>
+            {excelFileError && <p className='file-error'>{excelFileError}</p>}
+            <div className={excelFileError ? 'drag-area file-error' : 'drag-area'}
+                onDrop={handleDrop}
+                onDragEnter={handleOnDragEnter}
+                onDragLeave={handleOnDragLeave}
+                onDragOver={handleOnDragEnter}
+            >
+                <p className='drag-text'>{excelFile ? excelFile.name : 'Drag and drop a file here'}</p>
+                <label htmlFor="select-file" id='select-file-label'>Choose a file</label>
+                <input type="file" id="select-file" onChange={handleFileInput} />
+            </div>
         </div>
     );
 }
