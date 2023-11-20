@@ -1,5 +1,7 @@
 import Navbar from "./components/Navbar";
 import InputPage from "./pages/inputPage";
+import InputPageMatchingTheory from "./pages/MatchingTheory/inputPage";
+import InputProcessingPageMatchingTheory from "./pages/MatchingTheory/inputProcessingPage";
 import InputProcessingPage from "./pages/inputProcessingPage";
 import GuidePage from "./pages/guidePage";
 import OutputPage from "./pages/outputPage";
@@ -37,11 +39,12 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<InputPage />} />
+            <Route path="/matching-theory/" element={<InputPageMatchingTheory />} />
+            <Route path="/matching-theory/input" element={<InputPageMatchingTheory />} />
             <Route path="/input" element={<InputPage />} />
             <Route path="/guide" element={<GuidePage />} />
             <Route path="/input-processing" element={<InputProcessingPage />} />
             <Route path="/matching-theory/input-processing" element={<InputProcessingPageMatchingTheory />} />
-            <Route path="/matching-theory/result" element={<MatchingOutputPage />} />
             <Route path="/result" element={<OutputPage />} />
             <Route path='/insights' element={<InsightPage />} />
             <Route path="*" element={<InputPage />} />

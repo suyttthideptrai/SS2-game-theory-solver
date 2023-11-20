@@ -17,6 +17,7 @@ import MaxMinCheckbox from '../../components/MaxMinCheckbox'
 import PopupContext from '../../context/PopupContext';
 import ParamSettingBox from '../../components/ParamSettingBox'
 export default function InputPage() {
+    //initialize form data
     const [excelFile, setExcelFile] = useState(null);
 
     const [problemName, setProblemName] = useState("");
@@ -43,8 +44,8 @@ export default function InputPage() {
     const { displayPopup } = useContext(PopupContext)
 
     const navigate = useNavigate();
-
-    useEffect(() => {
+    //check if the uploaded file is an excel file
+        useEffect(() => {
         if (excelFile) {
             const extension = excelFile.name.split(".").pop();
 
@@ -59,6 +60,7 @@ export default function InputPage() {
         }
     }, [excelFile])
 
+    //read file
     const readExcelFile = async (file) => {
         const reader = new FileReader();
         setIsLoading(true)
@@ -369,6 +371,7 @@ export default function InputPage() {
 
     }
 
+    //tao file excel dua tren input
     const downloadExcel = () => {
         const workbook = XLSX.utils.book_new();
         let payoffFunction = playerPayoffFunction;
