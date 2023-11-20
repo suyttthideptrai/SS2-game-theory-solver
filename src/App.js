@@ -10,6 +10,7 @@ import DataContext from "./context/DataContext";
 import InsightPage from "./pages/insightPage";
 import PopupContext from "./context/PopupContext";
 import Popup from './components/Popup'
+import MatchingOutputPage from "./pages/MatchingTheory/outputPage";
 function App() {
   const [appData, setAppData] = useState(null)
   const [guideSectionIndex, setGuideSectionIndex] = useState(0)
@@ -39,6 +40,8 @@ function App() {
             <Route path="/input" element={<InputPage />} />
             <Route path="/guide" element={<GuidePage />} />
             <Route path="/input-processing" element={<InputProcessingPage />} />
+            <Route path="/matching-theory/input-processing" element={<InputProcessingPageMatchingTheory />} />
+            <Route path="/matching-theory/result" element={<MatchingOutputPage />} />
             <Route path="/result" element={<OutputPage />} />
             <Route path='/insights' element={<InsightPage />} />
             <Route path="*" element={<InputPage />} />
