@@ -93,7 +93,8 @@ export default function InputProcessingPage() {
             }
             setAppData({ ...appData, result });
             setIsLoading(false);
-            navigate('/result')
+            console.log(result);
+            //navigate('/result')
         } catch (err) {
             // console.log(err);
             // setIsLoading(false);
