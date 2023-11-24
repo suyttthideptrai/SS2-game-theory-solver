@@ -3,7 +3,7 @@ import "./style.scss"
 import { useNavigate } from 'react-router'
 
 import { useContext, useState, useEffect } from 'react'
-import Player from '../../../components/Player';
+import Individual from '../../../components/Individual';
 import axios from 'axios';
 import DataContext from "../../../context/DataContext"
 import NothingToShow from '../../../components/NothingToShow';
@@ -103,72 +103,23 @@ export default function InputProcessingPage() {
 
     }
 
-
-
     return (
-        // <div className='input-processing-page'>
-        //     <Loading isLoading={isLoading} message='Solve your problem, please do not close this window...' />
-        //     <h1 className="problem-name">{appData.problem.name}</h1>
-
-
-
-
-        //     <ParamSettingBox
-        //         distributedCoreParam={distributedCoreParam}
-        //         setDistributedCoreParam={setDistributedCoreParam}
-        //         generationParam={generationParam}
-        //         setGenerationParam={setGenerationParam}
-        //         populationSizeParam={populationSizeParam}
-        //         setPopulationSizeParam={setPopulationSizeParam}
-        //         maxTimeParam={maxTimeParam}
-        //         setMaxTimeParam={setMaxTimeParam}
-        //     />
-        //     {
-        //         algorithm == 'PAES' &&
-        //         <p className="error-text">Population size takes no effect for PAES algorithm</p>
-
-        //     }
-        //     <div className="algo-chooser">
-        //         <p className='algorithm-text bold'>Choose an algorithm: </p>
-
-        //         <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
-        //             <option value="NSGAII">NSGAII</option>
-        //             <option value="NSGAIII">NSGAIII</option>
-        //             <option value="eMOEA">εMOEA</option>
-        //             <option value="PESA2">PESA2</option>
-        //             <option value="VEGA">VEGA</option>
-        //             <option value="PAES">PAES</option>
-        //             <option value="IBEA">IBEA</option>
-        //         </select>
-        //     </div>
         <div>
 
             <p className="solve-now-btn" onClick={handleSolveNow}>Solve now</p>
             {body && (
                 <div>
-                    <h3>JSON Data to backend:</h3>
-                    <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre>
+                    <h3 className='labelName'>INPUT MATCHING THEORY:</h3>
+                    {/* <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre> */}
+                    <div className="player-container">
+                        {appData.problem.individuals.map((individual, index) => (
+                        <div key={index}>
+                            <Individual index={index} allPropertyNames={appData.problem.characteristics} IndividualName={individual.name} Properties={individual.argument.map((arg) => [...arg])} />
+                        </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
-        // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
-
-        //         {/* <div className="player-container">
-        //         {appData.problem && appData.problem.individuals.map((individual, index) => (
-        //     <div key={index}>
-        //       <p className="individual-info">
-        //         <span className="bold">Name:</span> {individual.name}, 
-        //         <span className="bold"> Set:</span> {individual.set}
-        //       </p>
-        //       <p className="characteristics-info">
-        //         <span className="bold">Characteristics:</span> {individual.characteristics.join(', ')}
-        //       </p>
-        //       <p className="argument-info">
-        //         <span className="bold">Argument:</span> {JSON.stringify(individual.argument)}
-        //       </p>
-        //     </div>
-        //   ))}
-        //         </div> */}
-        // </div>
     )
 }
