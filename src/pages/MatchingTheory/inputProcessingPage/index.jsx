@@ -142,14 +142,13 @@ export default function InputProcessingPage() {
         //         </select>
         //     </div>
         <div>
-
-            <p className="solve-now-btn" onClick={handleSolveNow}>Solve now</p>
             {body && (
                 <div>
                     <h3>JSON Data to backend:</h3>
                     <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre>
                 </div>
             )}
+            <p className="solve-now-btn" onClick={handleSolveNow}>Solve now</p>
         </div>
         // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
 
