@@ -46,6 +46,7 @@ function App() {
             <Route path="/input-processing" element={<InputProcessingPage />} />
             <Route path="/matching-theory/input-processing" element={<InputProcessingPageMatchingTheory />} />
             <Route path="/result" element={<OutputPage />} />
+            <Route path="/matching-theory/result" element={<MatchingOutputPage />} />
             <Route path='/insights' element={<InsightPage />} />
             <Route path="*" element={<InputPage />} />
           </Routes>

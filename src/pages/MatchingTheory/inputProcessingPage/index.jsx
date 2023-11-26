@@ -1,15 +1,13 @@
-import React from 'react'
-import "./style.scss"
-import { useNavigate } from 'react-router'
-
-import { useContext, useState, useEffect } from 'react'
-import Player from '../../../components/Player';
-import axios from 'axios';
-import DataContext from "../../../context/DataContext"
+import React, { useEffect, useState } from 'react';
+import "./style.scss";
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import DataContext from "../../../context/DataContext";
 import NothingToShow from '../../../components/NothingToShow';
 import Loading from '../../../components/Loading';
 import ParamSettingBox from '../../../components/ParamSettingBox';
 import PopupContext from '../../../context/PopupContext';
+import axios from 'axios';
 //TODO: algorithm selection
 export default function InputProcessingPage() {
     const navigate = useNavigate();
@@ -96,7 +94,7 @@ export default function InputProcessingPage() {
             setAppData({ ...appData, result });
             setIsLoading(false);
             console.log(result);
-            //navigate('/result')
+            // navigate('/matching-theory/result')
         } catch (err) {
             // console.log(err);
             // setIsLoading(false);
