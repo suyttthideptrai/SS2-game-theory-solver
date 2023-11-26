@@ -105,6 +105,7 @@ export default function InputProcessingPage() {
 
 
 
+
     return (
         // <div className='input-processing-page'>
         //     <Loading isLoading={isLoading} message='Solve your problem, please do not close this window...' />
@@ -142,15 +143,25 @@ export default function InputProcessingPage() {
         //         </select>
         //     </div>
         <div>
-
-            <p className="solve-now-btn" onClick={handleSolveNow}>Solve now</p>
+                <p className="solve-now-btn" onClick={handleSolveNow}>
+                    Solve now
+                </p>
+                
             {body && (
                 <div>
                     <h3>JSON Data to backend:</h3>
                     <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre>
                 </div>
             )}
+            {resultData && (
+                <div>
+                    {/* Display the result data */}
+                    <h3>Result Data:</h3>
+                    <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(resultData, null, 2)}</pre>
+                </div>
+            )}
         </div>
+        
         // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
 
         //         {/* <div className="player-container">
