@@ -23,6 +23,7 @@ export default function InputProcessingPage() {
 
     const { displayPopup } = useContext(PopupContext)
     const [body, setBody] = useState(null);
+    const [resultData, setResultData] = useState(null);
     useEffect(() => {
         if (appData && appData.problem) {
             document.title = appData.problem.name;
@@ -75,7 +76,7 @@ export default function InputProcessingPage() {
                 `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
                 requestBody
             );
-            console.log(res.data.data);
+            console.log("Data received from the backend:", res.data.data);
             const runtime = res.data.data.runtime;
             const usedAlgorithm = res.data.data.algorithm;
             console.log(appData);
@@ -91,6 +92,7 @@ export default function InputProcessingPage() {
                 // }
 
             }
+            setResultData(result);
             setAppData({ ...appData, result });
             setIsLoading(false);
             console.log(result);
@@ -100,7 +102,6 @@ export default function InputProcessingPage() {
             // setIsLoading(false);
             // displayPopup("Running failed", "Please check the dataset and try again or contact the admin!", true)
         }
-
     }
 
 
@@ -143,24 +144,31 @@ export default function InputProcessingPage() {
         //         </select>
         //     </div>
         <div>
-                <p className="solve-now-btn" onClick={handleSolveNow}>
-                    Solve now
-                </p>
-                
-            {body && (
-                <div>
-                    <h3>JSON Data to backend:</h3>
-                    <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre>
-                </div>
-            )}
-            {resultData && (
-                <div>
-                    {/* Display the result data */}
-                    <h3>Result Data:</h3>
-                    <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(resultData, null, 2)}</pre>
-                </div>
-            )}
-        </div>
+        <p className="solve-now-btn" onClick={handleSolveNow}>
+            Solve now
+        </p>
+
+        {resultData && (
+            <div>
+                <h3>Result Data:</h3>
+                <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>
+                    {JSON.stringify(resultData, null, 2)}
+                </pre>
+                {/* You can also render other information from resultData if needed */}
+            </div>
+        )}
+
+        {body && (
+            <div>
+                <h3>JSON Data to backend:</h3>
+                <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>
+                    {JSON.stringify(body, null, 2)}
+                </pre>
+            </div>
+        )}
+
+        {/* Render other components if needed */}
+    </div>
         
         // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
 
