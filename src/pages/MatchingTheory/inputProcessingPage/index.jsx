@@ -69,7 +69,6 @@ export default function InputProcessingPage() {
             }
             setBody(requestBody);
             setIsLoading(true);
-            console.log(requestBody)
             console.log("MAKE a POST request to: ", JSON.stringify(requestBody, null, 2));
             const res = await axios.post(
                 `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
@@ -78,8 +77,7 @@ export default function InputProcessingPage() {
             console.log(res.data.data);
             const runtime = res.data.data.runtime;
             const usedAlgorithm = res.data.data.algorithm;
-            console.log(appData);
-
+ 
             const result = {
                 data: res.data.data,
                 // params: {
@@ -89,8 +87,9 @@ export default function InputProcessingPage() {
                 //     generationParam: generationParam,
                 //     maxTimeParam: maxTimeParam
                 // }
-
             }
+
+
             setAppData({ ...appData, result });
             setIsLoading(false);
             navigate('/result')
