@@ -1,9 +1,11 @@
-.output-page {
-  display: flex;
-  flex-direction: column;
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+.matching-output-page {
+  width: auto;
+  margin: 0 auto;
   align-items: center;
   justify-content: center;
-  padding: 0 30px;
+  padding: 100px;
 
   .problem-name {
     font-size: 20px;
@@ -50,9 +52,7 @@
     justify-content: center;
     align-items: center;
     gap: 20px;
-
   }
-
 
   .param-box {
     background: var(--grey);
@@ -65,9 +65,8 @@
     gap: 20px;
 
     .estimated-time {
-
       min-width: 280px;
-      font-size:13px;
+      font-size: 13px;
       text-align: center;
       // background: red;
     }
@@ -81,7 +80,6 @@
         color: white;
       }
     }
-
   }
 
   .grid-container {
@@ -91,7 +89,7 @@
     font-weight: bold;
     padding: 0 30px;
     max-width: 1200px;
-    
+
     .head-column {
       text-align: left;
     }
@@ -123,10 +121,6 @@
       flex-wrap: wrap;
       justify-content: center;
     }
-
-  
-
-
   }
 
   /* For screen sizes greater than 768px */
@@ -153,7 +147,7 @@
 
     .grid-container {
       grid-template-columns: 10% 30% 30% 30%;
-      width: 1200px;  
+      width: 1200px;
     }
 
     .grid-item-container {
@@ -166,5 +160,4 @@
       }
     }
   }
-
 }
