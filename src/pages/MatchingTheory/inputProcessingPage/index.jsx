@@ -105,9 +105,8 @@ export default function InputProcessingPage() {
 
     return (
         <div>
-            {body && (
-                <div>
-                    <h3 className='labelName'>INPUT MATCHING THEORY:</h3>
+            <div>
+                <h3 className='labelName'>INPUT MATCHING THEORY:</h3>
                     {/* <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre> */}
                     <div className="player-container">
                         {appData.problem.individuals.map((individual, index) => (
@@ -117,7 +116,6 @@ export default function InputProcessingPage() {
                         ))}
                     </div>
                 </div>
-            )}
             <p className="solve-now-btn" onClick={handleSolveNow}>Solve now</p>
         </div>
     )
