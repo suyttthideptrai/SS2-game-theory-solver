@@ -1,15 +1,13 @@
-import React from 'react'
-import "./style.scss"
-import { useNavigate } from 'react-router'
-
-import { useContext, useState, useEffect } from 'react'
-import Player from '../../../components/Player';
-import axios from 'axios';
-import DataContext from "../../../context/DataContext"
+import React, { useEffect, useState } from 'react';
+import "./style.scss";
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import DataContext from "../../../context/DataContext";
 import NothingToShow from '../../../components/NothingToShow';
 import Loading from '../../../components/Loading';
 import ParamSettingBox from '../../../components/ParamSettingBox';
 import PopupContext from '../../../context/PopupContext';
+import axios from 'axios';
 //TODO: algorithm selection
 export default function InputProcessingPage() {
     const navigate = useNavigate();
@@ -23,6 +21,7 @@ export default function InputProcessingPage() {
 
     const { displayPopup } = useContext(PopupContext)
     const [body, setBody] = useState(null);
+    const [resultData, setResultData] = useState(null);
     useEffect(() => {
         if (appData && appData.problem) {
             document.title = appData.problem.name;
@@ -75,7 +74,7 @@ export default function InputProcessingPage() {
                 `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
                 requestBody
             );
-            console.log(res.data.data);
+            console.log("Data received from the backend:", res.data.data);
             const runtime = res.data.data.runtime;
             const usedAlgorithm = res.data.data.algorithm;
             console.log(appData);
@@ -91,17 +90,18 @@ export default function InputProcessingPage() {
                 // }
 
             }
+            setResultData(result);
             setAppData({ ...appData, result });
             setIsLoading(false);
             console.log(result);
-            //navigate('/result')
+            navigate('/matching-theory/result')
         } catch (err) {
             // console.log(err);
             // setIsLoading(false);
             // displayPopup("Running failed", "Please check the dataset and try again or contact the admin!", true)
         }
-
     }
+
 
 
 
@@ -142,15 +142,32 @@ export default function InputProcessingPage() {
         //         </select>
         //     </div>
         <div>
+        <p className="solve-now-btn" onClick={handleSolveNow}>
+            Solve now
+        </p>
 
-            <p className="solve-now-btn" onClick={handleSolveNow}>Solve now</p>
-            {body && (
-                <div>
-                    <h3>JSON Data to backend:</h3>
-                    <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre>
-                </div>
-            )}
-        </div>
+        {resultData && (
+            <div>
+                <h3>Result Data:</h3>
+                <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>
+                    {JSON.stringify(resultData, null, 2)}
+                </pre>
+                {/* You can also render other information from resultData if needed */}
+            </div>
+        )}
+
+        {body && (
+            <div>
+                <h3>JSON Data to backend:</h3>
+                <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>
+                    {JSON.stringify(body, null, 2)}
+                </pre>
+            </div>
+        )}
+
+        {/* Render other components if needed */}
+    </div>
+        
         // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
 
         //         {/* <div className="player-container">

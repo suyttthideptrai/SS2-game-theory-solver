@@ -1,39 +1,42 @@
-// import React from 'react'
-// import "./style.scss"
-// import PlayerResult from '../../components/PlayerResult'
+import React from 'react'
+import "./style.scss"
 // import ExcelImage from '../../images/excel.png'
 // import GraphImage from '../../images/graph.png'
-// import { useContext, useEffect, useState } from 'react'
-// import DataContext from "../../context/DataContext"
-// import { useNavigate } from 'react-router-dom';
-// import NothingToShow from '../../components/NothingToShow';
-// import Loading from '../../components/Loading';
+import { useContext, useEffect, useState } from 'react'
+import DataContext from "../../../context/DataContext"
+import { useNavigate } from 'react-router-dom';
+import NothingToShow from '../../../components/NothingToShow';
+import Loading from '../../../components/Loading';
 // import * as XLSX from 'xlsx';
 // import { saveAs } from 'file-saver';
-// import Popup from '../../components/Popup';
-// import axios from 'axios'
-// import ParamSettingBox from '../../components/ParamSettingBox';
-// import PopupContext from '../../context/PopupContext'
+import Popup from '../../../components/Popup';
+import axios from 'axios'
+import ParamSettingBox from '../../../components/ParamSettingBox';
+import PopupContext from '../../../context/PopupContext'
 
-// import SockJS from 'sockjs-client';
-// import { v4 } from 'uuid';
-// import { overWS } from 'stompjs'
-// import { over } from 'stompjs';
+import SockJS from 'sockjs-client';
+import { v4 } from 'uuid';
+import { overWS } from 'stompjs'
+import { over } from 'stompjs';
 
 
-// let stompClient = null
-// export default function MatchingOutputPage() {
-//   const navigate = useNavigate();
-//   const { appData, setAppData } = useContext(DataContext)
-//   const { displayPopup } = useContext(PopupContext)
-//   const [sessionCode, setSessionCode] = useState(v4())
-//   const [loadingMessage, setLoadingMessage] = useState("Processing to get problem insights, please wait...")
-//   const [loadingEstimatedTime, setLoadingEstimatedTime] = useState(null)
-//   const [loadingPercentage, setLoadingPercentage] = useState()
-//   const [distributedCoreParam, setDistributedCoreParam] = useState("all")
-//   const [populationSizeParam, setPopulationSizeParam] = useState(1000)
-//   const [generationParam, setGenerationParam] = useState(100)
-//   const [maxTimeParam, setMaxTimeParam] = useState(5000)
+let stompClient = null
+export default function MatchingOutputPage() {
+  const navigate = useNavigate();
+  const { appData, setAppData } = useContext(DataContext)
+  const { displayPopup } = useContext(PopupContext)
+  const [isLoading, setIsLoading] = useState(false);
+  const [isShowPopup, setIsShowPopup] = useState(false);
+  const [body, setBody] = useState(null);
+  const [sessionCode, setSessionCode] = useState(v4())
+  const [loadingMessage, setLoadingMessage] = useState("Processing to get problem insights, please wait...")
+  const [loadingEstimatedTime, setLoadingEstimatedTime] = useState(null)
+  const [loadingPercentage, setLoadingPercentage] = useState()
+  const [distributedCoreParam, setDistributedCoreParam] = useState("all")
+  const [populationSizeParam, setPopulationSizeParam] = useState(1000)
+  const [generationParam, setGenerationParam] = useState(100)
+  const [maxTimeParam, setMaxTimeParam] = useState(5000)
+  const [resultData, setResultData] = useState(null);
 
 //   const navigateToHome = () => {
 //     setAppData(null)
@@ -41,11 +44,11 @@
 //   }
 
 
-//   if (appData == null) {
-//     return (
-//       <NothingToShow />
-//     )
-//   }
+  if (appData == null) {
+    return (
+      <NothingToShow />
+    )
+  }
 
 //   const handleExportToExcel = async () => {
 //     const workbook = XLSX.utils.book_new();
@@ -100,91 +103,185 @@
 //     setIsShowPopup(true);
 //   }
 
-//   const handlePopupOk = async () => {
-//     try {
-//       setIsShowPopup(false);
-//       const body = {
-//         specialPlayer: appData.problem.specialPlayer,
-//         normalPlayers: appData.problem.players,
-//         fitnessFunction: appData.problem.fitnessFunction,
-//         defaultPayoffFunction: appData.problem.playerPayoffFunction,
-//         conflictSet: appData.problem.conflictSet,
-//         distributedCores: distributedCoreParam,
-//         populationSize: populationSizeParam,
-//         generation: generationParam,
-//         maxTime: maxTimeParam,
-//       }
-      
-//       setIsLoading(true);
-//       await connectWebSocket() // connect to websocket to get the progress percentage
-//       const res = await axios.post(`http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/problem-result-insights/${sessionCode}`, body);
-//       setIsLoading(false);
+  const handlePopupOk = async () => {
+    try {
+      setIsShowPopup(false);
+      const requestBody = {
+        problemName: appData.problem.nameOfProblem,
+        numberOfSets: appData.problem.numberOfSets,
+                //numberOfSets: appData.stableMatchingProblem.sets.length,
+        numberOfIndividuals: appData.problem.numberOfIndividuals,
+        allPropertyNames: appData.problem.characteristics,
+                // mapping over the individuals directly from appData.stableMatchingProblem 
+                // and creating a new array of objects based on the properties of each individual. 
+                // This assumes that appData.stableMatchingProblem directly contains an array of individuals
 
-//       const insights = {
-//         data: res.data.data,
-//         params: {
-//           distributedCoreParam: distributedCoreParam,
-//           populationSizeParam: populationSizeParam,
-//           generationParam: generationParam,
-//           maxTimeParam: maxTimeParam,
-//         }
-//       }
-//       setAppData({ ...appData, insights });
-//       closeWebSocketConnection()
-//       navigate('/insights') // navigate to insights page
-//     } catch (err) {
-//       setIsLoading(false);
-//       displayPopup("Something went wrong!", "Get insights failed!, please contact the admin!", true)
-//     }
+        Individuals: appData.problem.individuals.map(Individual => ({
+            IndividualName: Individual.name,
+            IndividualSet: Individual.set,
+            Properties: Individual.argument.map((arg) => [...arg]),
+            })),
+        fitnessFunction: appData.problem.fitnessFunction,
+        // distributedCores: distributedCoreParam,
+        // populationSize: populationSizeParam, 
+        // generation: generationParam,
+        // maxTime: maxTimeParam,
+      }
+      setBody(requestBody);
+      setIsLoading(true);
+      await connectWebSocket() // connect to websocket to get the progress percentage
+      const res = await axios.post(`http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/problem-result-insights/${sessionCode}`, requestBody);
+      setIsLoading(false);
 
-//   }
+      const insights = {
+        data: res.data.data,
+        params: {
+          distributedCoreParam: distributedCoreParam,
+          populationSizeParam: populationSizeParam,
+          generationParam: generationParam,
+          maxTimeParam: maxTimeParam,
+        }
+      }
+      setAppData({ ...appData, insights });
+      setResultData(insights);
+      closeWebSocketConnection()
+      navigate('/insights') // navigate to insights page
+    } catch (err) {
+      setIsLoading(false);
+      displayPopup("Something went wrong!", "Get insights failed!, please contact the admin!", true)
+    }
 
-//   const connectWebSocket = async () => {
-//     let Sock = new SockJS(`http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/ws`);
-//     stompClient = over(Sock);
-//     await stompClient.connect({}, onConnected, onError);
-//   }
-//   const onConnected = () => {
-//     stompClient.subscribe('/session/' + sessionCode + '/progress', onPrivateMessage);
-//     console.log('Connected to websocket server!');
-//   }
+  }
 
-//   const onError = (err) => {
-//     console.log(err);
-//     // displayPopup("Something went wrong!", "Connect to server failed!, please contact the admin!", true)
-//   }
+  const connectWebSocket = async () => {
+    let Sock = new SockJS(`http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/ws`);
+    stompClient = over(Sock);
+    await stompClient.connect({}, onConnected, onError);
+  }
+  const onConnected = () => {
+    stompClient.subscribe('/session/' + sessionCode + '/progress', onPrivateMessage);
+    console.log('Connected to websocket server!');
+  }
 
-//   const closeWebSocketConnection = () => {
-//     if (stompClient) {
-//       stompClient.disconnect();
-//     }
-//   }
+  const onError = (err) => {
+    console.log(err);
+    // displayPopup("Something went wrong!", "Connect to server failed!, please contact the admin!", true)
+  }
 
-//   const onPrivateMessage = (payload) => {
-//     let payloadData = JSON.parse(payload.body);
+  const closeWebSocketConnection = () => {
+    if (stompClient) {
+      stompClient.disconnect();
+    }
+  }
 
-
-//     // some return data are to show the progress, some are not
-//     // if the data is to show the progress, then it will have the estimated time and percentage
-//     if (payloadData.inProgress) {
-//       setLoadingEstimatedTime(payloadData.minuteLeft)
-//       setLoadingPercentage(payloadData.percentage)
-//     } 
-
-//     setLoadingMessage(payloadData.message)
-
-//   }
-
+  const onPrivateMessage = (payload) => {
+    let payloadData = JSON.parse(payload.body);
 
 
-//   return (
-//     <div className='matching-output-page'>
-//         {body && (
-//                 <div>
-//                     <h3>JSON Data to backend:</h3>
-//                     <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(appData.result, null, 2)}</pre>
-//                 </div>
-//             )}
-//     </div>
-//   )
-// }
+    // some return data are to show the progress, some are not
+    // if the data is to show the progress, then it will have the estimated time and percentage
+    if (payloadData.inProgress) {
+      setLoadingEstimatedTime(payloadData.minuteLeft)
+      setLoadingPercentage(payloadData.percentage)
+    } 
+
+    setLoadingMessage(payloadData.message)
+
+  }
+
+
+
+  return (
+    <div className='output-page'>
+      <Popup
+        isShow={isShowPopup}
+        setIsShow={setIsShowPopup}
+        title={"Get detailed insights"}
+        // message={`This process can take estimated ${data.estimatedWaitingTime || 1} minute(s) and you will be redirected to another page. Do you want to continue?`}
+        message={`This process can take a while do you to continue?`}
+        okCallback={handlePopupOk}
+      />
+
+      {/* <Loading isLoading={isLoading} message={`Get more detailed insights. This can take estimated ${data.estimatedWaitingTime || 1} minute(s)...`} /> */}
+      <Loading isLoading={isLoading}
+        percentage={loadingPercentage}
+        estimatedTime={loadingEstimatedTime}
+        message={loadingMessage} />
+      <h1 className="problem-name">{appData.problem.nameOfProblem}</h1>
+      <br />
+      <p className='below-headertext'>Solution</p>
+      {/* <div className="output-container">
+        <div className="row">
+          <div className="btn" onClick={handleExportToExcel}>
+            <p>Export to Excel</p>
+            <img src={ExcelImage} alt="" />
+          </div>
+        </div>
+        <div className="param-box">
+          <ParamSettingBox
+            distributedCoreParam={distributedCoreParam}
+            setDistributedCoreParam={setDistributedCoreParam}
+            generationParam={generationParam}
+            setGenerationParam={setGenerationParam}
+            populationSizeParam={populationSizeParam}
+            setPopulationSizeParam={setPopulationSizeParam}
+            maxTimeParam={maxTimeParam}
+            setMaxTimeParam={setMaxTimeParam}
+          />
+          <div className="btn insight-btn" onClick={handleGetMoreInsights}>
+            <p>Get more insights</p>
+            <img src={GraphImage} alt="" />
+          </div>
+        </div>
+
+      </div> */}
+      <br />
+      <p className='below-headertext'> Fitness value: {appData.result.data.fitnessValue}</p>
+
+      <p className='below-headertext'> Number of Sets: {appData.problem.numberOfSets}</p>
+
+      <p className='below-headertext'> Number of Sets: {appData.problem.numberOfIndividuals}</p>
+      <br />
+      <div className="table-matches-container">
+        <div className="grid-container">
+          <div className="column head-column">No</div>
+          <div className="column head-column">Matches</div>
+          {/* <div className="column head-column">LeftOvers</div> */}
+          {/* <div className="column head-column">Payoff value</div> */}
+        </div>
+
+        {appData.result.data.matches.matches&&(
+            // Use .map to iterate over the matches array
+            appData.result.data.matches.matches.map((match, index) => (
+                <div key={index} className="grid-container">
+                    <div className="column">{index + 1}</div>
+                    <div className="column">{JSON.stringify(match)}</div>
+                </div>
+            ))
+
+        )}
+      </div>
+      <br />
+
+      <div className="table-leftOvers-container">
+        <div className="grid-container">
+          <div className="column head-column">No</div>
+          <div className="column head-column">Leftovers</div>
+          {/* <div className="column head-column">LeftOvers</div> */}
+          {/* <div className="column head-column">Payoff value</div> */}
+        </div>
+
+        {appData.result.data.matches.leftOvers&&(
+            // Use .map to iterate over the matches array
+            appData.result.data.matches.leftOvers.map((leftOver, index) => (
+                <div key={index} className="grid-container">
+                    <div className="column">{index + 1}</div>
+                    <div className="column">{JSON.stringify(leftOver)}</div>
+                </div>
+            ))
+
+        )}
+      </div>
+    </div>
+  )
+}
