@@ -1,6 +1,5 @@
 import React from 'react'
 import "./style.scss"
-// import PlayerResult from '../../components/PlayerResult'
 // import ExcelImage from '../../images/excel.png'
 // import GraphImage from '../../images/graph.png'
 import { useContext, useEffect, useState } from 'react'
@@ -238,19 +237,50 @@ export default function MatchingOutputPage() {
       </div> */}
       <br />
       <p className='below-headertext'> Fitness value: {appData.result.data.fitnessValue}</p>
-      <br />
 
-      <div className="table-container">
+      <p className='below-headertext'> Number of Sets: {appData.problem.numberOfSets}</p>
+
+      <p className='below-headertext'> Number of Sets: {appData.problem.numberOfIndividuals}</p>
+      <br />
+      <div className="table-matches-container">
         <div className="grid-container">
           <div className="column head-column">No</div>
-          <div className="column head-column">Player Name</div>
-          <div className="column head-column">Choosen strategy name</div>
-          <div className="column head-column">Payoff value</div>
+          <div className="column head-column">Matches</div>
+          {/* <div className="column head-column">LeftOvers</div> */}
+          {/* <div className="column head-column">Payoff value</div> */}
         </div>
 
-        {/* {appData.result.data.matches?.map((individual, index) => (
-          <PlayerResult key={index} player={player} index={index + 1} />
-        ))} */}
+        {appData.result.data.matches.matches&&(
+            // Use .map to iterate over the matches array
+            appData.result.data.matches.matches.map((match, index) => (
+                <div key={index} className="grid-container">
+                    <div className="column">{index + 1}</div>
+                    <div className="column">{JSON.stringify(match)}</div>
+                </div>
+            ))
+
+        )}
+      </div>
+      <br />
+
+      <div className="table-leftOvers-container">
+        <div className="grid-container">
+          <div className="column head-column">No</div>
+          <div className="column head-column">Leftovers</div>
+          {/* <div className="column head-column">LeftOvers</div> */}
+          {/* <div className="column head-column">Payoff value</div> */}
+        </div>
+
+        {appData.result.data.matches.leftOvers&&(
+            // Use .map to iterate over the matches array
+            appData.result.data.matches.leftOvers.map((leftOver, index) => (
+                <div key={index} className="grid-container">
+                    <div className="column">{index + 1}</div>
+                    <div className="column">{JSON.stringify(leftOver)}</div>
+                </div>
+            ))
+
+        )}
       </div>
     </div>
   )
