@@ -94,7 +94,7 @@ export default function InputProcessingPage() {
             setAppData({ ...appData, result });
             setIsLoading(false);
             console.log(result);
-            // navigate('/matching-theory/result')
+            navigate('/matching-theory/result')
         } catch (err) {
             // console.log(err);
             // setIsLoading(false);
