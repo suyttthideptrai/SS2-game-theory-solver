@@ -12,6 +12,7 @@ import DataContext from "./context/DataContext";
 import InsightPage from "./pages/insightPage";
 import PopupContext from "./context/PopupContext";
 import Popup from './components/Popup'
+import MatchingOutputPage from "./pages/MatchingTheory/outputPage";
 function App() {
   const [appData, setAppData] = useState(null)
   const [guideSectionIndex, setGuideSectionIndex] = useState(0)
