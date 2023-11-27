@@ -12,7 +12,7 @@ import PopupContext from "./context/PopupContext";
 import Popup from './components/Popup'
 import MatchingInputPage from "./pages/MatchingTheory/inputPage";
 import MatchingInputProcessingPage from "./pages/MatchingTheory/inputProcessingPage";
-import MatchingOutputPage from "./pages/outputPage/";
+import MatchingOutputPage from "./pages/MatchingTheory/outputPage";
 function App() {
   const [appData, setAppData] = useState(null)
   const [guideSectionIndex, setGuideSectionIndex] = useState(0)
