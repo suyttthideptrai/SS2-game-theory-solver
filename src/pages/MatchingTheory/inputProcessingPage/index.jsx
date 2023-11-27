@@ -108,7 +108,7 @@ export default function InputProcessingPage() {
         <div className="player-container">
           {appData.problem.individuals.map((individual, index) => (
             <div key={index}>
-              <Individual
+              <Individual key={index}
                 index={index}
                 allPropertyNames={appData.problem.characteristics}
                 IndividualName={individual.name}

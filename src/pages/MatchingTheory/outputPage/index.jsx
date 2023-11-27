@@ -218,18 +218,18 @@ export default function MatchingOutputPage() {
   const htmlOutput = [];
   const htmlLeftOvers = [];
 
-  //Loop through result
-  //Success couple
+  // Loop through result
+  // Success couple
   matchesArray.forEach((match, index) => {
     if (abc.length < 1) {
       htmlOutput.push();
     } else {
       htmlOutput.push(
-        <tr className="table-success">
+        <tr className="table-success" key={"C"+index}>
           <td>Couple {index + 1}</td>
-          <td>{abc[Object.values(match)[0]].IndividualName}</td>
-          <td>{abc[Object.values(match)[1]].IndividualName}</td>
-          <td>{}</td>
+          <td>{Object.values(abc)[1][Object.values(match)[0]].IndividualName}</td>
+          <td>{Object.values(abc)[1][Object.values(match)[1]].IndividualName}</td>
+          <td>{Object.values(abc)[0][index]}</td>
         </tr>
       );
     }
@@ -241,9 +241,9 @@ export default function MatchingOutputPage() {
       htmlLeftOvers.push();
     } else {
       htmlLeftOvers.push(
-        <tr className="table-danger">
+        <tr className="table-danger" key={"L"+index}>
           <td>{individual}</td>
-          <td>{abc[individual].IndividualName}</td>
+          <td>{Object.values(abc)[1][individual].IndividualName}</td>
         </tr>
       );
     }
@@ -260,7 +260,7 @@ export default function MatchingOutputPage() {
             <th>#</th>
             <th>First Partner</th>
             <th>Second Partner</th>
-            <th>Fitness Value</th>
+            <th>Couple fitness</th>
           </tr>
         </thead>
         <tbody>{htmlOutput}</tbody>
@@ -281,13 +281,14 @@ export default function MatchingOutputPage() {
       <div className="d-grid gap-2">
         <Button
           variant="primary"
-          size="lg"
+          size="md"
           onClick={getABC}
-          style={{ justifyContent: "center", margin: "auto", width: 100 }}
+          style={{ justifyContent: "center", margin: "auto", width: 150 }}
         >
           Get Result
         </Button>
       </div>
+      {console.log(Object.values(abc)[1])}
     </div>
   );
 }
