@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom'
 
 import Loading from '../../../components/Loading';
 import PopupContext from '../../../context/PopupContext';
-export default function InputPage() {
+export default function MatchingInputPage() {
     //initialize from data
     const [excelFile, setExcelFile] = useState(null);
     const [problemName, setProblemName] = useState("");

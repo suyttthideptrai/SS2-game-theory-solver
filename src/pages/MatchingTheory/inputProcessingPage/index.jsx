@@ -1,17 +1,15 @@
-import React from 'react'
-import "./style.scss"
-import { useNavigate } from 'react-router'
-
-import { useContext, useState, useEffect } from 'react'
-import Player from '../../../components/Player';
-import axios from 'axios';
-import DataContext from "../../../context/DataContext"
+import React, { useEffect, useState } from 'react';
+import "./style.scss";
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import DataContext from "../../../context/DataContext";
 import NothingToShow from '../../../components/NothingToShow';
 import Loading from '../../../components/Loading';
 import ParamSettingBox from '../../../components/ParamSettingBox';
 import PopupContext from '../../../context/PopupContext';
+import axios from 'axios';
 //TODO: algorithm selection
-export default function InputProcessingPage() {
+export default function MatchingInputProcessingPage() {
     const navigate = useNavigate();
     const { appData, setAppData } = useContext(DataContext);
     const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +21,7 @@ export default function InputProcessingPage() {
 
     const { displayPopup } = useContext(PopupContext)
     const [body, setBody] = useState(null);
+    const [resultData, setResultData] = useState(null);
     useEffect(() => {
         if (appData && appData.problem) {
             document.title = appData.problem.name;
@@ -61,11 +60,11 @@ export default function InputProcessingPage() {
                     Properties: Individual.argument.map((arg) => [...arg]),
                 })),
                 fitnessFunction: appData.problem.fitnessFunction,
-                // algorithm: algorithm,
-                // distributedCores: distributedCoreParam,
-                // populationSize: populationSizeParam,
-                // generation: generationParam,
-                // maxTime: maxTimeParam,
+                algorithm: algorithm,
+                distributedCores: distributedCoreParam,
+                populationSize: populationSizeParam,
+                generation: generationParam,
+                maxTime: maxTimeParam,
             }
             setBody(requestBody);
             setIsLoading(true);
@@ -74,7 +73,7 @@ export default function InputProcessingPage() {
                 `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
                 requestBody
             );
-            console.log(res.data.data);
+            console.log("Data received from the backend:", res.data.data);
             const runtime = res.data.data.runtime;
             const usedAlgorithm = res.data.data.algorithm;
  
@@ -87,86 +86,111 @@ export default function InputProcessingPage() {
                 //     generationParam: generationParam,
                 //     maxTimeParam: maxTimeParam
                 // }
+                params: {
+                    usedAlgorithm: usedAlgorithm,
+                    distributedCoreParam: distributedCoreParam,
+                    populationSizeParam: populationSizeParam,
+                    generationParam: generationParam,
+                    maxTimeParam: maxTimeParam
+                }
+
             }
-
-
+            setResultData(result);
             setAppData({ ...appData, result });
             setIsLoading(false);
-            navigate('/result')
+            console.log(result);
+            navigate('/matching-theory/result')
         } catch (err) {
-            // console.log(err);
-            // setIsLoading(false);
-            // displayPopup("Running failed", "Please check the dataset and try again or contact the admin!", true)
+            console.log(err);
+            setIsLoading(false);
+            displayPopup("Running failed", "Please check the dataset and try again or contact the admin!", true)
         }
-
     }
 
 
 
+
     return (
-        // <div className='input-processing-page'>
-        //     <Loading isLoading={isLoading} message='Solve your problem, please do not close this window...' />
-        //     <h1 className="problem-name">{appData.problem.name}</h1>
+        <div className='input-processing-page'>
+            <Loading isLoading={isLoading} message='Solve your problem, please do not close this window...' />
+            <h1 className="problem-name">{appData.problem.name}</h1>
 
 
 
 
-        //     <ParamSettingBox
-        //         distributedCoreParam={distributedCoreParam}
-        //         setDistributedCoreParam={setDistributedCoreParam}
-        //         generationParam={generationParam}
-        //         setGenerationParam={setGenerationParam}
-        //         populationSizeParam={populationSizeParam}
-        //         setPopulationSizeParam={setPopulationSizeParam}
-        //         maxTimeParam={maxTimeParam}
-        //         setMaxTimeParam={setMaxTimeParam}
-        //     />
-        //     {
-        //         algorithm == 'PAES' &&
-        //         <p className="error-text">Population size takes no effect for PAES algorithm</p>
+            <ParamSettingBox
+                distributedCoreParam={distributedCoreParam}
+                setDistributedCoreParam={setDistributedCoreParam}
+                generationParam={generationParam}
+                setGenerationParam={setGenerationParam}
+                populationSizeParam={populationSizeParam}
+                setPopulationSizeParam={setPopulationSizeParam}
+                maxTimeParam={maxTimeParam}
+                setMaxTimeParam={setMaxTimeParam}
+            />
+            {
+                algorithm == 'PAES' &&
+                <p className="error-text">Population size takes no effect for PAES algorithm</p>
 
-        //     }
-        //     <div className="algo-chooser">
-        //         <p className='algorithm-text bold'>Choose an algorithm: </p>
+            }
+            <div className="algo-chooser">
+                <p className='algorithm-text bold'>Choose an algorithm: </p>
 
-        //         <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
-        //             <option value="NSGAII">NSGAII</option>
-        //             <option value="NSGAIII">NSGAIII</option>
-        //             <option value="eMOEA">εMOEA</option>
-        //             <option value="PESA2">PESA2</option>
-        //             <option value="VEGA">VEGA</option>
-        //             <option value="PAES">PAES</option>
-        //             <option value="IBEA">IBEA</option>
-        //         </select>
-        //     </div>
+                <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
+                    <option value="NSGAII">NSGAII</option>
+                    <option value="NSGAIII">NSGAIII</option>
+                    <option value="eMOEA">εMOEA</option>
+                    <option value="PESA2">PESA2</option>
+                    <option value="VEGA">VEGA</option>
+                    <option value="PAES">PAES</option>
+                    <option value="IBEA">IBEA</option>
+                </select>
+            </div>
         <div>
+        <p className="solve-now-btn" onClick={handleSolveNow}>
+            Solve now
+        </p>
 
-            <p className="solve-now-btn" onClick={handleSolveNow}>Solve now</p>
-            {body && (
-                <div>
-                    <h3>JSON Data to backend:</h3>
-                    <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre>
-                </div>
-            )}
-        </div>
-        // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
+        {resultData && (
+            <div>
+                <h3>Result Data:</h3>
+                <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>
+                    {JSON.stringify(resultData, null, 2)}
+                </pre>
+                {/* You can also render other information from resultData if needed */}
+            </div>
+        )}
 
-        //         {/* <div className="player-container">
+        {body && (
+            <div>
+                <h3>JSON Data to backend:</h3>
+                <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>
+                    {JSON.stringify(body, null, 2)}
+                </pre>
+            </div>
+        )}
+
+        {/* Render other components if needed */}
+    </div>
+        
+        // <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p>
+
+            <div className="player-container">
         //         {appData.problem && appData.problem.individuals.map((individual, index) => (
-        //     <div key={index}>
-        //       <p className="individual-info">
-        //         <span className="bold">Name:</span> {individual.name}, 
-        //         <span className="bold"> Set:</span> {individual.set}
-        //       </p>
-        //       <p className="characteristics-info">
-        //         <span className="bold">Characteristics:</span> {individual.characteristics.join(', ')}
-        //       </p>
-        //       <p className="argument-info">
-        //         <span className="bold">Argument:</span> {JSON.stringify(individual.argument)}
-        //       </p>
-        //     </div>
-        //   ))}
-        //         </div> */}
-        // </div>
+            <div key={index}>
+              <p className="individual-info">
+                <span className="bold">Name:</span> {individual.name}, 
+                <span className="bold"> Set:</span> {individual.set}
+              </p>
+              <p className="characteristics-info">
+                <span className="bold">Characteristics:</span> {individual.characteristics.join(', ')}
+              </p>
+              <p className="argument-info">
+                <span className="bold">Argument:</span> {JSON.stringify(individual.argument)}
+              </p>
+            </div>
+          ))}
+                </div>
+        </div>
     )
 }
