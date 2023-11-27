@@ -203,7 +203,7 @@ export default function GuidePage() {
                     </div>
                     <div className="gray-board">
 
-                        <iframe width="800" height="500" src="https://www.youtube.com/embed/mhmGwTDpPf0" title="Billie Eilish - i love you (Live At The Greek Theatre)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>                    
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Cn77RdWB6s8?si=jPKULyuFudKvD_7V" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>                  
                     </div>
                 </section>
             </div>
