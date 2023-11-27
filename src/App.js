@@ -5,6 +5,7 @@ import InputProcessingPageMatchingTheory from "./pages/MatchingTheory/inputProce
 import InputProcessingPage from "./pages/inputProcessingPage";
 import GuidePage from "./pages/guidePage";
 import OutputPage from "./pages/outputPage";
+import MatchingTheoryOutpuPage from "./pages/MatchingTheory/outputPage";
 import "./App.scss";
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import { createContext, useState } from "react";
@@ -12,7 +13,6 @@ import DataContext from "./context/DataContext";
 import InsightPage from "./pages/insightPage";
 import PopupContext from "./context/PopupContext";
 import Popup from './components/Popup'
-import MatchingOutputPage from "./pages/MatchingTheory/outputPage";
 function App() {
   const [appData, setAppData] = useState(null)
   const [guideSectionIndex, setGuideSectionIndex] = useState(0)
@@ -46,7 +46,11 @@ function App() {
             <Route path="/input-processing" element={<InputProcessingPage />} />
             <Route path="/matching-theory/input-processing" element={<InputProcessingPageMatchingTheory />} />
             <Route path="/result" element={<OutputPage />} />
+<<<<<<< HEAD
             <Route path="/matching-theory/result" element={<MatchingOutputPage />} />
+=======
+            <Route path="/matching-theory/result" element={<MatchingTheoryOutpuPage />} />
+>>>>>>> origin/quoc-brach
             <Route path='/insights' element={<InsightPage />} />
             <Route path="*" element={<InputPage />} />
           </Routes>
