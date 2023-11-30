@@ -458,7 +458,7 @@ export default function InputPage() {
                     </div>
                 </div>
                 <div className="btn" onClick={handleGetExcelTemplate}>
-                    <p>Get Excel Template</p>
+                    <p style={{justifyContent: 'center', textAlign:'center', alignItems:'center'}}>Get Excel Template</p>
                     <img src={ExcelImage} alt="" />
                 </div>
 

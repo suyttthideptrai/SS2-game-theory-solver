@@ -41,19 +41,19 @@ export default function MatchingOutputPage() {
   const [generationParam, setGenerationParam] = useState(100);
   const [maxTimeParam, setMaxTimeParam] = useState(5000);
 
-  const [abc, setABC] = useState([]);
-  const getABC = () => {
-    axios
-      .get(
-        `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-result`
-      )
-      .then((response) => {
-        setABC(response.data.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  // const [abc, setABC] = useState([]);
+  // const getABC = () => {
+  //   axios
+  //     .get(
+  //       `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-result`
+  //     )
+  //     .then((response) => {
+  //       setABC(response.data.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
 
   const navigateToHome = () => {
     setAppData(null);
@@ -221,32 +221,24 @@ export default function MatchingOutputPage() {
   // Loop through result
   // Success couple
   matchesArray.forEach((match, index) => {
-    if (abc.length < 1) {
-      htmlOutput.push();
-    } else {
       htmlOutput.push(
         <tr className="table-success" key={"C"+index}>
           <td>Couple {index + 1}</td>
-          <td>{Object.values(abc)[1][Object.values(match)[0]].IndividualName}</td>
-          <td>{Object.values(abc)[1][Object.values(match)[1]].IndividualName}</td>
-          <td>{Object.values(abc)[0][index]}</td>
+          <td>{appData.result.data.individuals[Object.values(match)[0]].IndividualName}</td>
+          <td>{appData.result.data.individuals[Object.values(match)[1]].IndividualName}</td>
+          <td>{appData.result.data.coupleFitness[index]}</td>
         </tr>
       );
-    }
   });
 
   //LeftOves
   leftOversArray.forEach((individual, index) => {
-    if (abc.length < 1) {
-      htmlLeftOvers.push();
-    } else {
       htmlLeftOvers.push(
         <tr className="table-danger" key={"L"+index}>
           <td>{individual}</td>
-          <td>{Object.values(abc)[1][individual].IndividualName}</td>
+          <td>{appData.result.data.individuals[individual].IndividualName}</td>
         </tr>
       );
-    }
   });
 
   return (
@@ -282,13 +274,12 @@ export default function MatchingOutputPage() {
         <Button
           variant="primary"
           size="md"
-          onClick={getABC}
           style={{ justifyContent: "center", margin: "auto", width: 150 }}
         >
           Get Result
         </Button>
       </div>
-      {console.log(Object.values(abc)[1])}
+      {/* {console.log(appData.result.data.individuals)} */}
     </div>
   );
 }

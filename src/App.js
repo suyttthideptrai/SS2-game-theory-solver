@@ -46,11 +46,7 @@ function App() {
             <Route path="/input-processing" element={<InputProcessingPage />} />
             <Route path="/matching-theory/input-processing" element={<InputProcessingPageMatchingTheory />} />
             <Route path="/result" element={<OutputPage />} />
-<<<<<<< HEAD
-            <Route path="/matching-theory/result" element={<MatchingOutputPage />} />
-=======
-            <Route path="/matching-theory/result" element={<MatchingTheoryOutpuPage />} />
->>>>>>> origin/quoc-brach
+            <Route path="/matching-theory/result" element={< MatchingTheoryOutpuPage />} />
             <Route path='/insights' element={<InsightPage />} />
             <Route path="*" element={<InputPage />} />
           </Routes>
