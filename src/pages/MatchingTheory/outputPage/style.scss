@@ -1,11 +1,9 @@
-@import "bootstrap/dist/css/bootstrap.min.css";
-
-.matching-output-page {
-  width: auto;
-  margin: 0 auto;
+.output-page {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 100px;
+  padding: 0 30px;
 
   .problem-name {
     font-size: 20px;
@@ -52,7 +50,9 @@
     justify-content: center;
     align-items: center;
     gap: 20px;
+
   }
+
 
   .param-box {
     background: var(--grey);
@@ -65,8 +65,9 @@
     gap: 20px;
 
     .estimated-time {
+
       min-width: 280px;
-      font-size: 13px;
+      font-size:13px;
       text-align: center;
       // background: red;
     }
@@ -80,6 +81,7 @@
         color: white;
       }
     }
+
   }
 
   .grid-container {
@@ -89,7 +91,7 @@
     font-weight: bold;
     padding: 0 30px;
     max-width: 1200px;
-
+    
     .head-column {
       text-align: left;
     }
@@ -121,6 +123,10 @@
       flex-wrap: wrap;
       justify-content: center;
     }
+
+  
+
+
   }
 
   /* For screen sizes greater than 768px */
@@ -146,8 +152,9 @@
     }
 
     .grid-container {
-      grid-template-columns: 10% 30% 30% 30%;
-      width: 1200px;
+      // display: grid;
+      grid-template-columns: 5% 15% 15% 15% 15% 15%;
+      width: 1200px;  
     }
 
     .grid-item-container {
@@ -160,4 +167,39 @@
       }
     }
   }
+
+
+  .table-matches-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding: 5px 0;
+  }
+  
+  .head-column {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .column {
+    color: #666;
+  }
+
+
+  // .table-leftOvers-container {
+  //   width: 100%;
+  //   display: flex;
+  //   flex-direction: column;
+  //   align-items: center;
+  // }
+
 }
