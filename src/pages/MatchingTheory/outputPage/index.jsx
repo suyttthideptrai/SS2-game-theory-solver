@@ -243,7 +243,8 @@ export default function MatchingOutputPage() {
 
   return (
     <div className="matching-output-page">
-      <h3 style={{ marginBottom: 20 }}>
+      <h2>MATCHING THEORY OUTPUT PAGE</h2>
+      <h3 style={{ marginBottom: 20, marginTop:40}}>
         THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
       </h3>
       <Table striped bordered hover responsive>
