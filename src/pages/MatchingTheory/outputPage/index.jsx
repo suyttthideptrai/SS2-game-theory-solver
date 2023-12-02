@@ -20,6 +20,7 @@ import { overWS } from 'stompjs'
 import { over } from 'stompjs';
 
 
+
 let stompClient = null
 export default function MatchingOutputPage() {
   const navigate = useNavigate();
@@ -135,6 +136,13 @@ export default function MatchingOutputPage() {
   }
 
 
+  function generateColor(index) {
+    const colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow']; // Define your desired colors
+    const randomIndex = index % colors.length;
+    return colors[randomIndex];
+  }
+
+  
 
   return (
     <div className='output-page'>
@@ -162,10 +170,41 @@ export default function MatchingOutputPage() {
 
       <p className='below-headertext'> Number of Sets: {appData.problem.numberOfSets}</p>
 
-      <p className='below-headertext'> Number of Sets: {appData.problem.numberOfIndividuals}</p>
+      <p className='below-headertext'> Number of Individuals: {appData.problem.numberOfIndividuals}</p>
       <br />
       
       <div className="table-matches-container">
+
+        {/* Create a graph (Other view of table) */}
+        <svg className="chart" viewBox="0 0 1200 600">
+              {appData.result.data.matches.matches &&
+                appData.result.data.matches.leftOvers &&
+                appData.result.data.matches.matches.map((match, index) => {
+                  const color = generateColor(index);
+                  const startX = 300;
+                  const startY = 50 + index * 50;
+                  const endX = 900;
+                  const endY = startY;
+                  const lineStyle = { stroke: color, strokeWidth: 5 };
+
+                  return (
+                    <React.Fragment key={index}>
+                      <line x1={startX} y1={startY} x2={endX} y2={endY} style={lineStyle} />
+                      <circle cx={startX} cy={startY} r={6} fill={color} />
+                      <circle cx={endX} cy={endY} r={6} fill={color} />
+                      <text x={startX - 30} y={startY} fill={color}>
+                        {match.individual1Index}
+                      </text>
+                      <text x={endX + 10} y={endY} fill={color}>
+                        {match.individual2Index}
+                      </text>
+                    </React.Fragment>
+                  );
+                })}
+            </svg>
+        
+        
+        {/* Create a result table */}
         <div className="grid-container">
           {/* const {No, Individual_1_Index, Individual_2_Index, IndividualMatches, Capacity} = JSON.stringify(match) */}
           <div className="column head-column0">No</div>
@@ -214,6 +253,7 @@ export default function MatchingOutputPage() {
         )}
       </div> */}
 
+<<<<<<< Updated upstream
 
       <button id="toggle-btn" onclick="toggleView()">Toggle View</button>
       <div id="graph-view">
@@ -222,7 +262,13 @@ export default function MatchingOutputPage() {
       <table id="table-view">
         {/* Table view implementation goes here */}
       </table>
+=======
+      
+>>>>>>> Stashed changes
 
     </div>
+    
   )
 }
+
+
