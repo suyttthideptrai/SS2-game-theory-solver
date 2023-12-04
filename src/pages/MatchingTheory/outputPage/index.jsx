@@ -288,6 +288,12 @@ export default function MatchingOutputPage() {
     // console.log(temp2Style);
   };
 
+  function generateColor(index) {
+    const colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow']; // Define your desired colors
+    const randomIndex = index % colors.length;
+    return colors[randomIndex];
+  }
+
   return (
     <div className="matching-output-page">
       <h2>MATCHING THEORY OUTPUT PAGE</h2>
@@ -362,7 +368,40 @@ export default function MatchingOutputPage() {
         </div>
       </div>
       <div className="view-2" style={{ display: "none" }}>
-        <h1>Hello"</h1>
+        <svg className="chart" viewBox="0 0 1200 600">
+          {appData.result.data.matches.matches &&
+            appData.result.data.matches.leftOvers &&
+            appData.result.data.matches.matches.map((match, index) => {
+              const color = generateColor(index);
+              const startX = 300;
+              const startY = 50 + index * 50;
+              const endX = 900;
+              const endY = startY;
+              const lineStyle = { stroke: color, strokeWidth: 5 };
+
+              return (
+                <React.Fragment key={index}>
+                  <line
+                    x1={startX}
+                    y1={startY}
+                    x2={endX}
+                    y2={endY}
+                    style={lineStyle}
+                  />
+                  <circle cx={startX} cy={startY} r={6} fill={color} />
+                  <circle cx={endX} cy={endY} r={6} fill={color} />
+                  <text x={startX - 90} y={startY} fill={color}>
+                    {appData.result.data.individuals[Object.values(match)[0]]
+              .IndividualName}
+                  </text>
+                  <text x={endX + 10} y={endY} fill={color}>
+                    {appData.result.data.individuals[Object.values(match)[1]]
+              .IndividualName}
+                  </text>
+                </React.Fragment>
+              );
+            })}
+        </svg>
       </div>
       {/* {console.log(appData.result.data.individuals)} */}
     </div>
