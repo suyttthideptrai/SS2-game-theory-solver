@@ -221,64 +221,148 @@ export default function MatchingOutputPage() {
   // Loop through result
   // Success couple
   matchesArray.forEach((match, index) => {
-      htmlOutput.push(
-        <tr className="table-success" key={"C"+index}>
-          <td>Couple {index + 1}</td>
-          <td>{appData.result.data.individuals[Object.values(match)[0]].IndividualName}</td>
-          <td>{appData.result.data.individuals[Object.values(match)[1]].IndividualName}</td>
-          <td>{appData.result.data.coupleFitness[index]}</td>
-        </tr>
-      );
+    htmlOutput.push(
+      <tr className="table-success" key={"C" + index}>
+        <td>Couple {index + 1}</td>
+        <td>
+          {
+            appData.result.data.individuals[Object.values(match)[0]]
+              .IndividualName
+          }
+        </td>
+        <td>
+          {
+            appData.result.data.individuals[Object.values(match)[1]]
+              .IndividualName
+          }
+        </td>
+        <td>{appData.result.data.coupleFitness[index]}</td>
+      </tr>
+    );
   });
 
   //LeftOves
   leftOversArray.forEach((individual, index) => {
-      htmlLeftOvers.push(
-        <tr className="table-danger" key={"L"+index}>
-          <td>{individual}</td>
-          <td>{appData.result.data.individuals[individual].IndividualName}</td>
-        </tr>
-      );
+    htmlLeftOvers.push(
+      <tr className="table-danger" key={"L" + index}>
+        <td>{individual}</td>
+        <td>{appData.result.data.individuals[individual].IndividualName}</td>
+      </tr>
+    );
   });
+
+  //Change view
+  const changeView = (event, view1, view2) => {
+    //change style current page
+    const view1Class = document.getElementsByClassName(view1);
+    let view1Style = view1Class[0].getAttribute("style");
+    let array1Style = view1Style.split(";");
+    array1Style.pop();
+    array1Style.pop();
+    array1Style.push("display:block");
+
+    let temp1Style = "";
+    temp1Style += array1Style[0];
+
+    view1Class[0].setAttribute("style", temp1Style);
+
+    // console.log(view1Style);
+    // console.log(array1Style);
+    // console.log(temp1Style);
+
+    //change style the other page
+    const view2Class = document.getElementsByClassName(view2);
+    let view2Style = view2Class[0].getAttribute("style");
+    let array2Style = view2Style.split(";");
+    array2Style.pop();
+    array2Style.pop();
+    array2Style.push("display:none");
+
+    let temp2Style = "";
+    temp2Style += array2Style[0];
+
+    view2Class[0].setAttribute("style", temp2Style);
+
+    // console.log(view2Style);
+    // console.log(array2Style);
+    // console.log(temp2Style);
+  };
 
   return (
     <div className="matching-output-page">
       <h2>MATCHING THEORY OUTPUT PAGE</h2>
-      <h3 style={{ marginBottom: 20, marginTop:40}}>
-        THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
-      </h3>
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr className="table-success">
-            <th>#</th>
-            <th>First Partner</th>
-            <th>Second Partner</th>
-            <th>Couple fitness</th>
-          </tr>
-        </thead>
-        <tbody>{htmlOutput}</tbody>
-      </Table>
-
-      <h3 style={{ marginTop: 50, marginBottom: 20 }}>
-        THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
-      </h3>
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr className="table-danger">
-            <th>No.</th>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>{htmlLeftOvers}</tbody>
-      </Table>
-      <div className="d-grid gap-2">
+      <div
+        className="d-flex align-items-center justify-content-center"
+        style={{ marginTop: 30 }}
+      >
         <Button
           variant="primary"
           size="md"
-          style={{ justifyContent: "center", margin: "auto", width: 150 }}
+          style={{
+            justifyContent: "center",
+            width: 150,
+            float: "left",
+            marginRight: 5,
+            display: "block",
+          }}
+          onClick={(e) => changeView(e, "view-1", "view-2")}
         >
-          Get Result
+          Table View
         </Button>
+        <Button
+          variant="primary"
+          size="md"
+          style={{
+            justifyContent: "center",
+            width: 150,
+            float: "right",
+            marginLeft: 5,
+          }}
+          onClick={(e) => changeView(e, "view-2", "view-1")}
+        >
+          Graph View
+        </Button>
+      </div>
+      <div className="view-1" style={{ display: "block" }}>
+        <h3 style={{ marginBottom: 20, marginTop: 40 }}>
+          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
+        </h3>
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr className="table-success">
+              <th>#</th>
+              <th>First Partner</th>
+              <th>Second Partner</th>
+              <th>Couple fitness</th>
+            </tr>
+          </thead>
+          <tbody>{htmlOutput}</tbody>
+        </Table>
+
+        <h3 style={{ marginTop: 50, marginBottom: 20 }}>
+          THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
+        </h3>
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr className="table-danger">
+              <th>No.</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>{htmlLeftOvers}</tbody>
+        </Table>
+        <div className="d-grid gap-2">
+          <Button
+            variant="primary"
+            size="md"
+            style={{ justifyContent: "center", margin: "auto", width: 150 }}
+          >
+            Get Result
+          </Button>
+        </div>
+      </div>
+      <div className="view-2" style={{ display: "none" }}>
+        <h1>Hello"</h1>
       </div>
       {/* {console.log(appData.result.data.individuals)} */}
     </div>
