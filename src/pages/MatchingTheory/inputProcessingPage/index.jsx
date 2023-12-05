@@ -30,6 +30,7 @@ export default function InputProcessingPage() {
   }, [appData?.problem]);
 
   const handleChange = (event) => {
+    console.log(event.target.value);
     setAlgorithm(event.target.value);
   };
   // navigate to home page if there is no problem data
@@ -59,11 +60,11 @@ export default function InputProcessingPage() {
           Properties: Individual.argument.map((arg) => [...arg]),
         })),
         fitnessFunction: appData.problem.fitnessFunction,
-        // algorithm: algorithm,
-        // distributedCores: distributedCoreParam,
-        // populationSize: populationSizeParam,
-        // generation: generationParam,
-        // maxTime: maxTimeParam,
+        algorithm: algorithm,
+        distributedCores: distributedCoreParam,
+        populationSize: populationSizeParam,
+        generation: generationParam,
+        maxTime: maxTimeParam,
       };
       setBody(requestBody);
       setIsLoading(true);
@@ -77,16 +78,17 @@ export default function InputProcessingPage() {
       const runtime = res.data.data.runtime;
       const usedAlgorithm = res.data.data.algorithm;
       console.log(appData);
+      console.log(res)
 
       const result = {
         data: res.data.data,
-        // params: {
-        //     usedAlgorithm: usedAlgorithm,
-        //     distributedCoreParam: distributedCoreParam,
-        //     populationSizeParam: populationSizeParam,
-        //     generationParam: generationParam,
-        //     maxTimeParam: maxTimeParam
-        // }
+        params: {
+            usedAlgorithm: usedAlgorithm,
+            distributedCoreParam: distributedCoreParam,
+            populationSizeParam: populationSizeParam,
+            generationParam: generationParam,
+            maxTimeParam: maxTimeParam
+        }
       };
       setAppData({ ...appData, result });
       setIsLoading(false);
@@ -100,14 +102,17 @@ export default function InputProcessingPage() {
     }
   };
 
-  return (
-    <div>
-      <div>
-        <h3 className="labelName">INPUT MATCHING THEORY:</h3>
-        {/* <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre> */}
-        <div className="player-container">
-          {appData.problem.individuals.map((individual, index) => (
-            <div key={index}>
+  //Display by set
+  const set1 = [];
+  const set2 = [];
+  const set3 = [];
+  const set4 = []
+  const allSet = [set1, set2, set3, set4];
+
+  appData.problem.individuals.map((individual, index) => {
+    if (individual.set === 0) {
+      set1.push(
+        <div key={index}>
               <Individual key={index}
                 index={index}
                 allPropertyNames={appData.problem.characteristics}
@@ -115,7 +120,84 @@ export default function InputProcessingPage() {
                 Properties={individual.argument.map((arg) => [...arg])}
               />
             </div>
-          ))}
+      );
+    }
+    if (individual.set === 1) {
+      set2.push(
+        <div key={index}>
+              <Individual key={index}
+                index={index}
+                allPropertyNames={appData.problem.characteristics}
+                IndividualName={individual.name}
+                Properties={individual.argument.map((arg) => [...arg])}
+              />
+            </div>
+      );
+    }
+    if (individual.set === 2) {
+      set3.push(
+        <div key={index}>
+              <Individual key={index}
+                index={index}
+                allPropertyNames={appData.problem.characteristics}
+                IndividualName={individual.name}
+                Properties={individual.argument.map((arg) => [...arg])}
+              />
+            </div>
+      );
+    }
+  })
+
+  //Final Result
+  const set=1;
+  const none = 'none';
+  const finalHTML = [];
+
+  for (var i=0; i<appData.problem.numberOfSets;i++) {
+    finalHTML.push(
+      <div className={`set-${i}`} style={{width:500}}>
+        <h4>{`Set ${i+1}`}</h4>
+        {allSet[i]}
+        </div>
+    )
+  }
+
+  return (
+    <div>
+      <div>
+        <h3 className="labelName">INPUT PROCESSING PAGE:</h3>
+
+        <ParamSettingBox
+                distributedCoreParam={distributedCoreParam}
+                setDistributedCoreParam={setDistributedCoreParam}
+                generationParam={generationParam}
+                setGenerationParam={setGenerationParam}
+                populationSizeParam={populationSizeParam}
+                setPopulationSizeParam={setPopulationSizeParam}
+                maxTimeParam={maxTimeParam}
+                setMaxTimeParam={setMaxTimeParam}
+            />
+            {
+                algorithm == 'PAES' &&
+                <p className="error-text">Population size takes no effect for PAES algorithm</p>
+
+            }
+            <div className="algo-chooser" style={{width:1046}}>
+                <p className='algorithm-text bold'>Choose an algorithm: </p>
+
+                <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
+                    <option value="NSGAII">NSGAII</option>
+                    <option value="NSGAIII">NSGAIII</option>
+                    <option value="eMOEA">MOEA</option>
+                    <option value="PESA2">PESA2</option>
+                    <option value="VEGA">VEGA</option>
+                    <option value="PAES">PAES</option>
+                    <option value="IBEA">IBEA</option>
+                </select>
+            </div>
+        {/* <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre> */}
+        <div className="player-container" style={{display:"flex"}}>
+            {finalHTML}
         </div>
       </div>
       <p className="solve-now-btn" onClick={handleSolveNow}>

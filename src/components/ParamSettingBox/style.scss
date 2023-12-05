@@ -1,5 +1,5 @@
 .param-setting-box {
-    background: var(--grey);
+    background: white;
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 50px;
@@ -9,6 +9,7 @@
     width: fit-content;
     margin: 0 auto;
     padding: 10px;
+    border: 1px solid black;
     border-radius: 10px;
     gap: 20px;
 

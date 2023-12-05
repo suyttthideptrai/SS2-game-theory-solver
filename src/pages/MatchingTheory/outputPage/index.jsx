@@ -302,7 +302,7 @@ export default function MatchingOutputPage() {
         style={{ marginTop: 30 }}
       >
         <Button
-          variant="primary"
+          variant="success"
           size="md"
           style={{
             justifyContent: "center",
@@ -316,7 +316,7 @@ export default function MatchingOutputPage() {
           Table View
         </Button>
         <Button
-          variant="primary"
+          variant="success"
           size="md"
           style={{
             justifyContent: "center",
