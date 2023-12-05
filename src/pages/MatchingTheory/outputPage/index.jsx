@@ -215,6 +215,8 @@ export default function MatchingOutputPage() {
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
 
+  console.log(appData.result.data)
+
   const htmlOutput = [];
   const htmlLeftOvers = [];
 
@@ -226,17 +228,15 @@ export default function MatchingOutputPage() {
         <td>Couple {index + 1}</td>
         <td>
           {
-            appData.result.data.individuals[Object.values(match)[0]]
-              .IndividualName
+            appData.result.data.individuals[Object.values(match)[0]].IndividualName
           }
         </td>
         <td>
           {
-            appData.result.data.individuals[Object.values(match)[1]]
-              .IndividualName
+            appData.result.data.individuals[Object.values(match)[1]].IndividualName
           }
         </td>
-        <td>{appData.result.data.coupleFitness[index]}</td>
+        <td>{appData.result.data.matches.coupleFitness[index]}</td>
       </tr>
     );
   });
@@ -289,7 +289,7 @@ export default function MatchingOutputPage() {
   };
 
   function generateColor(index) {
-    const colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow']; // Define your desired colors
+    const colors = ["red", "blue", "green", "orange", "purple", "yellow"]; // Define your desired colors
     const randomIndex = index % colors.length;
     return colors[randomIndex];
   }
@@ -391,12 +391,16 @@ export default function MatchingOutputPage() {
                   <circle cx={startX} cy={startY} r={6} fill={color} />
                   <circle cx={endX} cy={endY} r={6} fill={color} />
                   <text x={startX - 90} y={startY} fill={color}>
-                    {appData.result.data.individuals[Object.values(match)[0]]
-              .IndividualName}
+                    {
+                      appData.result.data.individuals[Object.values(match)[0]]
+                        .IndividualName
+                    }
                   </text>
                   <text x={endX + 10} y={endY} fill={color}>
-                    {appData.result.data.individuals[Object.values(match)[1]]
-              .IndividualName}
+                    {
+                      appData.result.data.individuals[Object.values(match)[1]]
+                        .IndividualName
+                    }
                   </text>
                 </React.Fragment>
               );
