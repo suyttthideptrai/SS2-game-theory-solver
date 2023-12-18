@@ -385,6 +385,16 @@ export default function InputPage() {
 
                 <Loading isLoading={isLoading} />
                 <p className='header-text'>Enter information about your problem</p>
+                <div className="content-guideline">
+                <h1>Guidance</h1>
+                <p>Step 1: Enter the name of your problem</p>
+                <p>Step 2: Enter the number of sets</p>
+                <p>Step 3: Enter the number of characteristics of all individuals</p>
+                <p>Step 4: Enter the number of total individuals in each set involved</p>
+                <p>Step 5: Enter the fitness function which you initialize</p>
+                <p>Step 6: Click the button "Get Excel Templates" to receive the Excel file that contains all the information you entered above</p>
+                <p>Step 7: Select or drag and drop the Excel file you just received at the dotted line and the "Choose a file" button for the system to process your problem</p>
+                </div>
                 <div className="input-container">
                     <div className="row">
                         <Input
