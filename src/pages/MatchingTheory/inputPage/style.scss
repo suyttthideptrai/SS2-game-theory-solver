@@ -7,7 +7,22 @@
     gap: 20px;
     max-width: 80%;
     margin: 0 auto;
-
+    .content-guidance {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        // height: 75vh;
+        padding: 0 20px;
+        overflow-y: scroll;
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+                p {
+                    text-align: left;     
+                }
+        }
+    }
     .warning {
         color: rgb(186, 7, 7);
         font-size: 14px;
