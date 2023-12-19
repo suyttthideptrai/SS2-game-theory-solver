@@ -22,6 +22,7 @@ export default function InputPage() {
     const [totalIndividualsNum, setTotalIndividualsNum] = useState(null);
     const [fitnessFunction, setFitnessFunction] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isSetMany, setIsSetMany] = useState(false);
 
     const [excelFileError, setExcelFileError] = useState("");
     const [problemNameError, setProblemNameError] = useState("");
@@ -35,7 +36,9 @@ export default function InputPage() {
     const { displayPopup } = useContext(PopupContext)
     const [rowNums, setRowNums] = useState(2);
     const [colNums, setColNums] = useState(0);
+    const [setEvaluateFunction, setSetEvaluateFunction] = useState(Array.from({ length: colNums }, () => ''));
     const [setIndividuals, setSetIndividuals] = useState(Array.from({ length: colNums }, () => ''));
+    const [setMany, setSetMany] = useState(Array.from({ length: colNums }, () => false));
     const navigate = useNavigate();
     const validateExcelFile = (file) => {
         const extension = file.name.split(".").pop();
@@ -84,8 +87,11 @@ export default function InputPage() {
                         characteristics: problemInfo.characteristics,
                         individuals: problemInfo.individuals,
                         fitnessFunction: problemInfo.fitnessFunction,
+                        evaluateFunctions: problemInfo.evaluateFunction
                     }
+                    
                 })
+                console.log(setAppData);
                 navigate('/matching-theory/input-processing')
             };
             reader.readAsBinaryString(file);
@@ -97,11 +103,13 @@ export default function InputPage() {
     const loadIndividual = async (workbook, sheetNumber) => {
         const sheetName = await workbook.SheetNames[sheetNumber];
         const sheet = await workbook.Sheets[sheetName];
-        let currentRow = 6;
+        const numberOfEvaluateFunction = 2;
+        let currentRow = 6 + numberOfEvaluateFunction;
         let currentIndividual = 0;
         let characteristics = [];
-
         let errorMessage = "";
+        // MODIFY THE ORDER OF SET MANY TO RETURN TO BACKEND
+
         try {
             const problemName = await sheet['A1']['v'];
             const setNum = await sheet['B2']['v'];
@@ -110,62 +118,115 @@ export default function InputPage() {
             const fitnessFunction = await sheet['B5']['v'];
 
             // LOAD CHARACTERISTICS
-            for (let i = 2; i < characteristicNum + 2; i++) {
+            for (let i1 = 4; i1 < characteristicNum + 4; i1++) {
                 const characteristicName = await sheet[XLSX.utils.encode_cell({
-                    c: i, r: currentRow - 1
+                    c: i1, r: currentRow - 1
                 })];
+
                 if (characteristicName) {
                     characteristics.push(characteristicName['v']);
                 }
             }
+            console.log(characteristics);
+
+
 
             // LOAD SET
             const individuals = [];
+            const individualSetMany = [];
+            const individualSetOne = [];
+            const tempEvaluateFunctions = [
+                await sheet[`B6`]['v'],
+                await sheet[`B7`]['v'],
+            ];
+            let setEvaluateFucntion = [];
+            let evaluateFunctionSet1;
+            let evaluateFunctionSet2;
             const row = characteristicNum;
             const col = 3;
             let individualNum = null;
             let argumentCell = null;
             let individualName = null;
-            for (let g = 0; g < setNum; g++) {
-                const set = await sheet[`A${currentRow}`]['v'];
-                individualNum = await sheet[`B${currentRow}`];
-                if (typeof individualNum['v'] !== 'number') {
+            let setType = null;
 
+            let capacity = null;
+            let setName = null;
+            for (let g = 0; g < setNum; g++) {
+                setName = await sheet[`A${currentRow}`]['v'];
+                setType = await sheet[`B${currentRow}`]['v'];
+                
+                if (setType === 'Set Many') {
+                    setType = 1;
+                    setEvaluateFucntion[1] = { [setType]: tempEvaluateFunctions[g] };
+                } else {
+                    setType = 0;
+                    setEvaluateFucntion[0] = { [setType]: tempEvaluateFunctions[g] };
+                }
+                console.log(setEvaluateFucntion);
+
+                // CHECK THE INDIVIDUAL NUMBER IS NUMBER
+                individualNum = await sheet[`D${currentRow}`];
+                if (typeof individualNum['v'] !== 'number') {
                     errorMessage = `Error when loading Set_${currentIndividual + 1}, row = ${currentRow} . Number of individual is invalid`;
                     throw new Error();
                 } else {
-                    individualNum = await sheet[`B${currentRow}`]['v'];
+                    individualNum = await sheet[`D${currentRow}`]['v'];
 
                     // LOAD INDIVIDUAL
                     for (let i = 0; i < individualNum; i++) {
                         let argument = [];
-                        individualName = await sheet[`A${currentRow + 1}`]['v']
+                        individualName = await sheet[`A${currentRow + 1}`]['v'];
+                        capacity = await sheet[`C${currentRow + 1}`][`v`];
+
                         for (let k = 0; k < row; k++) {
                             argument[k] = []
                             for (let l = 0; l < col; l++) {
                                 argumentCell = await sheet[XLSX.utils.encode_cell({
-                                    c: k + 2,
+                                    c: k + 3,
                                     r: currentRow + l
                                 })];
+
                                 if (argumentCell === undefined) {
                                     errorMessage = `Error when loading Individual_${currentIndividual + 1}, row = ${currentRow}, column = ${k + 1}. Characteristic_ of strategy are invalid`;
                                     throw new Error()
                                 };
                                 argument[k][l] = argumentCell['v'];
                             }
+
+
                         }
                         let individual = {
-                            name: individualName,
-                            set: set,
+                            set: setName,
+                            setType: setType,
+                            individualName: individualName,
+                            capacity: capacity,
                             argument: argument
                         };
+                        if (setType === 1) {
+                            individualSetMany.push(individual);
+                        } else {
+                            individualSetOne.push(individual);
+                        }
 
-                        individuals.push(individual);
                         currentRow += 3;
                     }
                     currentRow += 1;
                 }
             }
+            
+
+            for (let i = 0; i < totalNumberOfIndividuals; i++) {
+
+                if (i < individualSetOne.length) {
+                    individuals.push(individualSetOne[i]);
+                } else {
+                    const indexInSetMany = i - individualSetOne.length;
+                    if (indexInSetMany < individualSetMany.length) {
+                        individuals.push(individualSetMany[indexInSetMany]);
+                    }
+                }
+            }
+            console.log(individuals);
             return {
                 problemName,
                 characteristicNum,
@@ -173,7 +234,8 @@ export default function InputPage() {
                 totalNumberOfIndividuals,
                 characteristics,
                 individuals,
-                fitnessFunction
+                fitnessFunction,
+                setEvaluateFucntion,
             };
         } catch (error) {
             displayPopup("Something went wrong!", errorMessage, true)
@@ -242,30 +304,52 @@ export default function InputPage() {
 
         // write problem information to sheet1
         const sheet1 = XLSX.utils.aoa_to_sheet([
-            ["Problem name", problemName],
+            [{ v: "Problem name", s: { alignment: { horizontal: "center" } } }, { v: problemName, s: { alignment: { horizontal: "center" } } }],
             ["Number of set", setNum],
-            ["Number of individuals", Number(totalIndividualsNum)],
-            ["Number of characteristics", Number(characteristicsNum)],
+            ["Number of individuals", totalIndividualsNum],
+            ["Number of characteristics", characteristicsNum],
             ["Fitness function", fitnessFunction],
         ]);
 
         const addTable = [];
+        setEvaluateFunction.forEach((evaluateFunction, index) => {
+            addTable.push([`Evaluate Function Set_${index + 1}`, evaluateFunction]);
+        });
         for (let i = 0; i < Number(setNum); i++) {
+
+
             const numberSetIndividuals = Number(setIndividuals[i]);
             if (i === 0) {
-                const row6 = ["Set_1"];
-                row6.push(numberSetIndividuals);
+                const row8 = ["Set_1"];
+                if (setMany[i] === true) {
+                    row8.push("Set Many")
+                } else {
+                    row8.push("Set One")
+                }
+                row8.push("Capacity");
+                row8.push(numberSetIndividuals);
 
                 for (let j = 0; j < Number(characteristicsNum); j++) {
-                    row6.push(`Characteristic_${j + 1}`);
+                    row8.push(`Characteristic_${j + 1}`);
                 }
-                addTable.push(row6);
+                addTable.push(row8);
                 for (let k = 0; k < numberSetIndividuals; k++) {
                     const rowIndividual = [`Individual_${k + 1}`];
+                    if (setMany[i] === true) {
+                        rowIndividual.push(null);
+                        rowIndividual.push("Fill capacity > 0");
+                    } else {
+                        rowIndividual.push(null);
+                        rowIndividual.push(1);
+                    }
                     rowIndividual.push(`Requirements`)
                     const rowWeights = [null];
+                    rowWeights.push(null);
+                    rowWeights.push(null);
                     rowWeights.push('Weights');
                     const rowProperties = [null];
+                    rowProperties.push(null);
+                    rowProperties.push(null);
                     rowProperties.push("Properties");
 
                     for (let h = 0; h < characteristicsNum; h++) {
@@ -281,14 +365,31 @@ export default function InputPage() {
                 }
             } else {
                 const rowSet = [`Set_${i + 1}`];
+                if (setMany[i] === true) {
+                    rowSet.push("Set Many")
+                } else {
+                    rowSet.push("Set One")
+                }
+                rowSet.push(null);
                 rowSet.push(numberSetIndividuals);
                 addTable.push(rowSet)
                 for (let k = 0; k < numberSetIndividuals; k++) {
                     const rowIndividual = [`Individual_${k + 1}`];
+                    if (setMany[i] === true) {
+                        rowIndividual.push(null);
+                        rowIndividual.push("Fill capacity > 0");
+                    } else {
+                        rowIndividual.push(null);
+                        rowIndividual.push(1);
+                    }
                     rowIndividual.push(`Requirements`)
                     const rowWeights = [null];
+                    rowWeights.push(null);
+                    rowWeights.push(null);
                     rowWeights.push('Weights');
                     const rowProperties = [null];
+                    rowProperties.push(null);
+                    rowProperties.push(null);
                     rowProperties.push("Properties");
 
                     for (let h = 0; h < characteristicsNum; h++) {
@@ -342,36 +443,78 @@ export default function InputPage() {
         const value = e.target.value;
         setSetNum(value);
         setColNums(value);
-        setSetIndividuals(Array.from({ length: value }, () => ''))
+        setSetIndividuals(Array.from({ length: value }, () => ''));
+        setSetEvaluateFunction(Array.from({ length: value }, () => ''));
+        setSetMany(Array.from({ length: value }, () => ''));
     }
     const generateTable = () => {
         const table = [];
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 4; i++) {
             const row = [];
             if (i === 0) {
                 for (let j = 0; j < colNums; j++) {
                     row.push(<th className='th' key={j}>{` Set_${j + 1}`}</th>);
                 }
-            } else {
+            } else if (i === 1) {
+                for (let k = 0; k < colNums; k++) {
+                    row.push(<td className="td" key={k}>
+                        <label>
+                            <input
+                                type="checkbox"
+                                name={`setType_Set_${k + 1}`}
+                                onChange={() => {
+                                    const updatedSetMany = [...setMany];
+                                    updatedSetMany[k] = !updatedSetMany[k];
+                                    setSetMany(updatedSetMany);
+
+                                }}
+                            />
+                            <h6>Tick if Set_{k + 1} is Many</h6>
+                        </label>
+
+                    </td>);
+                }
+            } else if (i === 2) {
                 for (let k = 0; k < colNums; k++) {
                     row.push(<td className="td" key={k}>
                         <input
                             type="text"
                             className='input-table-data'
-                            placeholder={` #Individuals Set_${k + 1}`}
+                            placeholder={`Individuals Set_${k + 1}`}
                             onChange={(e) => {
                                 const newSetIndividuals = [...setIndividuals];
                                 newSetIndividuals[k] = e.target.value;
                                 setSetIndividuals(newSetIndividuals);
+
                             }
 
                             }
                         />
                     </td>);
                 }
+            } else if (i === 3) {
+                for (let k = 0; k < colNums; k++) {
+                    row.push(<td className="td" key={k}>
+                        <input
+                            type="text"
+                            className='input-table-data'
+                            placeholder={`Evaluate Function Set_${k + 1}`}
+                            onChange={(e) => {
+                                const newSetEvaluateFunction = [...setEvaluateFunction];
+                                newSetEvaluateFunction[k] = e.target.value;
+                                setSetEvaluateFunction(newSetEvaluateFunction);
+                            }
+                            }
+                        />
+                    </td>);
+                }
             }
+
+            // console.log(setMany);
             table.push(<tr key={i}>{row}</tr>);
         }
+
+
         return (
             <table>
                 <tbody>{table}</tbody>
@@ -386,14 +529,14 @@ export default function InputPage() {
                 <Loading isLoading={isLoading} />
                 <p className='header-text'>Enter information about your problem</p>
                 <div className="content-guideline">
-                <h1>Guidance</h1>
-                <p>Step 1: Enter the name of your problem</p>
-                <p>Step 2: Enter the number of sets</p>
-                <p>Step 3: Enter the number of characteristics of all individuals</p>
-                <p>Step 4: Enter the number of total individuals in each set involved</p>
-                <p>Step 5: Enter the fitness function which you initialize</p>
-                <p>Step 6: Click the button "Get Excel Templates" to receive the Excel file that contains all the information you entered above</p>
-                <p>Step 7: Select or drag and drop the Excel file you just received at the dotted line and the "Choose a file" button for the system to process your problem</p>
+                    <h1>Guidance</h1>
+                    <p>Step 1: Enter the name of your problem</p>
+                    <p>Step 2: Enter the number of sets</p>
+                    <p>Step 3: Enter the number of characteristics of all individuals</p>
+                    <p>Step 4: Enter the number of total individuals in each set involved</p>
+                    <p>Step 5: Enter the fitness function which you initialize</p>
+                    <p>Step 6: Click the button "Get Excel Templates" to receive the Excel file that contains all the information you entered above</p>
+                    <p>Step 7: Select or drag and drop the Excel file you just received at the dotted line and the "Choose a file" button for the system to process your problem</p>
                 </div>
                 <div className="input-container">
                     <div className="row">
