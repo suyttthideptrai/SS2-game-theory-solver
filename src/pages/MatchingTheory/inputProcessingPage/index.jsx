@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import "./style.scss";
-import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
-import DataContext from "../../../context/DataContext";
+import React from 'react'
+import "./style.scss"
+import { useNavigate } from 'react-router'
+
+import { useContext, useState, useEffect } from 'react'
+import Player from '../../../components/Player';
+import axios from 'axios';
+import DataContext from "../../../context/DataContext"
 import NothingToShow from '../../../components/NothingToShow';
 import Loading from '../../../components/Loading';
 import ParamSettingBox from '../../../components/ParamSettingBox';
 import PopupContext from '../../../context/PopupContext';
-import axios from 'axios';
 //TODO: algorithm selection
 export default function InputProcessingPage() {
     const navigate = useNavigate();
@@ -21,7 +23,6 @@ export default function InputProcessingPage() {
 
     const { displayPopup } = useContext(PopupContext)
     const [body, setBody] = useState(null);
-    const [resultData, setResultData] = useState(null);
     useEffect(() => {
         if (appData && appData.problem) {
             document.title = appData.problem.name;
@@ -37,12 +38,16 @@ export default function InputProcessingPage() {
             <NothingToShow />
         )
     }
+    
     const handleSolveNow = async () => {
         try {
             if (!appData || !appData.problem) {
                 displayPopup("Error", "Stable Matching Problem data is missing.", true);
                 return;
             }
+            
+            const evaluateFunction = appData.problem.evaluateFunctions || [];
+            const evaluateFunctionStrings = evaluateFunction.flatMap(item => Object.entries(item));
 
             const requestBody = {
                 problemName: appData.problem.nameOfProblem,
@@ -53,32 +58,40 @@ export default function InputProcessingPage() {
                 // mapping over the individuals directly from appData.stableMatchingProblem 
                 // and creating a new array of objects based on the properties of each individual. 
                 // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-
-                Individuals: appData.problem.individuals.map(Individual => ({
-                    IndividualName: Individual.name,
-                    IndividualSet: Individual.set,
-                    Properties: Individual.argument.map((arg) => [...arg]),
+                
+                Individuals: appData.problem.individuals.map(individual => ({
+                    // IndividualSet: individual.set,
+                    Properties: [
+                        ["setName", individual.set],
+                        ["setType", individual.setType],
+                        ["individualName", individual.individualName],
+                        ["capacity", individual.capacity],
+                        ["argument", individual.argument.map(arg => [...arg])]
+                    ],
                 })),
                 fitnessFunction: appData.problem.fitnessFunction,
+                evaluateFunction: evaluateFunctionStrings,
+                
                 // algorithm: algorithm,
                 // distributedCores: distributedCoreParam,
                 // populationSize: populationSizeParam,
                 // generation: generationParam,
                 // maxTime: maxTimeParam,
-            }
-            setBody(requestBody);
+            }   
+            // console.log("Evaluate Function:", appData?.problem?.evaluateFunction);
+            // console.log("Request Body:", requestBody);
+            setBody(requestBody);  
             setIsLoading(true);
-            console.log(requestBody)
+            // console.log(evaluateFunctionStrings);
             console.log("MAKE a POST request to: ", JSON.stringify(requestBody, null, 2));
             const res = await axios.post(
                 `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
                 requestBody
             );
-            console.log("Data received from the backend:", res.data.data);
+            console.log(res.data.data);
             const runtime = res.data.data.runtime;
             const usedAlgorithm = res.data.data.algorithm;
-            console.log(appData);
-
+ 
             const result = {
                 data: res.data.data,
                 // params: {
@@ -88,20 +101,20 @@ export default function InputProcessingPage() {
                 //     generationParam: generationParam,
                 //     maxTimeParam: maxTimeParam
                 // }
-
             }
-            setResultData(result);
+
+
             setAppData({ ...appData, result });
             setIsLoading(false);
             console.log(result);
-            navigate('/matching-theory/result')
+            //navigate('/result')
         } catch (err) {
-            // console.log(err);
+            //  console.log(err);
             // setIsLoading(false);
             // displayPopup("Running failed", "Please check the dataset and try again or contact the admin!", true)
         }
-    }
 
+    }
 
 
 
@@ -142,32 +155,15 @@ export default function InputProcessingPage() {
         //         </select>
         //     </div>
         <div>
-        <p className="solve-now-btn" onClick={handleSolveNow}>
-            Solve now
-        </p>
 
-        {resultData && (
-            <div>
-                <h3>Result Data:</h3>
-                <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>
-                    {JSON.stringify(resultData, null, 2)}
-                </pre>
-                {/* You can also render other information from resultData if needed */}
-            </div>
-        )}
-
-        {body && (
-            <div>
-                <h3>JSON Data to backend:</h3>
-                <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>
-                    {JSON.stringify(body, null, 2)}
-                </pre>
-            </div>
-        )}
-
-        {/* Render other components if needed */}
-    </div>
-        
+            <p className="solve-now-btn" onClick={handleSolveNow}>Solve now</p>
+            {body && (
+                <div>
+                    <h3>JSON Data to backend:</h3>
+                    <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre>
+                </div>
+            )}
+        </div>
         // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
 
         //         {/* <div className="player-container">
