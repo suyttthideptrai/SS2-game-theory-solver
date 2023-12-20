@@ -87,11 +87,10 @@ export default function InputPage() {
                         characteristics: problemInfo.characteristics,
                         individuals: problemInfo.individuals,
                         fitnessFunction: problemInfo.fitnessFunction,
-                        evaluateFunctions: problemInfo.evaluateFunction
+                        evaluateFunctions: problemInfo.setEvaluateFucntion
                     }
-                    
+
                 })
-                console.log(setAppData);
                 navigate('/matching-theory/input-processing')
             };
             reader.readAsBinaryString(file);
@@ -127,7 +126,7 @@ export default function InputPage() {
                     characteristics.push(characteristicName['v']);
                 }
             }
-            console.log(characteristics);
+
 
 
 
@@ -154,7 +153,7 @@ export default function InputPage() {
             for (let g = 0; g < setNum; g++) {
                 setName = await sheet[`A${currentRow}`]['v'];
                 setType = await sheet[`B${currentRow}`]['v'];
-                
+
                 if (setType === 'Set Many') {
                     setType = 1;
                     setEvaluateFucntion[1] = { [setType]: tempEvaluateFunctions[g] };
@@ -162,7 +161,6 @@ export default function InputPage() {
                     setType = 0;
                     setEvaluateFucntion[0] = { [setType]: tempEvaluateFunctions[g] };
                 }
-                console.log(setEvaluateFucntion);
 
                 // CHECK THE INDIVIDUAL NUMBER IS NUMBER
                 individualNum = await sheet[`D${currentRow}`];
@@ -213,7 +211,7 @@ export default function InputPage() {
                     currentRow += 1;
                 }
             }
-            
+
 
             for (let i = 0; i < totalNumberOfIndividuals; i++) {
 
@@ -480,7 +478,7 @@ export default function InputPage() {
                         <input
                             type="text"
                             className='input-table-data'
-                            placeholder={`Individuals Set_${k + 1}`}
+                            placeholder={`Num individuals Set_${k + 1}`}
                             onChange={(e) => {
                                 const newSetIndividuals = [...setIndividuals];
                                 newSetIndividuals[k] = e.target.value;
@@ -509,8 +507,6 @@ export default function InputPage() {
                     </td>);
                 }
             }
-
-            // console.log(setMany);
             table.push(<tr key={i}>{row}</tr>);
         }
 
