@@ -37,12 +37,16 @@ export default function InputProcessingPage() {
             <NothingToShow />
         )
     }
+    
     const handleSolveNow = async () => {
         try {
             if (!appData || !appData.problem) {
                 displayPopup("Error", "Stable Matching Problem data is missing.", true);
                 return;
             }
+            
+            const evaluateFunction = appData.problem.evaluateFunctions || [];
+            const evaluateFunctionStrings = evaluateFunction.flatMap(item => Object.entries(item));
 
             const requestBody = {
                 problemName: appData.problem.nameOfProblem,
@@ -53,22 +57,31 @@ export default function InputProcessingPage() {
                 // mapping over the individuals directly from appData.stableMatchingProblem 
                 // and creating a new array of objects based on the properties of each individual. 
                 // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-
-                Individuals: appData.problem.individuals.map(Individual => ({
-                    IndividualName: Individual.name,
-                    IndividualSet: Individual.set,
-                    Properties: Individual.argument.map((arg) => [...arg]),
+                
+                Individuals: appData.problem.individuals.map(individual => ({
+                    // IndividualSet: individual.set,
+                    Properties: [
+                        ["setName", individual.set],
+                        ["setType", individual.setType],
+                        ["individualName", individual.individualName],
+                        ["capacity", individual.capacity],
+                        ["argument", individual.argument.map(arg => [...arg])]
+                    ],
                 })),
                 fitnessFunction: appData.problem.fitnessFunction,
+                evaluateFunction: evaluateFunctionStrings,
+                
                 // algorithm: algorithm,
                 // distributedCores: distributedCoreParam,
                 // populationSize: populationSizeParam,
                 // generation: generationParam,
                 // maxTime: maxTimeParam,
-            }
-            setBody(requestBody);
+            }   
+            // console.log("Evaluate Function:", appData?.problem?.evaluateFunction);
+            // console.log("Request Body:", requestBody);
+            setBody(requestBody);  
             setIsLoading(true);
-            console.log(requestBody)
+            // console.log(evaluateFunctionStrings);
             console.log("MAKE a POST request to: ", JSON.stringify(requestBody, null, 2));
             const res = await axios.post(
                 `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
@@ -77,8 +90,7 @@ export default function InputProcessingPage() {
             console.log("Data received from the backend:", res.data.data);
             const runtime = res.data.data.runtime;
             const usedAlgorithm = res.data.data.algorithm;
-            console.log(appData);
-
+ 
             const result = {
                 data: res.data.data,
                 // params: {
@@ -88,15 +100,15 @@ export default function InputProcessingPage() {
                 //     generationParam: generationParam,
                 //     maxTimeParam: maxTimeParam
                 // }
-
             }
-            setResultData(result);
+
+
             setAppData({ ...appData, result });
             setIsLoading(false);
             console.log(result);
             navigate('/matching-theory/result')
         } catch (err) {
-            // console.log(err);
+            //  console.log(err);
             // setIsLoading(false);
             // displayPopup("Running failed", "Please check the dataset and try again or contact the admin!", true)
         }

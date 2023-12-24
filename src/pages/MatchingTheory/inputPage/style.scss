@@ -7,7 +7,22 @@
     gap: 20px;
     max-width: 80%;
     margin: 0 auto;
-
+    .content-guidance {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        // height: 75vh;
+        padding: 0 20px;
+        overflow-y: scroll;
+        .section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+                p {
+                    text-align: left;     
+                }
+        }
+    }
     .warning {
         color: rgb(186, 7, 7);
         font-size: 14px;
@@ -16,6 +31,7 @@
             color: black;
         }
     }
+
     .header-text {
         font-size: 12px;
         color: #000;
@@ -41,6 +57,30 @@
             align-items: center;
             gap: 20px;
             width: 100%;
+        }
+
+        .table {
+            width: 100%;
+            border: 1px solid black;
+            overflow-x: auto;
+            border-collapse: collapse;
+
+        }
+
+        .th{
+            border: 1px solid black;
+            padding: 8px; // Adjust the padding as needed
+            text-align: center; // Center-align content in cells
+        }
+        .td {
+            border: 1px solid black;
+            padding: 8px; // Adjust the padding as needed
+            text-align: center; // Center-align content in cells
+
+            .input-table-data{
+                border: none;
+                text-align: center;
+            }
         }
     }
 
