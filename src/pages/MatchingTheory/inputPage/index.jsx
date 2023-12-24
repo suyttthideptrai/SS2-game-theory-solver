@@ -110,7 +110,7 @@ export default function InputPage() {
         // MODIFY THE ORDER OF SET MANY TO RETURN TO BACKEND
 
         try {
-            const problemName = await sheet['A1']['v'];
+            const problemName = await sheet['A2']['v'];
             const setNum = await sheet['B2']['v'];
             const totalNumberOfIndividuals = await sheet['B3']['v'];
             const characteristicNum = await sheet['B4']['v'];
@@ -155,11 +155,13 @@ export default function InputPage() {
                 setType = await sheet[`B${currentRow}`]['v'];
 
                 if (setType === 'Set Many') {
-                    setType = 1;
-                    setEvaluateFucntion[1] = { [setType]: tempEvaluateFunctions[g] };
-                } else {
+                    // change
                     setType = 0;
                     setEvaluateFucntion[0] = { [setType]: tempEvaluateFunctions[g] };
+                } else {
+                    // change
+                    setType = 1;
+                    setEvaluateFucntion[1] = { [setType]: tempEvaluateFunctions[g] };
                 }
 
                 // CHECK THE INDIVIDUAL NUMBER IS NUMBER
@@ -180,7 +182,7 @@ export default function InputPage() {
                             argument[k] = []
                             for (let l = 0; l < col; l++) {
                                 argumentCell = await sheet[XLSX.utils.encode_cell({
-                                    c: k + 3,
+                                    c: k + 4,
                                     r: currentRow + l
                                 })];
 
@@ -200,7 +202,8 @@ export default function InputPage() {
                             capacity: capacity,
                             argument: argument
                         };
-                        if (setType === 1) {
+                        console.log(argument);
+                        if (setType === 0) {
                             individualSetMany.push(individual);
                         } else {
                             individualSetOne.push(individual);
@@ -213,17 +216,19 @@ export default function InputPage() {
             }
 
 
+            // Change
             for (let i = 0; i < totalNumberOfIndividuals; i++) {
 
-                if (i < individualSetOne.length) {
-                    individuals.push(individualSetOne[i]);
+                if (i < individualSetMany.length) {
+                    individuals.push(individualSetMany[i]);
                 } else {
-                    const indexInSetMany = i - individualSetOne.length;
-                    if (indexInSetMany < individualSetMany.length) {
-                        individuals.push(individualSetMany[indexInSetMany]);
+                    const indexInSetOne = i - individualSetMany.length;
+                    if (indexInSetOne < individualSetOne.length) {
+                        individuals.push(individualSetOne[indexInSetOne]);
                     }
                 }
             }
+
             console.log(individuals);
             return {
                 problemName,
@@ -335,10 +340,12 @@ export default function InputPage() {
                     const rowIndividual = [`Individual_${k + 1}`];
                     if (setMany[i] === true) {
                         rowIndividual.push(null);
-                        rowIndividual.push("Fill capacity > 0");
+                        //Change
+                        rowIndividual.push(1);
                     } else {
                         rowIndividual.push(null);
-                        rowIndividual.push(1);
+                        //Change
+                        rowIndividual.push("Fill capacity > 0");
                     }
                     rowIndividual.push(`Requirements`)
                     const rowWeights = [null];
@@ -351,9 +358,9 @@ export default function InputPage() {
                     rowProperties.push("Properties");
 
                     for (let h = 0; h < characteristicsNum; h++) {
-                        rowIndividual.push(`req_${h + 1}`);
-                        rowWeights.push(`w_${h + 1}`);
-                        rowProperties.push(`p_${h + 1}`)
+                        rowIndividual.push(String(`req_${h + 1}`));
+                        rowWeights.push(String(`w_${h + 1}`));
+                        rowProperties.push(String(`p_${h + 1}`))
                     }
 
                     addTable.push(rowIndividual)
@@ -375,10 +382,12 @@ export default function InputPage() {
                     const rowIndividual = [`Individual_${k + 1}`];
                     if (setMany[i] === true) {
                         rowIndividual.push(null);
-                        rowIndividual.push("Fill capacity > 0");
+                        //Change
+                        rowIndividual.push(1);
                     } else {
                         rowIndividual.push(null);
-                        rowIndividual.push(1);
+                        //Change
+                        rowIndividual.push("Fill capacity > 0");
                     }
                     rowIndividual.push(`Requirements`)
                     const rowWeights = [null];
@@ -391,9 +400,9 @@ export default function InputPage() {
                     rowProperties.push("Properties");
 
                     for (let h = 0; h < characteristicsNum; h++) {
-                        rowIndividual.push(`req_${h + 1}`);
-                        rowWeights.push(`w_${h + 1}`);
-                        rowProperties.push(`p_${h + 1}`)
+                        rowIndividual.push(String(`req_${h + 1}`));
+                        rowWeights.push(String(`w_${h + 1}`));
+                        rowProperties.push(String(`p_${h + 1}`))
                     }
 
                     addTable.push(rowIndividual)
