@@ -149,8 +149,6 @@ export default function InputProcessingPage() {
   })
 
   //Final Result
-  const set=1;
-  const none = 'none';
   const finalHTML = [];
 
   for (var i=0; i<appData.problem.numberOfSets;i++) {
@@ -165,7 +163,10 @@ export default function InputProcessingPage() {
   return (
     <div>
       <div>
-        <h3 className="labelName">INPUT PROCESSING PAGE:</h3>
+        <h3 className="labelName" style={{marginBottom:50}}>INPUT PROCESSING PAGE:</h3>
+
+        <p>Number of sets: ${appData.problem.numberOfSets}</p>
+        <p style={{marginBottom:50}}>Number of Individuals: ${appData.problem.numberOfIndividuals}</p>
 
         <ParamSettingBox
                 distributedCoreParam={distributedCoreParam}
@@ -196,9 +197,9 @@ export default function InputProcessingPage() {
                 </select>
             </div>
         {/* <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre> */}
-        <div className="player-container" style={{display:"flex"}}>
+        {/* <div className="player-container" style={{display:"flex"}}>
             {finalHTML}
-        </div>
+        </div> */}
       </div>
       <p className="solve-now-btn" onClick={handleSolveNow}>
         Solve now
