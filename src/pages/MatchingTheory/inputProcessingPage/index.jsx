@@ -46,31 +46,25 @@ export default function InputProcessingPage() {
             }
             
             const evaluateFunction = appData.problem.evaluateFunctions || [];
-            const evaluateFunctionStrings = evaluateFunction.flatMap(item => Object.entries(item));
+            //const evaluateFunctionStrings = evaluateFunction.flatMap(item => Object.entries(item));
 
             const requestBody = {
                 problemName: appData.problem.nameOfProblem,
                 numberOfSets: appData.problem.numberOfSets,
-                //numberOfSets: appData.stableMatchingProblem.sets.length,
+                fitnessFunction: appData.problem.fitnessFunction,
+                evaluateFunction: evaluateFunction,
                 numberOfIndividuals: appData.problem.numberOfIndividuals,
                 allPropertyNames: appData.problem.characteristics,
                 // mapping over the individuals directly from appData.stableMatchingProblem 
                 // and creating a new array of objects based on the properties of each individual. 
                 // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-                
-                Individuals: appData.problem.individuals.map(individual => ({
-                    // IndividualSet: individual.set,
-                    Properties: [
-                        ["setName", individual.set],
-                        ["setType", individual.setType],
-                        ["individualName", individual.individualName],
-                        ["capacity", individual.capacity],
-                        ["argument", individual.argument.map(arg => [...arg])]
-                    ],
+
+                Individuals: appData.problem.individuals.map(Individual => ({
+                    IndividualName: Individual.individualName,
+                    SetType: Individual.setType,
+                    Capacity: Individual.capacity,
+                    Properties: Individual.argument.map((arg) => [...arg]),
                 })),
-                fitnessFunction: appData.problem.fitnessFunction,
-                evaluateFunction: evaluateFunctionStrings,
-                
                 // algorithm: algorithm,
                 // distributedCores: distributedCoreParam,
                 // populationSize: populationSizeParam,

@@ -156,11 +156,11 @@ export default function InputPage() {
                 if (setType === 'Set Many') {
                     // change
                     setType = 0;
-                    setEvaluateFucntion[0] = { [setType]: tempEvaluateFunctions[g] };
+                    setEvaluateFucntion[0] = tempEvaluateFunctions[g];
                 } else {
                     // change
                     setType = 1;
-                    setEvaluateFucntion[1] = { [setType]: tempEvaluateFunctions[g] };
+                    setEvaluateFucntion[1] = tempEvaluateFunctions[g];
                 }
 
                 // CHECK THE INDIVIDUAL NUMBER IS NUMBER
