@@ -165,8 +165,8 @@ export default function InputProcessingPage() {
       <div>
         <h3 className="labelName" style={{marginBottom:50}}>INPUT PROCESSING PAGE:</h3>
 
-        <p>Number of sets: ${appData.problem.numberOfSets}</p>
-        <p style={{marginBottom:50}}>Number of Individuals: ${appData.problem.numberOfIndividuals}</p>
+        <p style={{marginLeft:250}}>Number of sets: {appData.problem.numberOfSets}</p>
+        <p style={{marginBottom:50, marginLeft:250}}>Number of Individuals: {appData.problem.numberOfIndividuals}</p>
 
         <ParamSettingBox
                 distributedCoreParam={distributedCoreParam}
