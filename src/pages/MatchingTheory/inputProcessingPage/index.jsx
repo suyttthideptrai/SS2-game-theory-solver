@@ -1,75 +1,43 @@
-import React from "react";
-import "./style.scss";
-import { useNavigate } from "react-router";
-import React from "react";
-import "./style.scss";
-import { useNavigate } from "react-router";
+import React from 'react'
+import "./style.scss"
+import { useNavigate } from 'react-router'
 
-import { useContext, useState, useEffect } from "react";
-import Individual from "../../../components/Individual";
-import axios from "axios";
-import DataContext from "../../../context/DataContext";
-import NothingToShow from "../../../components/NothingToShow";
-import Loading from "../../../components/Loading";
-import ParamSettingBox from "../../../components/ParamSettingBox";
-import PopupContext from "../../../context/PopupContext";
+import { useContext, useState, useEffect } from 'react'
+import Player from '../../../components/Player';
+import axios from 'axios';
+import DataContext from "../../../context/DataContext"
+import NothingToShow from '../../../components/NothingToShow';
+import Loading from '../../../components/Loading';
+import ParamSettingBox from '../../../components/ParamSettingBox';
+import PopupContext from '../../../context/PopupContext';
 //TODO: algorithm selection
 export default function InputProcessingPage() {
-  const navigate = useNavigate();
-  const { appData, setAppData } = useContext(DataContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [algorithm, setAlgorithm] = useState("NSGAII");
-  const [distributedCoreParam, setDistributedCoreParam] = useState("all");
-  const [populationSizeParam, setPopulationSizeParam] = useState(1000);
-  const [generationParam, setGenerationParam] = useState(100);
-  const [maxTimeParam, setMaxTimeParam] = useState(5000);
+    const navigate = useNavigate();
+    const { appData, setAppData } = useContext(DataContext);
+    const [isLoading, setIsLoading] = useState(false);
+    const [algorithm, setAlgorithm] = useState('NSGAII');
+    const [distributedCoreParam, setDistributedCoreParam] = useState("all")
+    const [populationSizeParam, setPopulationSizeParam] = useState(1000)
+    const [generationParam, setGenerationParam] = useState(100)
+    const [maxTimeParam, setMaxTimeParam] = useState(5000)
 
-  const { displayPopup } = useContext(PopupContext);
-  const [body, setBody] = useState(null);
-  useEffect(() => {
-    if (appData && appData.problem) {
-      document.title = appData.problem.name;
+    const { displayPopup } = useContext(PopupContext)
+    const [body, setBody] = useState(null);
+    useEffect(() => {
+        if (appData && appData.problem) {
+            document.title = appData.problem.name;
+        }
+    }, [appData?.problem]);
+
+    const handleChange = (event) => {
+        setAlgorithm(event.target.value);
     }
-  }, [appData?.problem]);
-  const navigate = useNavigate();
-  const { appData, setAppData } = useContext(DataContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [algorithm, setAlgorithm] = useState("NSGAII");
-  const [distributedCoreParam, setDistributedCoreParam] = useState("all");
-  const [populationSizeParam, setPopulationSizeParam] = useState(1000);
-  const [generationParam, setGenerationParam] = useState(100);
-  const [maxTimeParam, setMaxTimeParam] = useState(5000);
-
-  const { displayPopup } = useContext(PopupContext);
-  const [body, setBody] = useState(null);
-  useEffect(() => {
-    if (appData && appData.problem) {
-      document.title = appData.problem.name;
+    // navigate to home page if there is no problem data
+    if (!appData || !appData.problem) {
+        return (
+            <NothingToShow />
+        )
     }
-  }, [appData?.problem]);
-
-  const handleChange = (event) => {
-    console.log(event.target.value);
-    setAlgorithm(event.target.value);
-  };
-  // navigate to home page if there is no problem data
-  if (!appData || !appData.problem) {
-    return <NothingToShow />;
-  }
-  const handleSolveNow = async () => {
-    try {
-      if (!appData || !appData.problem) {
-        displayPopup("Error", "Stable Matching Problem data is missing.", true);
-        return;
-      }
-  const handleChange = (event) => {
-    console.log(event.target.value);
-    setAlgorithm(event.target.value);
-  };
-  // navigate to home page if there is no problem data
-  if (!appData || !appData.problem) {
-    return <NothingToShow />;
-  }
   const handleSolveNow = async () => {
     try {
       if (!appData || !appData.problem) {
