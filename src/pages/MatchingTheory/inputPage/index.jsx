@@ -86,6 +86,7 @@ export default function InputPage() {
                         fitnessFunction: problemInfo.fitnessFunction,
                     }
                 })
+                console.log(problemInfo);
                 navigate('/matching-theory/input-processing')
             };
             reader.readAsBinaryString(file);

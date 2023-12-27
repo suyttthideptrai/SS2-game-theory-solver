@@ -1,6 +1,9 @@
 import React from "react";
 import "./style.scss";
 import { useNavigate } from "react-router";
+import React from "react";
+import "./style.scss";
+import { useNavigate } from "react-router";
 
 import { useContext, useState, useEffect } from "react";
 import Individual from "../../../components/Individual";
@@ -12,6 +15,22 @@ import ParamSettingBox from "../../../components/ParamSettingBox";
 import PopupContext from "../../../context/PopupContext";
 //TODO: algorithm selection
 export default function InputProcessingPage() {
+  const navigate = useNavigate();
+  const { appData, setAppData } = useContext(DataContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [algorithm, setAlgorithm] = useState("NSGAII");
+  const [distributedCoreParam, setDistributedCoreParam] = useState("all");
+  const [populationSizeParam, setPopulationSizeParam] = useState(1000);
+  const [generationParam, setGenerationParam] = useState(100);
+  const [maxTimeParam, setMaxTimeParam] = useState(5000);
+
+  const { displayPopup } = useContext(PopupContext);
+  const [body, setBody] = useState(null);
+  useEffect(() => {
+    if (appData && appData.problem) {
+      document.title = appData.problem.name;
+    }
+  }, [appData?.problem]);
   const navigate = useNavigate();
   const { appData, setAppData } = useContext(DataContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +62,20 @@ export default function InputProcessingPage() {
         displayPopup("Error", "Stable Matching Problem data is missing.", true);
         return;
       }
+  const handleChange = (event) => {
+    console.log(event.target.value);
+    setAlgorithm(event.target.value);
+  };
+  // navigate to home page if there is no problem data
+  if (!appData || !appData.problem) {
+    return <NothingToShow />;
+  }
+  const handleSolveNow = async () => {
+    try {
+      if (!appData || !appData.problem) {
+        displayPopup("Error", "Stable Matching Problem data is missing.", true);
+        return;
+      }
 
       const requestBody = {
         problemName: appData.problem.nameOfProblem,
@@ -53,6 +86,7 @@ export default function InputProcessingPage() {
         // mapping over the individuals directly from appData.stableMatchingProblem
         // and creating a new array of objects based on the properties of each individual.
         // This assumes that appData.stableMatchingProblem directly contains an array of individuals
+        evaluateFunctions: appData.problem.evaluateFunctions,
 
         Individuals: appData.problem.individuals.map((Individual) => ({
           IndividualName: Individual.name,
@@ -101,64 +135,65 @@ export default function InputProcessingPage() {
       // displayPopup("Running failed", "Please check the dataset and try again or contact the admin!", true)
     }
   };
+  
 
   //Display by set
-  const set1 = [];
-  const set2 = [];
-  const set3 = [];
-  const set4 = []
-  const allSet = [set1, set2, set3, set4];
+  // const set1 = [];
+  // const set2 = [];
+  // const set3 = [];
+  // const set4 = []
+  // const allSet = [set1, set2, set3, set4];
 
-  appData.problem.individuals.map((individual, index) => {
-    if (individual.set === 0) {
-      set1.push(
-        <div key={index}>
-              <Individual key={index}
-                index={index}
-                allPropertyNames={appData.problem.characteristics}
-                IndividualName={individual.name}
-                Properties={individual.argument.map((arg) => [...arg])}
-              />
-            </div>
-      );
-    }
-    if (individual.set === 1) {
-      set2.push(
-        <div key={index}>
-              <Individual key={index}
-                index={index}
-                allPropertyNames={appData.problem.characteristics}
-                IndividualName={individual.name}
-                Properties={individual.argument.map((arg) => [...arg])}
-              />
-            </div>
-      );
-    }
-    if (individual.set === 2) {
-      set3.push(
-        <div key={index}>
-              <Individual key={index}
-                index={index}
-                allPropertyNames={appData.problem.characteristics}
-                IndividualName={individual.name}
-                Properties={individual.argument.map((arg) => [...arg])}
-              />
-            </div>
-      );
-    }
-  })
+  // appData.problem.individuals.map((individual, index) => {
+  //   if (individual.set === 0) {
+  //     set1.push(
+  //       <div key={index}>
+  //             <Individual key={index}
+  //               index={index}
+  //               allPropertyNames={appData.problem.characteristics}
+  //               IndividualName={individual.name}
+  //               Properties={individual.argument.map((arg) => [...arg])}
+  //             />
+  //           </div>
+  //     );
+  //   }
+  //   if (individual.set === 1) {
+  //     set2.push(
+  //       <div key={index}>
+  //             <Individual key={index}
+  //               index={index}
+  //               allPropertyNames={appData.problem.characteristics}
+  //               IndividualName={individual.name}
+  //               Properties={individual.argument.map((arg) => [...arg])}
+  //             />
+  //           </div>
+  //     );
+  //   }
+  //   if (individual.set === 2) {
+  //     set3.push(
+  //       <div key={index}>
+  //             <Individual key={index}
+  //               index={index}
+  //               allPropertyNames={appData.problem.characteristics}
+  //               IndividualName={individual.name}
+  //               Properties={individual.argument.map((arg) => [...arg])}
+  //             />
+  //           </div>
+  //     );
+  //   }
+  // })
 
   //Final Result
-  const finalHTML = [];
+  // const finalHTML = [];
 
-  for (var i=0; i<appData.problem.numberOfSets;i++) {
-    finalHTML.push(
-      <div className={`set-${i}`} style={{width:500}}>
-        <h4>{`Set ${i+1}`}</h4>
-        {allSet[i]}
-        </div>
-    )
-  }
+  // for (var i=0; i<appData.problem.numberOfSets;i++) {
+  //   finalHTML.push(
+  //     <div className={`set-${i}`} style={{width:500}}>
+  //       <h4>{`Set ${i+1}`}</h4>
+  //       {allSet[i]}
+  //       </div>
+  //   )
+  // }
 
   return (
     <div>
@@ -196,7 +231,7 @@ export default function InputProcessingPage() {
                     <option value="IBEA">IBEA</option>
                 </select>
             </div>
-        {/* <pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre> */}
+        {<pre style={{ whiteSpace: 'pre-wrap', maxWidth: '800px', overflowX: 'auto' }}>{JSON.stringify(body, null, 2)}</pre>}
         {/* <div className="player-container" style={{display:"flex"}}>
             {finalHTML}
         </div> */}
