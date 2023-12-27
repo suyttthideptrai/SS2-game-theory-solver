@@ -102,7 +102,7 @@ export default function InputPage() {
     const loadIndividual = async (workbook, sheetNumber) => {
         const sheetName = await workbook.SheetNames[sheetNumber];
         const sheet = await workbook.Sheets[sheetName];
-        const problemName = await sheet['A2']['v'];
+        const problemName = await sheet['B1']['v'];
             const setNum = await sheet['B2']['v'];
             const totalNumberOfIndividuals = await sheet['B3']['v'];
             const characteristicNum = await sheet['B4']['v'];
