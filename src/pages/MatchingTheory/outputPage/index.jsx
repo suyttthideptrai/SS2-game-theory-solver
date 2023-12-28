@@ -223,7 +223,7 @@ export default function MatchingOutputPage() {
   // Loop through result
   // Success couple
   matchesArray.forEach((match, index) => {
-    var individualName = appData.result.data.individuals[Object.values(match)[1]].IndividualName;
+    var individualName = appData.result.data.individuals[Object.values(match)[0]].IndividualName;
     var individualMatches = "";
     if (Object.values(match)[2].length==0) {
       individualMatches = "There are no individual matches";
@@ -251,7 +251,7 @@ export default function MatchingOutputPage() {
     );
   });
 
-  //LeftOves
+  // LeftOves
   leftOversArray.forEach((individual, index) => {
     htmlLeftOvers.push(
       <tr className="table-danger" key={"L" + index}>
@@ -261,42 +261,42 @@ export default function MatchingOutputPage() {
     );
   });
 
-  //Change view
-  const changeView = (event, view1, view2) => {
-    //change style current page
-    const view1Class = document.getElementsByClassName(view1);
-    let view1Style = view1Class[0].getAttribute("style");
-    let array1Style = view1Style.split(";");
-    array1Style.pop();
-    array1Style.pop();
-    array1Style.push("display:block");
+  // //Change view
+  // const changeView = (event, view1, view2) => {
+  //   //change style current page
+  //   const view1Class = document.getElementsByClassName(view1);
+  //   let view1Style = view1Class[0].getAttribute("style");
+  //   let array1Style = view1Style.split(";");
+  //   array1Style.pop();
+  //   array1Style.pop();
+  //   array1Style.push("display:block");
 
-    let temp1Style = "";
-    temp1Style += array1Style[0];
+  //   let temp1Style = "";
+  //   temp1Style += array1Style[0];
 
-    view1Class[0].setAttribute("style", temp1Style);
+  //   view1Class[0].setAttribute("style", temp1Style);
 
-    // console.log(view1Style);
-    // console.log(array1Style);
-    // console.log(temp1Style);
+  //   // console.log(view1Style);
+  //   // console.log(array1Style);
+  //   // console.log(temp1Style);
 
-    //change style the other page
-    const view2Class = document.getElementsByClassName(view2);
-    let view2Style = view2Class[0].getAttribute("style");
-    let array2Style = view2Style.split(";");
-    array2Style.pop();
-    array2Style.pop();
-    array2Style.push("display:none");
+  //   //change style the other page
+  //   const view2Class = document.getElementsByClassName(view2);
+  //   let view2Style = view2Class[0].getAttribute("style");
+  //   let array2Style = view2Style.split(";");
+  //   array2Style.pop();
+  //   array2Style.pop();
+  //   array2Style.push("display:none");
 
-    let temp2Style = "";
-    temp2Style += array2Style[0];
+  //   let temp2Style = "";
+  //   temp2Style += array2Style[0];
 
-    view2Class[0].setAttribute("style", temp2Style);
+  //   view2Class[0].setAttribute("style", temp2Style);
 
-    // console.log(view2Style);
-    // console.log(array2Style);
-    // console.log(temp2Style);
-  };
+  //   // console.log(view2Style);
+  //   // console.log(array2Style);
+  //   // console.log(temp2Style);
+  // };
 
   function generateColor(index) {
     const colors = ["red", "blue", "green", "orange", "purple", "yellow"]; // Define your desired colors
@@ -307,7 +307,7 @@ export default function MatchingOutputPage() {
   return (
     <div className="matching-output-page">
       <h2>MATCHING THEORY OUTPUT PAGE</h2>
-      <div
+      {/* <div
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: 30 }}
       >
@@ -338,7 +338,7 @@ export default function MatchingOutputPage() {
         >
           Graph View
         </Button>
-      </div>
+      </div> */}
       <div className="view-1" style={{ display: "block" }}>
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
           THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
@@ -376,46 +376,6 @@ export default function MatchingOutputPage() {
             Get Result
           </Button>
         </div>
-      </div>
-      <div className="view-2" style={{ display: "none" }}>
-        <svg className="chart" viewBox="0 0 1200 600">
-          {appData.result.data.matches.matches &&
-            appData.result.data.matches.leftOvers &&
-            appData.result.data.matches.matches.map((match, index) => {
-              const color = generateColor(index);
-              const startX = 300;
-              const startY = 50 + index * 50;
-              const endX = 900;
-              const endY = startY;
-              const lineStyle = { stroke: color, strokeWidth: 5 };
-
-              return (
-                <React.Fragment key={index}>
-                  <line
-                    x1={startX}
-                    y1={startY}
-                    x2={endX}
-                    y2={endY}
-                    style={lineStyle}
-                  />
-                  <circle cx={startX} cy={startY} r={6} fill={color} />
-                  <circle cx={endX} cy={endY} r={6} fill={color} />
-                  <text x={startX - 90} y={startY} fill={color}>
-                    {
-                      appData.result.data.individuals[Object.values(match)[0]]
-                        .IndividualName
-                    }
-                  </text>
-                  <text x={endX + 10} y={endY} fill={color}>
-                    {
-                      appData.result.data.individuals[Object.values(match)[1]]
-                        .IndividualName
-                    }
-                  </text>
-                </React.Fragment>
-              );
-            })}
-        </svg>
       </div>
       {/* {console.log(appData.result.data.individuals)} */}
     </div>
