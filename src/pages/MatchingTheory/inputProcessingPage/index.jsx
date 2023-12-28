@@ -70,18 +70,20 @@ export default function InputProcessingPage() {
                // This assumes that appData.stableMatchingProblem directly contains an array of individuals
               
                Individuals: appData.problem.individuals.map(individual => ({
-                   // IndividualSet: individual.set,
-                 
-                       "SetName": individual.set,
-                       "SetType": individual.setType,
-                       "IndividualName": individual.individualName,
-                       "Capacity": individual.capacity,
-                       "Properties": individual.argument.map(arg => [...arg])
-               
-               })),
-               fitnessFunction: appData.problem.fitnessFunction,
-               // evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
-               evaluateFunction: evaluateFunction,
+                // IndividualSet: individual.set,
+
+
+                "setType": individual.setType,
+                "individualName": individual.individualName,
+                "capacity": individual.capacity,
+                "argument": individual.argument.map(arg => [...arg])
+
+
+                })),
+                fitnessFunction: appData.problem.fitnessFunction,
+                // evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
+                evaluateFunction: evaluateFunction,
+
 
 
               
