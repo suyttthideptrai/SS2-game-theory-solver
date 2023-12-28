@@ -229,7 +229,7 @@ export default function MatchingOutputPage() {
       individualMatches = "There are no individual matches";
     } else {
       for (let i = 0; i < Object.values(match)[2].length; i++) {
-        individualMatches += Object.values(match)[2][i] + " ";
+        individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName + " ";
       }
     }
     htmlOutput.push(
