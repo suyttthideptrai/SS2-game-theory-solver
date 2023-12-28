@@ -101,19 +101,25 @@ export default function InputPage() {
     const loadIndividual = async (workbook, sheetNumber) => {
         const sheetName = await workbook.SheetNames[sheetNumber];
         const sheet = await workbook.Sheets[sheetName];
-        const numberOfEvaluateFunction = 2;
-        let currentRow = 6 + numberOfEvaluateFunction;
-        let currentIndividual = 0;
-        let characteristics = [];
-        let errorMessage = "";
-        // MODIFY THE ORDER OF SET MANY TO RETURN TO BACKEND
-
-        try {
-            const problemName = await sheet['A2']['v'];
+        const problemName = await sheet['B1']['v'];
             const setNum = await sheet['B2']['v'];
             const totalNumberOfIndividuals = await sheet['B3']['v'];
             const characteristicNum = await sheet['B4']['v'];
             const fitnessFunction = await sheet['B5']['v'];
+        let currentRow = 6 + Number(setNum);
+        let currentIndividual = 0;
+        let characteristics = [];
+        let errorMessage = "";
+        console.log(currentRow);
+
+        // MODIFY THE ORDER OF SET MANY TO RETURN TO BACKEND
+
+        try {
+            // const problemName = await sheet['A2']['v'];
+            // const setNum = await sheet['B2']['v'];
+            // const totalNumberOfIndividuals = await sheet['B3']['v'];
+            // const characteristicNum = await sheet['B4']['v'];
+            // const fitnessFunction = await sheet['B5']['v'];
 
             // LOAD CHARACTERISTICS
             for (let i1 = 4; i1 < characteristicNum + 4; i1++) {
@@ -133,13 +139,13 @@ export default function InputPage() {
             const individuals = [];
             const individualSetMany = [];
             const individualSetOne = [];
+            const evaluateSetMany = [];
+            const evaluateSetOne = [];
             const tempEvaluateFunctions = [
-                await sheet[`B6`]['v'],
-                await sheet[`B7`]['v'],
+                // await sheet[`B6`]['v'],
+                // await sheet[`B7`]['v'],
             ];
             let setEvaluateFucntion = [];
-            let evaluateFunctionSet1;
-            let evaluateFunctionSet2;
             const row = characteristicNum;
             const col = 3;
             let individualNum = null;
@@ -149,10 +155,14 @@ export default function InputPage() {
 
             let capacity = null;
             let setName = null;
+            for(let j = 0; j < setNum; j++){
+                let evaluateFunction = await sheet[`B${6+j}`]['v'];
+                console.log(evaluateFunction);
+                tempEvaluateFunctions.push(evaluateFunction)
+            }
             for (let g = 0; g < setNum; g++) {
                 setName = await sheet[`A${currentRow}`]['v'];
                 setType = await sheet[`B${currentRow}`]['v'];
-
                 if (setType === 'Set Many') {
                     // change
                     setType = 0;
@@ -202,8 +212,7 @@ export default function InputPage() {
                             capacity: capacity,
                             argument: argument
                         };
-                        console.log(argument);
-                        if (setType === 0) {
+                        if (setType === 1) {
                             individualSetMany.push(individual);
                         } else {
                             individualSetOne.push(individual);
@@ -216,15 +225,36 @@ export default function InputPage() {
             }
 
 
-            // Change
-            for (let i = 0; i < totalNumberOfIndividuals; i++) {
-
-                if (i < individualSetMany.length) {
-                    individuals.push(individualSetMany[i]);
+            for (let i = 0, z = evaluateSetMany.length + evaluateSetOne.length; i < z; i++) {
+                if(evaluateSetMany.length === setNum){
+                    setEvaluateFucntion.push(evaluateSetMany[i]);
+                }else if(evaluateSetOne.length === setNum){
+                    setEvaluateFucntion.push(evaluateSetOne[i]);
+                }
+                else if (i < evaluateSetOne.length) {
+                    setEvaluateFucntion.push(evaluateSetOne[i]);
                 } else {
-                    const indexInSetOne = i - individualSetMany.length;
-                    if (indexInSetOne < individualSetOne.length) {
-                        individuals.push(individualSetOne[indexInSetOne]);
+                    const indexInSetMany = i - evaluateSetOne.length;
+                    if (indexInSetMany < evaluateSetMany.length) {
+                        setEvaluateFucntion.push(evaluateSetMany[indexInSetMany]);
+                    }
+                }
+            }
+            console.log(setEvaluateFucntion);
+
+            // Change
+            for (let i = 0, z = individualSetMany.length + individualSetOne.length; i < z; i++) {
+                if(individualSetMany.length === totalNumberOfIndividuals){
+                    individuals.push(individualSetMany[i]);
+                }else if(individualSetOne.length === totalNumberOfIndividuals){
+                    individuals.push(individualSetOne[i]);
+                }
+                else if (i < individualSetOne.length) {
+                    individuals.push(individualSetOne[i]);
+                } else {
+                    const indexInSetMany = i - individualSetOne.length;
+                    if (indexInSetMany < individualSetMany.length) {
+                        individuals.push(individualSetMany[indexInSetMany]);
                     }
                 }
             }
@@ -241,7 +271,7 @@ export default function InputPage() {
                 setEvaluateFucntion,
             };
         } catch (error) {
-            displayPopup("Something went wrong!", errorMessage, true)
+            // displayPopup("Something went wrong!", errorMessage, true)
         }
         return sheet
     }

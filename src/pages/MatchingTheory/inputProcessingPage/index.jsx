@@ -58,13 +58,19 @@ export default function InputProcessingPage() {
                 // mapping over the individuals directly from appData.stableMatchingProblem 
                 // and creating a new array of objects based on the properties of each individual. 
                 // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-
-                Individuals: appData.problem.individuals.map(Individual => ({
-                    IndividualName: Individual.individualName,
-                    SetType: Individual.setType,
-                    Capacity: Individual.capacity,
-                    Properties: Individual.argument.map((arg) => [...arg]),
+                
+                Individuals: appData.problem.individuals.map(individual => ({
+                    // IndividualSet: individual.set,
+                   
+                        "setName": individual.set,
+                        "setType": individual.setType,
+                        "individualName": individual.individualName,
+                        "capacity": individual.capacity,
+                        "argument": individual.argument.map(arg => [...arg])
+                 
                 })),
+                fitnessFunction: appData.problem.fitnessFunction,
+                
                 // algorithm: algorithm,
                 // distributedCores: distributedCoreParam,
                 // populationSize: populationSizeParam,
