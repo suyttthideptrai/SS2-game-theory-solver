@@ -248,7 +248,7 @@ export default function MatchingOutputPage() {
             })}
         </svg>
       </div>
-      {/* {console.log(appData.result.data.individuals)} */}
+      {console.log(appData.result.data.individuals)}
     </div>
   );
 }

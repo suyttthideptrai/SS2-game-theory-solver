@@ -72,11 +72,11 @@ export default function InputProcessingPage() {
                Individuals: appData.problem.individuals.map(individual => ({
                    // IndividualSet: individual.set,
                  
-                       "setName": individual.set,
-                       "setType": individual.setType,
-                       "individualName": individual.individualName,
-                       "capacity": individual.capacity,
-                       "argument": individual.argument.map(arg => [...arg])
+                       "SetName": individual.set,
+                       "SetType": individual.setType,
+                       "IndividualName": individual.individualName,
+                       "Capacity": individual.capacity,
+                       "Properties": individual.argument.map(arg => [...arg])
                
                })),
                fitnessFunction: appData.problem.fitnessFunction,
@@ -85,11 +85,11 @@ export default function InputProcessingPage() {
 
 
               
-               // algorithm: algorithm,
-               // distributedCores: distributedCoreParam,
-               // populationSize: populationSizeParam,
-               // generation: generationParam,
-               // maxTime: maxTimeParam,
+               algorithm: algorithm,
+               distributedCores: distributedCoreParam,
+               populationSize: populationSizeParam,
+               generation: generationParam,
+               maxTime: maxTimeParam,
            }  
            // console.log("Evaluate Function:", appData?.problem?.evaluateFunction);
            // console.log("Request Body:", requestBody);
@@ -106,13 +106,13 @@ export default function InputProcessingPage() {
            const usedAlgorithm = res.data.data.algorithm;
            const result = {
                data: res.data.data,
-               // params: {
-               //     usedAlgorithm: usedAlgorithm,
-               //     distributedCoreParam: distributedCoreParam,
-               //     populationSizeParam: populationSizeParam,
-               //     generationParam: generationParam,
-               //     maxTimeParam: maxTimeParam
-               // }
+               params: {
+                   usedAlgorithm: usedAlgorithm,
+                   distributedCoreParam: distributedCoreParam,
+                   populationSizeParam: populationSizeParam,
+                   generationParam: generationParam,
+                   maxTimeParam: maxTimeParam
+               }
            }
 
 
@@ -121,7 +121,7 @@ export default function InputProcessingPage() {
            setAppData({ ...appData, result });
            setIsLoading(false);
            console.log(result);
-           //navigate('/result')
+           navigate('/matching-theory/result');
        } catch (err) {
            //  console.log(err);
            // setIsLoading(false);
