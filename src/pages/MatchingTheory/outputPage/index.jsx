@@ -187,7 +187,7 @@ export default function MatchingOutputPage() {
         </Table>
 
         <h3 style={{ marginTop: 50, marginBottom: 20 }}>
-          THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
+          LeftOvers (Individual that has no where to go) Aafter Matching Algorithm: 
         </h3>
         <Table striped bordered hover responsive>
           <thead>
