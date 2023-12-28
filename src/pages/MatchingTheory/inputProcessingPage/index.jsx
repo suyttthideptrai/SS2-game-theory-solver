@@ -38,16 +38,21 @@ export default function InputProcessingPage() {
             <NothingToShow />
         )
     }
-    
+
     const handleSolveNow = async () => {
         try {
             if (!appData || !appData.problem) {
                 displayPopup("Error", "Stable Matching Problem data is missing.", true);
                 return;
             }
-            
+
             const evaluateFunction = appData.problem.evaluateFunctions || [];
-            const evaluateFunctionStrings = evaluateFunction.flatMap(item => Object.entries(item));
+            // const evaluateFunctionStrings = evaluateFunction.flatMap(item => Object.entries(item));
+            // const evaluateFunctionStrings = evaluateFunction.map(item => ({
+
+            // }))
+            console.log(evaluateFunction);
+
 
             const requestBody = {
                 problemName: appData.problem.nameOfProblem,
@@ -58,29 +63,30 @@ export default function InputProcessingPage() {
                 // mapping over the individuals directly from appData.stableMatchingProblem 
                 // and creating a new array of objects based on the properties of each individual. 
                 // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-                
+
                 Individuals: appData.problem.individuals.map(individual => ({
                     // IndividualSet: individual.set,
-                   
-                        "setName": individual.set,
-                        "setType": individual.setType,
-                        "individualName": individual.individualName,
-                        "capacity": individual.capacity,
-                        "argument": individual.argument.map(arg => [...arg])
-                 
+
+                    "setType": individual.setType,
+                    "individualName": individual.individualName,
+                    "capacity": individual.capacity,
+                    "argument": individual.argument.map(arg => [...arg])
+
                 })),
                 fitnessFunction: appData.problem.fitnessFunction,
-                evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
-                
+                // evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
+                evaluateFunction: evaluateFunction,
+
+
                 // algorithm: algorithm,
                 // distributedCores: distributedCoreParam,
                 // populationSize: populationSizeParam,
                 // generation: generationParam,
                 // maxTime: maxTimeParam,
-            }   
+            }
             // console.log("Evaluate Function:", appData?.problem?.evaluateFunction);
             // console.log("Request Body:", requestBody);
-            setBody(requestBody);  
+            setBody(requestBody);
             setIsLoading(true);
             // console.log(evaluateFunctionStrings);
             console.log("MAKE a POST request to: ", JSON.stringify(requestBody, null, 2));
@@ -91,7 +97,7 @@ export default function InputProcessingPage() {
             console.log(res.data.data);
             const runtime = res.data.data.runtime;
             const usedAlgorithm = res.data.data.algorithm;
- 
+
             const result = {
                 data: res.data.data,
                 // params: {
