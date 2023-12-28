@@ -61,16 +61,16 @@ export default function InputProcessingPage() {
                 
                 Individuals: appData.problem.individuals.map(individual => ({
                     // IndividualSet: individual.set,
-                    Properties: [
-                        ["setName", individual.set],
-                        ["setType", individual.setType],
-                        ["individualName", individual.individualName],
-                        ["capacity", individual.capacity],
-                        ["argument", individual.argument.map(arg => [...arg])]
-                    ],
+                   
+                        "setName": individual.set,
+                        "setType": individual.setType,
+                        "individualName": individual.individualName,
+                        "capacity": individual.capacity,
+                        "argument": individual.argument.map(arg => [...arg])
+                 
                 })),
                 fitnessFunction: appData.problem.fitnessFunction,
-                evaluateFunction: evaluateFunctionStrings,
+                evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
                 
                 // algorithm: algorithm,
                 // distributedCores: distributedCoreParam,
