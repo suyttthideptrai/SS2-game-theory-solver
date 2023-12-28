@@ -59,7 +59,7 @@ export default function InputProcessingPage() {
 
         Individuals: appData.problem.individuals.map((Individual) => ({
           IndividualName: Individual.individualName,
-          SetType: Individual.setType,
+          SetType: Individual.set,
           Capacity: Individual.capacity,
           Properties: Individual.argument.map((arg) => [...arg]),
         })),

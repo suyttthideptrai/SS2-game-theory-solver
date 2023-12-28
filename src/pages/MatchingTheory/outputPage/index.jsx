@@ -223,7 +223,7 @@ export default function MatchingOutputPage() {
   // Loop through result
   // Success couple
   matchesArray.forEach((match, index) => {
-    var individualName = appData.result.data.individuals[Object.values(match)[0]].IndividualName;
+    var individualName = appData.result.data.individuals[Object.values(match)[1]].IndividualName;
     var individualMatches = "";
     if (Object.values(match)[2].length==0) {
       individualMatches = "There are no individual matches";
