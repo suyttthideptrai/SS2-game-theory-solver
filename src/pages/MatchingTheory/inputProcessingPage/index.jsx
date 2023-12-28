@@ -10,6 +10,7 @@ import NothingToShow from '../../../components/NothingToShow';
 import Loading from '../../../components/Loading';
 import ParamSettingBox from '../../../components/ParamSettingBox';
 import PopupContext from '../../../context/PopupContext';
+import { right } from '@popperjs/core';
 //TODO: algorithm selection
 export default function InputProcessingPage() {
     const navigate = useNavigate();
@@ -54,11 +55,12 @@ export default function InputProcessingPage() {
         // mapping over the individuals directly from appData.stableMatchingProblem
         // and creating a new array of objects based on the properties of each individual.
         // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-        evaluateFunctions: appData.problem.evaluateFunctions,
+        evaluateFunction: appData.problem.evaluateFunctions,
 
         Individuals: appData.problem.individuals.map((Individual) => ({
-          IndividualName: Individual.name,
-          IndividualSet: Individual.set,
+          IndividualName: Individual.individualName,
+          SetType: Individual.setType,
+          Capacity: Individual.capacity,
           Properties: Individual.argument.map((arg) => [...arg]),
         })),
         fitnessFunction: appData.problem.fitnessFunction,
@@ -186,8 +188,8 @@ export default function InputProcessingPage() {
                 <p className="error-text">Population size takes no effect for PAES algorithm</p>
 
             }
-            <div className="algo-chooser" style={{width:1046}}>
-                <p className='algorithm-text bold'>Choose an algorithm: </p>
+            <div className="algo-chooser" style={{width:1046, backgroundColor:'white', marginTop:10}}>
+                <p className='algorithm-text bold' style={{marginLeft:700}}>Choose an algorithm: </p>
 
                 <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
                     <option value="NSGAII">NSGAII</option>
