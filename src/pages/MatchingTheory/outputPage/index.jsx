@@ -253,7 +253,6 @@ export default function MatchingOutputPage() {
         )}
       </div> */}
 
-<<<<<<< Updated upstream
 
       <button id="toggle-btn" onclick="toggleView()">Toggle View</button>
       <div id="graph-view">
@@ -262,9 +261,6 @@ export default function MatchingOutputPage() {
       <table id="table-view">
         {/* Table view implementation goes here */}
       </table>
-=======
-      
->>>>>>> Stashed changes
 
     </div>
     
