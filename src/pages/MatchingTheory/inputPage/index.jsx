@@ -123,7 +123,6 @@ export default function InputPage() {
     let currentIndividual = 0;
     let characteristics = [];
     let errorMessage = "";
-    console.log(currentRow);
 
     try {
       // LOAD CHARACTERISTICS
@@ -155,7 +154,6 @@ export default function InputPage() {
       // Add evaluate function
       for (let j = 0; j < setNum; j++) {
         let evaluateFunction = await sheet[`B${6 + j}`]["v"];
-        console.log(evaluateFunction);
         setEvaluateFunction.push(evaluateFunction);
       }
       for (let g = 0; g < setNum; g++) {
