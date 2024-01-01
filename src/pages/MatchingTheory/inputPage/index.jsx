@@ -142,7 +142,7 @@ export default function InputPage() {
 
       // LOAD SET
       const individuals = [];
-      let setEvaluateFucntion = [];
+      let setEvaluateFunction = [];
       const row = characteristicNum;
       const col = 3;
       let individualNum = null;
@@ -156,7 +156,7 @@ export default function InputPage() {
       for (let j = 0; j < setNum; j++) {
         let evaluateFunction = await sheet[`B${6 + j}`]["v"];
         console.log(evaluateFunction);
-        setEvaluateFucntion.push(evaluateFunction);
+        setEvaluateFunction.push(evaluateFunction);
       }
       for (let g = 0; g < setNum; g++) {
         setName = await sheet[`A${currentRow}`]["v"];
