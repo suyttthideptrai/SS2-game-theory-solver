@@ -1,9 +1,11 @@
-.output-page {
-  display: flex;
-  flex-direction: column;
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+.matching-output-page {
+  width: auto;
+  margin: 0 auto;
   align-items: center;
   justify-content: center;
-  padding: 0 30px;
+  padding: 0 100px;
 
   .problem-name {
     font-size: 20px;
@@ -14,14 +16,21 @@
     margin: 0 auto;
     padding: 5px 20px;
   }
-
+  #head-title {
+    font-size: 20px;
+    color: #000;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 5px 20px;
+  }
   .header-text {
     font-size: 16px;
     // font-weight: 600;
     color: #000;
     border-bottom: 1px solid black;
     width: fit-content;
-    margin: 0 auto;
+    margin: 0;
     padding: 0 10px 10px 10px;
     width: 300px;
     text-align: center;
@@ -35,7 +44,15 @@
     margin: 0 auto;
     padding: 0 10px;
   }
-
+  .result-information {
+    font-size: 14px;
+    // font-weight: 600;
+    color: #000;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 0 10px;
+    text-align: center;
+  }
   .output-container {
     margin: 20px 0;
     display: flex;
@@ -50,9 +67,7 @@
     justify-content: center;
     align-items: center;
     gap: 20px;
-
   }
-
 
   .param-box {
     background: var(--grey);
@@ -65,9 +80,8 @@
     gap: 20px;
 
     .estimated-time {
-
       min-width: 280px;
-      font-size:13px;
+      font-size: 13px;
       text-align: center;
       // background: red;
     }
@@ -81,7 +95,6 @@
         color: white;
       }
     }
-
   }
 
   .grid-container {
@@ -91,7 +104,7 @@
     font-weight: bold;
     padding: 0 30px;
     max-width: 1200px;
-    
+
     .head-column {
       text-align: left;
     }
@@ -103,7 +116,7 @@
 
   /* For screen sizes less than or equal to 768px */
   @media only screen and (max-width: 768px) {
-    .output-page {
+    .matching-output-page {
       padding: 0 10px;
     }
 
@@ -123,15 +136,11 @@
       flex-wrap: wrap;
       justify-content: center;
     }
-
-  
-
-
   }
 
   /* For screen sizes greater than 768px */
   @media only screen and (min-width: 769px) {
-    .output-page {
+    .matching-output-page {
       padding: 0 30px;
     }
 
@@ -153,7 +162,7 @@
 
     .grid-container {
       grid-template-columns: 10% 30% 30% 30%;
-      width: 1200px;  
+      width: 1200px;
     }
 
     .grid-item-container {
@@ -166,5 +175,4 @@
       }
     }
   }
-
 }

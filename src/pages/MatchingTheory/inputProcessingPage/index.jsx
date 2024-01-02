@@ -64,20 +64,20 @@ export default function InputProcessingPage() {
         Individuals: appData.problem.individuals.map((individual) => ({
           // IndividualSet: individual.set,
 
-          setType: individual.setType,
-          individualName: individual.individualName,
-          capacity: individual.capacity,
-          argument: individual.argument.map((arg) => [...arg]),
+          SetType: individual.setType,
+          IndividualName: individual.individualName,
+          Capacity: individual.capacity,
+          Properties: individual.argument.map((arg) => [...arg]),
         })),
         fitnessFunction: appData.problem.fitnessFunction,
         // evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
         evaluateFunction: evaluateFunction,
 
-        // algorithm: algorithm,
-        // distributedCores: distributedCoreParam,
-        // populationSize: populationSizeParam,
-        // generation: generationParam,
-        // maxTime: maxTimeParam,
+        algorithm: algorithm,
+        distributedCores: distributedCoreParam,
+        populationSize: populationSizeParam,
+        generation: generationParam,
+        maxTime: maxTimeParam,
       };
       // console.log("Evaluate Function:", appData?.problem?.evaluateFunction);
       // console.log("Request Body:", requestBody);
@@ -98,19 +98,19 @@ export default function InputProcessingPage() {
 
       const result = {
         data: res.data.data,
-        // params: {
-        //     usedAlgorithm: usedAlgorithm,
-        //     distributedCoreParam: distributedCoreParam,
-        //     populationSizeParam: populationSizeParam,
-        //     generationParam: generationParam,
-        //     maxTimeParam: maxTimeParam
-        // }
+        params: {
+            usedAlgorithm: usedAlgorithm,
+            distributedCoreParam: distributedCoreParam,
+            populationSizeParam: populationSizeParam,
+            generationParam: generationParam,
+            maxTimeParam: maxTimeParam
+        }
       };
 
       setAppData({ ...appData, result });
       setIsLoading(false);
       console.log(result);
-      //navigate('/result')
+      navigate('/matching-theory/result')
     } catch (err) {
       //  console.log(err);
       // setIsLoading(false);
@@ -119,38 +119,38 @@ export default function InputProcessingPage() {
   };
 
   return (
-    // <div className='input-processing-page'>
-    //     <Loading isLoading={isLoading} message='Solve your problem, please do not close this window...' />
-    //     <h1 className="problem-name">{appData.problem.name}</h1>
+    <div className='input-processing-page'>
+        <Loading isLoading={isLoading} message='Solve your problem, please do not close this window...' />
+        <h1 className="problem-name">{appData.problem.name}</h1>
 
-    //     <ParamSettingBox
-    //         distributedCoreParam={distributedCoreParam}
-    //         setDistributedCoreParam={setDistributedCoreParam}
-    //         generationParam={generationParam}
-    //         setGenerationParam={setGenerationParam}
-    //         populationSizeParam={populationSizeParam}
-    //         setPopulationSizeParam={setPopulationSizeParam}
-    //         maxTimeParam={maxTimeParam}
-    //         setMaxTimeParam={setMaxTimeParam}
-    //     />
-    //     {
-    //         algorithm == 'PAES' &&
-    //         <p className="error-text">Population size takes no effect for PAES algorithm</p>
+        <ParamSettingBox
+            distributedCoreParam={distributedCoreParam}
+            setDistributedCoreParam={setDistributedCoreParam}
+            generationParam={generationParam}
+            setGenerationParam={setGenerationParam}
+            populationSizeParam={populationSizeParam}
+            setPopulationSizeParam={setPopulationSizeParam}
+            maxTimeParam={maxTimeParam}
+            setMaxTimeParam={setMaxTimeParam}
+        />
+        {
+            algorithm == 'PAES' &&
+            <p className="error-text">Population size takes no effect for PAES algorithm</p>
 
-    //     }
-    //     <div className="algo-chooser">
-    //         <p className='algorithm-text bold'>Choose an algorithm: </p>
+        }
+        <div className="algo-chooser">
+            <p className='algorithm-text bold'>Choose an algorithm: </p>
 
-    //         <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
-    //             <option value="NSGAII">NSGAII</option>
-    //             <option value="NSGAIII">NSGAIII</option>
-    //             <option value="eMOEA">εMOEA</option>
-    //             <option value="PESA2">PESA2</option>
-    //             <option value="VEGA">VEGA</option>
-    //             <option value="PAES">PAES</option>
-    //             <option value="IBEA">IBEA</option>
-    //         </select>
-    //     </div>
+            <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
+                <option value="NSGAII">NSGAII</option>
+                <option value="NSGAIII">NSGAIII</option>
+                <option value="eMOEA">εMOEA</option>
+                <option value="PESA2">PESA2</option>
+                <option value="VEGA">VEGA</option>
+                <option value="PAES">PAES</option>
+                <option value="IBEA">IBEA</option>
+            </select>
+        </div>
     <div>
       <p className="solve-now-btn" onClick={handleSolveNow}>
         Solve now

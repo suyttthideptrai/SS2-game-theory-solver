@@ -523,7 +523,15 @@ export default function InputPage() {
       + Đối với các requirement giới hạn một phía (ví dụ như > 20, < 10): Các nhóm khi nhập vào file excel 
       sẽ nhập dưới dạng x++(đối với > x) và x--(đối với < x).
       + Đối với các requirement giới hạn hai phía (ví dụ như 20<n<30): Các nhóm khi nhập vào file excel sẽ
-       nhập dưới dạng 20:30 (x:y với x<y)`,
+       nhập dưới dạng 20:30 (x:y với x<y)
+       Đối với các characteristic của các set: 
+        Khi nhập thông tin vào file excel, nếu cá thể nào không có characteristic đang nhập thì nhập vào giá trị 0.
+- Về phần các characteristic của các Individual:
+       + Đối với các characteristic dạng chữ, có thể phân tích thành nhiều input khác nhau không có quy luật(ví dụ như skills có thể có cooking, swimming, drawing,...): 
+        Các nhóm cần chia thành từng characteristic theo các input đấy (ví dụ như skills thì sẽ tách ra thành cooking, swimming,... và để thành characteristic riêng biệt)
+        và đánh giá bằng điểm số (ví dụ swimming: 10 điểm, cooking: 6 điểm).
+       +  Đối với các characteristic đánh giá theo mức độ (ví dụ như low, medium, high): 
+       Các nhóm cần chuyển đổi thành dạng số theo thang điểm 10 và giới hạn các mức độ theo từng mốc điểm.`,
     ];
 
     // Set purple background color and black text for cells B3 to B13
