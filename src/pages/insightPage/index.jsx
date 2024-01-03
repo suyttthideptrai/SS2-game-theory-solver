@@ -35,7 +35,7 @@ export default function InsightPage() {
             appData.insights.data.fitnessValues.eMOEA[i],
             appData.insights.data.fitnessValues.PESA2[i],
             appData.insights.data.fitnessValues.VEGA[i]]
-            XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 })
+            XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: - 1 })
         }
 
 
