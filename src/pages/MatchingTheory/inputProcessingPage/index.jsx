@@ -148,7 +148,7 @@ export default function InputProcessingPage() {
                 <option value="PESA2">PESA2</option>
                 <option value="VEGA">VEGA</option>
                 <option value="PAES">PAES</option>
-                <option value="IBEA">IBEA</option>
+                <option value="MOEAD">MOEAD</option>
             </select>
         </div>
     <div>
