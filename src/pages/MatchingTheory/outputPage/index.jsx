@@ -123,118 +123,140 @@ export default function MatchingOutputPage() {
   //   saveAs(blob, "result.xlsx");
   // };
 
-  // const handleGetMoreInsights = () => {
-  //   setIsShowPopup(true);
-  // };
+  const handleGetMoreInsights = () => {
+    setIsShowPopup(true);
+  };
 
-  // const handlePopupOk = async () => {
-  //   try {
-  //     setIsShowPopup(false);
-  //     const body = {
-  //       specialPlayer: appData.problem.specialPlayer,
-  //       normalPlayers: appData.problem.players,
-  //       fitnessFunction: appData.problem.fitnessFunction,
-  //       defaultPayoffFunction: appData.problem.playerPayoffFunction,
-  //       conflictSet: appData.problem.conflictSet,
-  //       distributedCores: distributedCoreParam,
-  //       populationSize: populationSizeParam,
-  //       generation: generationParam,
-  //       maxTime: maxTimeParam,
-  //     };
+  const handlePopupOk = async () => {
+    try {
+      const evaluateFunction = appData.problem.evaluateFunctions || [];
 
-  //     setIsLoading(true);
-  //     await connectWebSocket(); // connect to websocket to get the progress percentage
-  //     const res = await axios.post(
-  //       `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/problem-result-insights/${sessionCode}`,
-  //       body
-  //     );
-  //     setIsLoading(false);
+      setIsShowPopup(false);
+      const body = {
+        problemName: appData.problem.nameOfProblem,
+        numberOfSets: appData.problem.numberOfSets,
+        //numberOfSets: appData.stableMatchingProblem.sets.length,
+        numberOfIndividuals: appData.problem.numberOfIndividuals,
+        allPropertyNames: appData.problem.characteristics,
+        // mapping over the individuals directly from appData.stableMatchingProblem
+        // and creating a new array of objects based on the properties of each individual.
+        // This assumes that appData.stableMatchingProblem directly contains an array of individuals
 
-  //     const insights = {
-  //       data: res.data.data,
-  //       params: {
-  //         distributedCoreParam: distributedCoreParam,
-  //         populationSizeParam: populationSizeParam,
-  //         generationParam: generationParam,
-  //         maxTimeParam: maxTimeParam,
-  //       },
-  //     };
-  //     setAppData({ ...appData, insights });
-  //     closeWebSocketConnection();
-  //     navigate("/insights"); // navigate to insights page
-  //   } catch (err) {
-  //     setIsLoading(false);
-  //     displayPopup(
-  //       "Something went wrong!",
-  //       "Get insights failed!, please contact the admin!",
-  //       true
-  //     );
-  //   }
-  // };
+        Individuals: appData.problem.individuals.map((individual) => ({
+          // IndividualSet: individual.set,
 
-  // const connectWebSocket = async () => {
-  //   let Sock = new SockJS(
-  //     `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/ws`
-  //   );
-  //   stompClient = over(Sock);
-  //   await stompClient.connect({}, onConnected, onError);
-  // };
-  // const onConnected = () => {
-  //   stompClient.subscribe(
-  //     "/session/" + sessionCode + "/progress",
-  //     onPrivateMessage
-  //   );
-  //   console.log("Connected to websocket server!");
-  // };
+          SetType: individual.setType,
+          IndividualName: individual.individualName,
+          Capacity: individual.capacity,
+          Properties: individual.argument.map((arg) => [...arg]),
+        })),
+        fitnessFunction: appData.problem.fitnessFunction,
+        // evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
+        evaluateFunction: evaluateFunction,
+        distributedCores: distributedCoreParam,
+        populationSize: populationSizeParam,
+        generation: generationParam,
+        maxTime: maxTimeParam,
+      };
 
-  // const onError = (err) => {
-  //   console.log(err);
-  //   // displayPopup("Something went wrong!", "Connect to server failed!, please contact the admin!", true)
-  // };
+      setIsLoading(true);
+      await connectWebSocket(); // connect to websocket to get the progress percentage
+      const res = await axios.post(
+        `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/matching-problem-result-insights/${sessionCode}`,
+        body
+      );
+      setIsLoading(false);
 
-  // const closeWebSocketConnection = () => {
-  //   if (stompClient) {
-  //     stompClient.disconnect();
-  //   }
-  // };
+      const insights = {
+        data: res.data.data,
+        params: {
+          distributedCoreParam: distributedCoreParam,
+          populationSizeParam: populationSizeParam,
+          generationParam: generationParam,
+          maxTimeParam: maxTimeParam,
+        },
+      };
+      setAppData({ ...appData, insights });
+      closeWebSocketConnection();
+      navigate("/insights"); // navigate to insights page
+    } catch (err) {
+      setIsLoading(false);
+      displayPopup(
+        "Something went wrong!",
+        "Get insights failed!, please contact the admin!",
+        true
+      );
+    }
+  };
 
-  // const onPrivateMessage = (payload) => {
-  //   let payloadData = JSON.parse(payload.body);
+  const connectWebSocket = async () => {
+    let Sock = new SockJS(
+      `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/ws`
+    );
+    stompClient = over(Sock);
+    await stompClient.connect({}, onConnected, onError);
+  };
+  const onConnected = () => {
+    stompClient.subscribe(
+      "/session/" + sessionCode + "/progress",
+      onPrivateMessage
+    );
+    console.log("Connected to websocket server!");
+  };
 
-  //   // some return data are to show the progress, some are not
-  //   // if the data is to show the progress, then it will have the estimated time and percentage
-  //   if (payloadData.inProgress) {
-  //     setLoadingEstimatedTime(payloadData.minuteLeft);
-  //     setLoadingPercentage(payloadData.percentage);
-  //   }
+  const onError = (err) => {
+    console.log(err);
+    // displayPopup("Something went wrong!", "Connect to server failed!, please contact the admin!", true)
+  };
 
-  //   setLoadingMessage(payloadData.message);
-  // };
+  const closeWebSocketConnection = () => {
+    if (stompClient) {
+      stompClient.disconnect();
+    }
+  };
+
+  const onPrivateMessage = (payload) => {
+    let payloadData = JSON.parse(payload.body);
+
+    // some return data are to show the progress, some are not
+    // if the data is to show the progress, then it will have the estimated time and percentage
+    if (payloadData.inProgress) {
+      setLoadingEstimatedTime(payloadData.minuteLeft);
+      setLoadingPercentage(payloadData.percentage);
+    }
+
+    setLoadingMessage(payloadData.message);
+  };
 
   //Get data from sever
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
 
   console.log(appData.result.data)
-
+  const fitnessValue = appData.result.data.fitnessValue.toFixed(3);
+  const usedAlgorithm = appData.result.data.algorithm;
+  const runtime=appData.result.data.runtime.toFixed(3);
   const htmlOutput = [];
   const htmlLeftOvers = [];
 
   // Loop through result
   // Success couple
   matchesArray.forEach((match, index) => {
-    var individualName = appData.result.data.individuals[Object.values(match)[0]].IndividualName;
+    var individualName = appData.result.data.individuals[Object.values(match)[1]].IndividualName;
     var individualMatches = "";
     if (Object.values(match)[2].length==0) {
       individualMatches = "There are no individual matches";
     } else {
       for (let i = 0; i < Object.values(match)[2].length; i++) {
-        individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName + " ";
+        if (i == Object.values(match)[2].length - 1) {
+          individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName;
+        }else
+        individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName + ", ";
       }
     }
     htmlOutput.push(
       <tr className="table-success" key={"C" + index}>
-        <td>Couple {index + 1}</td>
+        {/* <td>Couple {index + 1}</td> */}
         <td>
           {
             individualName
@@ -246,16 +268,17 @@ export default function MatchingOutputPage() {
             individualMatches
           }
         </td>
-        <td>{appData.result.data.matches.coupleFitness[index]}</td>
+        {/* <td>{appData.result.data.matches.coupleFitness[index]}</td> */}
       </tr>
     );
+    
   });
 
   // LeftOves
   leftOversArray.forEach((individual, index) => {
     htmlLeftOvers.push(
       <tr className="table-danger" key={"L" + index}>
-        <td>{individual}</td>
+        <td>{index+1}</td>
         <td>{appData.result.data.individuals[individual].IndividualName}</td>
       </tr>
     );
@@ -306,7 +329,49 @@ export default function MatchingOutputPage() {
 
   return (
     <div className="matching-output-page">
-      <h2>MATCHING THEORY OUTPUT PAGE</h2>
+      <h2 id="head-title">MATCHING THEORY OUTPUT PAGE</h2>
+      <Popup
+        isShow={isShowPopup}
+        setIsShow={setIsShowPopup}
+        title={"Get detailed insights"}
+        // message={`This process can take estimated ${data.estimatedWaitingTime || 1} minute(s) and you will be redirected to another page. Do you want to continue?`}
+        message={`This process can take a while do you to continue?`}
+        okCallback={handlePopupOk}
+      />
+
+      {/* <Loading isLoading={isLoading} message={`Get more detailed insights. This can take estimated ${data.estimatedWaitingTime || 1} minute(s)...`} /> */}
+      <Loading isLoading={isLoading}
+        percentage={loadingPercentage}
+        estimatedTime={loadingEstimatedTime}
+        message={loadingMessage} />
+      <br />
+      <p className='below-headertext'>Optimal solution</p>
+      <div className="output-container">
+        <div className="param-box">
+          <ParamSettingBox
+            distributedCoreParam={distributedCoreParam}
+            setDistributedCoreParam={setDistributedCoreParam}
+            generationParam={generationParam}
+            setGenerationParam={setGenerationParam}
+            populationSizeParam={populationSizeParam}
+            setPopulationSizeParam={setPopulationSizeParam}
+            maxTimeParam={maxTimeParam}
+            setMaxTimeParam={setMaxTimeParam}
+          />
+          <div className="btn insight-btn" onClick={handleGetMoreInsights}>
+            <p>Get more insights</p>
+            <img src={GraphImage} alt="" />
+          </div>
+        </div>
+        
+      <div className="d-flex align-items-center justify-content-center">
+        
+        </div>
+      <div className="result-information">
+        <p>Fitness Value: {fitnessValue}</p>
+        <p>Used Algorithm: {usedAlgorithm}</p>
+        <p>Runtime: {runtime} ms</p>
+      </div>
       {/* <div
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: 30 }}
@@ -346,7 +411,7 @@ export default function MatchingOutputPage() {
         <Table striped bordered hover responsive>
           <thead>
             <tr className="table-success">
-              <th>#</th>
+              {/* <th>#</th> */}
               <th>First Partner</th>
               <th>Second Partner</th>
               <th>Couple fitness</th>
@@ -378,6 +443,7 @@ export default function MatchingOutputPage() {
         </div>
       </div>
       {/* {console.log(appData.result.data.individuals)} */}
+    </div>
     </div>
   );
 }

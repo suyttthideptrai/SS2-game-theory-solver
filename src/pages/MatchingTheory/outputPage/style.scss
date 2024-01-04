@@ -16,14 +16,21 @@
     margin: 0 auto;
     padding: 5px 20px;
   }
-
+  #head-title {
+    font-size: 20px;
+    color: #000;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 5px 20px;
+  }
   .header-text {
     font-size: 16px;
     // font-weight: 600;
     color: #000;
     border-bottom: 1px solid black;
     width: fit-content;
-    margin: 0 auto;
+    margin: 0;
     padding: 0 10px 10px 10px;
     width: 300px;
     text-align: center;
@@ -37,7 +44,15 @@
     margin: 0 auto;
     padding: 0 10px;
   }
-
+  .result-information {
+    font-size: 14px;
+    // font-weight: 600;
+    color: #000;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 0 10px;
+    text-align: center;
+  }
   .output-container {
     margin: 20px 0;
     display: flex;
@@ -101,7 +116,7 @@
 
   /* For screen sizes less than or equal to 768px */
   @media only screen and (max-width: 768px) {
-    .output-page {
+    .matching-output-page {
       padding: 0 10px;
     }
 
@@ -125,7 +140,7 @@
 
   /* For screen sizes greater than 768px */
   @media only screen and (min-width: 769px) {
-    .output-page {
+    .matching-output-page {
       padding: 0 30px;
     }
 
