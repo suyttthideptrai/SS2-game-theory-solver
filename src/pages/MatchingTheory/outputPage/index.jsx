@@ -244,14 +244,14 @@ export default function MatchingOutputPage() {
   matchesArray.forEach((match, index) => {
     var individualName = appData.result.data.individuals[Object.values(match)[1]].IndividualName;
     var individualMatches = "";
-    if (Object.values(match)[0].length==0) {
+    if (Object.values(match)[2].length==0) {
       individualMatches = "There are no individual matches";
     } else {
-      for (let i = 0; i < Object.values(match)[0].length; i++) {
-        if (i == Object.values(match)[0].length - 1) {
-          individualMatches += appData.result.data.individuals[Object.values(match)[0][i]].IndividualName;
+      for (let i = 0; i < Object.values(match)[2].length; i++) {
+        if (i == Object.values(match)[2].length - 1) {
+          individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName;
         }else
-        individualMatches += appData.result.data.individuals[Object.values(match)[0][i]].IndividualName + ", ";
+        individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName + ", ";
       }
     }
     htmlOutput.push(
