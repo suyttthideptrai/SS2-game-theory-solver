@@ -232,57 +232,120 @@ export default function MatchingOutputPage() {
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
 
-  console.log(appData.result.data)
+  console.log(appData.result.data);
   const fitnessValue = appData.result.data.fitnessValue.toFixed(3);
   const usedAlgorithm = appData.result.data.algorithm;
-  const runtime=appData.result.data.runtime.toFixed(3);
+  const runtime = appData.result.data.runtime.toFixed(3);
   const htmlOutput = [];
   const htmlLeftOvers = [];
 
   // Loop through result
+
+  let fileContent = "";
+
   // Success couple
-  matchesArray.forEach((match, index) => {
-    var individualName = appData.result.data.individuals[Object.values(match)[1]].IndividualName;
-    var individualMatches = "";
-    if (Object.values(match)[2].length==0) {
-      individualMatches = "There are no individual matches";
+
+  for (let i = 0, size = matchesArray.length; i < size; i++) {
+    let individualMatchesArray = "";
+    let semicolon = "; ";
+    let matchingIndividual = appData.result.data.individuals[i].IndividualName;
+    let indexMatchedArray = matchesArray[i].individualMatches;
+    if (matchesArray[i].individualMatches.length === 0) {
+      individualMatchesArray = "There are no individual matches";
     } else {
-      for (let i = 0; i < Object.values(match)[2].length; i++) {
-        if (i == Object.values(match)[2].length - 1) {
-          individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName;
-        }else
-        individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName + ", ";
+      for (
+        let j = 0, size = matchesArray[i].individualMatches.length;
+        j < size;
+        j++
+      ) {
+        
+        let matchedIndividual =
+          appData.result.data.individuals[indexMatchedArray[j]].IndividualName;
+          individualMatchesArray += matchedIndividual + semicolon
       }
     }
+
+    fileContent += `${matchingIndividual} -> ${individualMatchesArray}\n`;
+
     htmlOutput.push(
-      <tr className="table-success" key={"C" + index}>
+      <tr className="table-success" key={"C" + i}>
         {/* <td>Couple {index + 1}</td> */}
-        <td>
-          {
-            individualName
-          }
-        </td>
+        <td>{matchingIndividual}</td>
         <td>
           {
             // appData.result.data.individuals[Object.values(match)[2]].IndividualName
-            individualMatches
+            individualMatchesArray
           }
         </td>
         {/* <td>{appData.result.data.matches.coupleFitness[index]}</td> */}
       </tr>
     );
-    
-  });
+  }
+
+  // matchesArray.forEach((match, index) => {
+  //   var individualName =
+  //     appData.result.data.individuals[Object.values(match)[1]].IndividualName;
+  //   var individualMatches = "";
+  //   if (Object.values(match)[2].length == 0) {
+  //     individualMatches = "There are no individual matches";
+  //   } else {
+  //     for (let i = 0; i < Object.values(match)[2].length; i++) {
+  //       if (i == Object.values(match)[2].length - 1) {
+  //         individualMatches +=
+  //           appData.result.data.individuals[Object.values(match)[2][i]]
+  //             .IndividualName;
+  //       } else
+  //         individualMatches +=
+  //           appData.result.data.individuals[Object.values(match)[2][i]]
+  //             .IndividualName + ", ";
+  //     }
+  //   }
+  //   htmlOutput.push(
+  //     <tr className="table-success" key={"C" + index}>
+  //       {/* <td>Couple {index + 1}</td> */}
+  //       <td>{individualName}</td>
+  //       <td>
+  //         {
+  //           // appData.result.data.individuals[Object.values(match)[2]].IndividualName
+  //           individualMatches
+  //         }
+  //       </td>
+  //       {/* <td>{appData.result.data.matches.coupleFitness[index]}</td> */}
+  //     </tr>
+  //   );
+  // });
 
   // LeftOves
+  let leftoverArray = [];
   leftOversArray.forEach((individual, index) => {
     htmlLeftOvers.push(
       <tr className="table-danger" key={"L" + index}>
-        <td>{index+1}</td>
+        <td>{index + 1}</td>
         <td>{appData.result.data.individuals[individual].IndividualName}</td>
       </tr>
     );
+    leftoverArray.push(
+      appData.result.data.individuals[individual].IndividualName
+    );
   });
+  fileContent += `Left over = [${leftoverArray}]`;
+
+  fileContent += `Fitness value: ${appData.result.data.fitnessValue}`;
+  fileContent += `Runtime: ${appData.result.data.runtime}`;
+  // Create a Blob with the content
+  const blob = new Blob([fileContent], { type: "text/plain" });
+
+  // Create a download link
+  const downloadLink = document.createElement("a");
+  downloadLink.href = URL.createObjectURL(blob);
+  downloadLink.download = "output.txt";
+
+  // // Append the link to the body and trigger the click event
+  // document.body.appendChild(downloadLink);
+  // downloadLink.click();
+
+  // // Remove the link from the body
+  // document.body.removeChild(downloadLink);
 
   // //Change view
   // const changeView = (event, view1, view2) => {
@@ -340,12 +403,14 @@ export default function MatchingOutputPage() {
       />
 
       {/* <Loading isLoading={isLoading} message={`Get more detailed insights. This can take estimated ${data.estimatedWaitingTime || 1} minute(s)...`} /> */}
-      <Loading isLoading={isLoading}
+      <Loading
+        isLoading={isLoading}
         percentage={loadingPercentage}
         estimatedTime={loadingEstimatedTime}
-        message={loadingMessage} />
+        message={loadingMessage}
+      />
       <br />
-      <p className='below-headertext'>Optimal solution</p>
+      <p className="below-headertext">Optimal solution</p>
       <div className="output-container">
         <div className="param-box">
           <ParamSettingBox
@@ -363,16 +428,14 @@ export default function MatchingOutputPage() {
             <img src={GraphImage} alt="" />
           </div>
         </div>
-        
-      <div className="d-flex align-items-center justify-content-center">
-        
+
+        <div className="d-flex align-items-center justify-content-center"></div>
+        <div className="result-information">
+          <p>Fitness Value: {fitnessValue}</p>
+          <p>Used Algorithm: {usedAlgorithm}</p>
+          <p>Runtime: {runtime} ms</p>
         </div>
-      <div className="result-information">
-        <p>Fitness Value: {fitnessValue}</p>
-        <p>Used Algorithm: {usedAlgorithm}</p>
-        <p>Runtime: {runtime} ms</p>
-      </div>
-      {/* <div
+        {/* <div
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: 30 }}
       >
@@ -404,46 +467,46 @@ export default function MatchingOutputPage() {
           Graph View
         </Button>
       </div> */}
-      <div className="view-1" style={{ display: "block" }}>
-        <h3 style={{ marginBottom: 20, marginTop: 40 }}>
-          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
-        </h3>
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr className="table-success">
-              {/* <th>#</th> */}
-              <th>First Partner</th>
-              <th>Second Partner</th>
-              <th>Couple fitness</th>
-            </tr>
-          </thead>
-          <tbody>{htmlOutput}</tbody>
-        </Table>
+        <div className="view-1" style={{ display: "block" }}>
+          <h3 style={{ marginBottom: 20, marginTop: 40 }}>
+            THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
+          </h3>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr className="table-success">
+                {/* <th>#</th> */}
+                <th>First Partner</th>
+                <th>Second Partner</th>
+                <th>Couple fitness</th>
+              </tr>
+            </thead>
+            <tbody>{htmlOutput}</tbody>
+          </Table>
 
-        <h3 style={{ marginTop: 50, marginBottom: 20 }}>
-          THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
-        </h3>
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr className="table-danger">
-              <th>No.</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>{htmlLeftOvers}</tbody>
-        </Table>
-        <div className="d-grid gap-2">
-          <Button
-            variant="primary"
-            size="md"
-            style={{ justifyContent: "center", margin: "auto", width: 150 }}
-          >
-            Get Result
-          </Button>
+          <h3 style={{ marginTop: 50, marginBottom: 20 }}>
+            THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
+          </h3>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr className="table-danger">
+                <th>No.</th>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody>{htmlLeftOvers}</tbody>
+          </Table>
+          <div className="d-grid gap-2">
+            <Button
+              variant="primary"
+              size="md"
+              style={{ justifyContent: "center", margin: "auto", width: 150 }}
+            >
+              Get Result
+            </Button>
+          </div>
         </div>
+        {/* {console.log(appData.result.data.individuals)} */}
       </div>
-      {/* {console.log(appData.result.data.individuals)} */}
-    </div>
     </div>
   );
 }

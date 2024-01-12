@@ -159,6 +159,7 @@ export default function InsightPage() {
                         <tr>
                             <th class='first-col'>Iteration</th>
                             <th>NSGAII</th>
+                            <th>NSGAIII</th>
                             <th>eMOEA</th>
                             <th>PESA2</th>
                             <th>VEGA</th>
@@ -171,6 +172,7 @@ export default function InsightPage() {
                                 <tr key={index}>
                                     <td class='first-col'>{index + 1}</td>
                                     <td>{appData.insights.data.fitnessValues.NSGAII[index]}</td>
+                                    <td>{appData.insights.data.fitnessValues.NSGAIII[index]}</td>
                                     <td>{appData.insights.data.fitnessValues.eMOEA[index]}</td>
                                     <td>{appData.insights.data.fitnessValues.PESA2[index]}</td>
                                     <td>{appData.insights.data.fitnessValues.VEGA[index]}</td>
