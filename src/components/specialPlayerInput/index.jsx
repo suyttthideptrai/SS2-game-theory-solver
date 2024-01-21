@@ -37,7 +37,7 @@ export default function SpecialPlayerInput({ specialPlayerExists, setSpecialPlay
                     value={specialPlayerExists}
 
                 />
-                <p>Special player exists</p>
+                <p id='text'>Special player exists</p>
             </label>
 
             <div className={`${style}`} onAnimationEnd={handleHidingAnimationEnd}>

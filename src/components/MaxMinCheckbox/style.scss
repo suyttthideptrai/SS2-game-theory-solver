@@ -5,8 +5,12 @@
     .max-min-label {
         display: flex;
         font-size: 12px;
-        gap: 10px;
+        gap: 15px;
         align-items: center;
+    }
+
+    #text {
+        margin-bottom: 1px;
     }
 
     .info {
@@ -15,7 +19,7 @@
         height: 20px;
         display: block; 
         text-align: center;
-        line-height: 20px;
+        line-height: 8px;
         font-size: 10px;
         border-radius: 50%;
 
@@ -23,4 +27,5 @@
             cursor: pointer;
         }
     }
+
 }

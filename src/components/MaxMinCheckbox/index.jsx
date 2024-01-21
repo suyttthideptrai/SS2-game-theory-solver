@@ -23,7 +23,7 @@ export default function ({ isMaximizing, setIsMaximizing  }) {
                     onChange={e => setIsMaximizing(e.target.checked)}
                     value={isMaximizing}
                 />
-                <p>Is maximizing problem</p>
+                <p id='text'>Is maximizing problem</p>
                 <i className="info fa-solid fa-info" onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}></i>
 
             </label>

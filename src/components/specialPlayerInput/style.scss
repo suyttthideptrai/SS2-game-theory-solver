@@ -14,7 +14,7 @@
     .special-player-label {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
         font-size: 12px;
     }
 
@@ -28,6 +28,10 @@
         height: 0;
         opacity: 0;
         transition: height 1s ease-out, opacity 1s ease-out;
+    }
+
+    #text {
+        margin-bottom: 1px;
     }
 }
 

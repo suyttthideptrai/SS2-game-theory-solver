@@ -13,6 +13,8 @@ import { Link } from "react-router-dom";
 
 import Loading from "../../../components/Loading";
 import PopupContext from "../../../context/PopupContext";
+
+
 export default function InputPage() {
   //initialize from data
   const [excelFile, setExcelFile] = useState(null);
@@ -716,17 +718,20 @@ export default function InputPage() {
 
         {showGuidelineText && (
           <div className="guideline-text">
-            <h4>Step 1: Enter the name of your problem (Text)</h4>
-            <h4>
+            <h5>Step 1: Enter the name of your problem (Text)</h5>
+            <h5>
               Step 2: Enter the number of sets{" "}
               <span
                 onClick={handleToggle}
                 className="toggle-icon"
-                style={{ cursor: "pointer" }}
+                style={{
+                  cursor: "pointer",
+                  color: isExpanded ? "gray" : "gray",
+                }}
               >
                 {isExpanded ? "(▼)" : "(▶)"}
               </span>
-            </h4>
+            </h5>
             {isExpanded && (
               <div className="subsection" id="subsection">
                 <p>
@@ -770,18 +775,18 @@ export default function InputPage() {
               </div>
             )}
 
-            <h4>Step 3: Enter the number of characteristics of both sets</h4>
-            <h4>Step 4: Enter the number of total individuals of both sets</h4>
-            <h4>Step 5: Enter the fitness function which you initialize</h4>
-            <h4>
+            <h5>Step 3: Enter the number of characteristics of both sets</h5>
+            <h5>Step 4: Enter the number of total individuals of both sets</h5>
+            <h5>Step 5: Enter the fitness function which you initialize</h5>
+            <h5>
               Step 6: Click the button "Get Excel Templates" to receive the
               Excel file that contains all the information you entered above
-            </h4>
-            <h4>
+            </h5>
+            <h5>
               Step 7: Select or drag and drop the Excel file you just received
               at the dotted line and the "Choose a file" button for the system
               to process your problem
-            </h4>
+            </h5>
           </div>
         )}
 
@@ -802,7 +807,7 @@ export default function InputPage() {
           </div>
 
           <div className="row">
-            <Input
+            <Input 
               message="Number of set"
               type="text"
               error={setNumError}
@@ -844,8 +849,10 @@ export default function InputPage() {
               value={fitnessFunction}
               description="The fitness function is a mathematical function that represents the payoff that a player receives for a specific combination of strategies played by all the players in the game"
               guideSectionIndex={5}
+              // iconStyle={{fontSize: '1.2em', verticalAlign: 'center'}}
             />
           </div>
+
         </div>
         <div className="btn" onClick={handleGetExcelTemplate}>
           <p>Get Excel Template</p>
