@@ -13,8 +13,10 @@
         border: 1px solid black;
         width: 20px;
         height: 20px;
-        display: block; 
+        display: flex; 
         text-align: center;
+        justify-content: center;
+        align-items: center;
         line-height: 20px;
         font-size: 10px;
         border-radius: 50%;
@@ -22,5 +24,8 @@
         &:hover {
             cursor: pointer;
         }
+    }
+    p { 
+        margin: 0;
     }
 }
