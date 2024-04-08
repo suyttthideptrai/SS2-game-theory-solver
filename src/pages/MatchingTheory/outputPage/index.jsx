@@ -263,7 +263,7 @@ export default function MatchingOutputPage() {
             individualMatches
           }
         </td>
-        {/* <td>{appData.result.data.matches.coupleFitness[index]}</td> */}
+        <td>{appData.result.data.setSatisfactions[index].toFixed(3)}</td>
       </tr>
     );
     
