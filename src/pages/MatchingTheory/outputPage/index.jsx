@@ -238,8 +238,6 @@ export default function MatchingOutputPage() {
   // Success couple
   matchesArray.forEach((match, index) => {
     var individualName = appData.result.data.individuals[index].IndividualName;
-    console.log(individualName);
-    console.log(Object.values(match)[0]);
     var individualMatches = "";
     if (Object.values(match).length==0) {
       individualMatches = "There are no individual matches";
