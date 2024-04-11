@@ -1,15 +1,11 @@
 import React from "react";
 import "./style.scss";
-import PlayerResult from "../../../components/PlayerResult";
-import ExcelImage from "../../../images/excel.png";
 import GraphImage from "../../../images/graph.png";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import DataContext from "../../../context/DataContext";
 import { useNavigate } from "react-router-dom";
 import NothingToShow from "../../../components/NothingToShow";
 import Loading from "../../../components/Loading";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import Popup from "../../../components/Popup";
 import axios from "axios";
 import ParamSettingBox from "../../../components/ParamSettingBox";
@@ -17,7 +13,6 @@ import PopupContext from "../../../context/PopupContext";
 
 import SockJS from "sockjs-client";
 import { v4 } from "uuid";
-import { overWS } from "stompjs";
 import { over } from "stompjs";
 
 import Table from "react-bootstrap/Table";
@@ -242,16 +237,16 @@ export default function MatchingOutputPage() {
   // Loop through result
   // Success couple
   matchesArray.forEach((match, index) => {
-    var individualName = appData.result.data.individuals[Object.values(match)[1]].IndividualName;
+    var individualName = appData.result.data.individuals[index].IndividualName;
     var individualMatches = "";
-    if (Object.values(match)[2].length==0) {
+    if (Object.values(match).length==0) {
       individualMatches = "There are no individual matches";
     } else {
-      for (let i = 0; i < Object.values(match)[2].length; i++) {
-        if (i == Object.values(match)[2].length - 1) {
-          individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName;
+      for (let i = 0; i < Object.values(match).length; i++) {
+        if (i == Object.values(match).length - 1) {
+          individualMatches += appData.result.data.individuals[Object.values(match)[i]].IndividualName;
         }else
-        individualMatches += appData.result.data.individuals[Object.values(match)[2][i]].IndividualName + ", ";
+        individualMatches += appData.result.data.individuals[Object.values(match)[i]].IndividualName + ", ";
       }
     }
     htmlOutput.push(
@@ -268,7 +263,7 @@ export default function MatchingOutputPage() {
             individualMatches
           }
         </td>
-        {/* <td>{appData.result.data.matches.coupleFitness[index]}</td> */}
+        <td>{appData.result.data.setSatisfactions[index].toFixed(3)}</td>
       </tr>
     );
     
