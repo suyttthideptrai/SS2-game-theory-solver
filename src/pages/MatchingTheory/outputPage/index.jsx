@@ -18,7 +18,6 @@ import { over } from "stompjs";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 
-import d3Js from 'https://d3js.org/d3.v3.min.js';
 import * as d3 from 'd3';
 
 let stompClient = null;
@@ -284,41 +283,41 @@ export default function MatchingOutputPage() {
   });
 
   // //Change view
-  const changeView = (event, view1, view2) => {
-    //change style current page
-    const view1Class = document.getElementsByClassName(view1);
-    let view1Style = view1Class[0].getAttribute("style");
-    let array1Style = view1Style.split(";");
-    array1Style.pop();
-    array1Style.pop();
-    array1Style.push("display:block");
+  // const changeView = (event, view1, view2) => {
+  //   //change style current page
+  //   const view1Class = document.getElementsByClassName(view1);
+  //   let view1Style = view1Class[0].getAttribute("style");
+  //   let array1Style = view1Style.split(";");
+  //   array1Style.pop();
+  //   array1Style.pop();
+  //   array1Style.push("display:block");
 
-    let temp1Style = "";
-    temp1Style += array1Style[0];
+  //   let temp1Style = "";
+  //   temp1Style += array1Style[0];
 
-    view1Class[0].setAttribute("style", temp1Style);
+  //   view1Class[0].setAttribute("style", temp1Style);
 
-    // console.log(view1Style);
-    // console.log(array1Style);
-    // console.log(temp1Style);
+  //   // console.log(view1Style);
+  //   // console.log(array1Style);
+  //   // console.log(temp1Style);
 
-    //change style the other page
-    const view2Class = document.getElementsByClassName(view2);
-    let view2Style = view2Class[0].getAttribute("style");
-    let array2Style = view2Style.split(";");
-    array2Style.pop();
-    array2Style.pop();
-    array2Style.push("display:none");
+  //   //change style the other page
+  //   const view2Class = document.getElementsByClassName(view2);
+  //   let view2Style = view2Class[0].getAttribute("style");
+  //   let array2Style = view2Style.split(";");
+  //   array2Style.pop();
+  //   array2Style.pop();
+  //   array2Style.push("display:none");
 
-    let temp2Style = "";
-    temp2Style += array2Style[0];
+  //   let temp2Style = "";
+  //   temp2Style += array2Style[0];
 
-    view2Class[0].setAttribute("style", temp2Style);
+  //   view2Class[0].setAttribute("style", temp2Style);
 
-    // console.log(view2Style);
-    // console.log(array2Style);
-    // console.log(temp2Style);
-  };
+  //   // console.log(view2Style);
+  //   // console.log(array2Style);
+  //   // console.log(temp2Style);
+  // };
 
   function generateColor(index) {
     const colors = ["red", "blue", "green", "orange", "purple", "yellow"]; // Define your desired colors
@@ -372,51 +371,51 @@ const links = [];
   console.log(nodes);
   console.log(links)
 
-//   // Create the SVG container
-//   const svg = d3.select("svg"),
-//   width = +svg.attr("width"),
-//   height = +svg.attr("height");
+  // Create the SVG container
+  const svg = d3.select("svg"),
+  width = +svg.attr("width"),
+  height = +svg.attr("height");
 
-// // Create the D3 force simulation
-// const simulation = d3.forceSimulation(nodes)
-//   .force("charge", d3.forceManyBody().strength(-200))
-//   .force("link", d3.forceLink(links).id(d => d.id))
-//   .force("x", d3.forceX(width / 2).strength(0.1))
-//   .force("y", d3.forceY(height / 2).strength(0.1))
-//   .on("tick", ticked);
+// Create the D3 force simulation
+const simulation = d3.forceSimulation(nodes)
+  .force("charge", d3.forceManyBody().strength(-200))
+  .force("link", d3.forceLink(links).id(d => d.id))
+  .force("x", d3.forceX(width / 2).strength(0.1))
+  .force("y", d3.forceY(height / 2).strength(0.1))
+  .on("tick", ticked);
 
-// // Draw links
-// const link = svg.selectAll(".link")
-//   .data(links)
-//   .enter().append("line")
-//   .attr("class", "link")
-//   .style("stroke", "gray");
+// Draw links
+const link = svg.selectAll(".link")
+  .data(links)
+  .enter().append("line")
+  .attr("class", "link")
+  .style("stroke", "gray");
 
 
-// // Draw nodes
-// const node = svg.selectAll(".node")
-//   .data(nodes)
-//   .enter().append("circle")
-//   .attr("class", "node")
-//   .attr("r", 10)
-//   .attr("fill", d => d.group === 1 ? "red" : "blue");
+// Draw nodes
+const node = svg.selectAll(".node")
+  .data(nodes)
+  .enter().append("circle")
+  .attr("class", "node")
+  .attr("r", 10)
+  .attr("fill", d => d.group === 1 ? "red" : "blue");
 
-// // Add node labels
-// node.append("title")
-//   .text(d => d.name);
+// Add node labels
+node.append("title")
+  .text(d => d.name);
 
-// // Update node and link positions on each tick
-// function ticked() {
-//   link
-//     .attr("x1", d => d.source.x)
-//     .attr("y1", d => d.source.y)
-//     .attr("x2", d => d.target.x)
-//     .attr("y2", d => d.target.y);
+// Update node and link positions on each tick
+function ticked() {
+  link
+    .attr("x1", d => d.source.x)
+    .attr("y1", d => d.source.y)
+    .attr("x2", d => d.target.x)
+    .attr("y2", d => d.target.y);
 
-//   node
-//     .attr("cx", d => d.x)
-//     .attr("cy", d => d.y);
-// }
+  node
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y);
+}
 
   return (
     <div className="matching-output-page">
@@ -463,7 +462,7 @@ const links = [];
         <p>Used Algorithm: {usedAlgorithm}</p>
         <p>Runtime: {runtime} ms</p>
       </div>
-      <div
+      {/* <div
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: 30 }}
       >
@@ -494,7 +493,7 @@ const links = [];
         >
           Graph View
         </Button>
-      </div>
+      </div> */}
       <div className="view-1" style={{ display: "block" }}>
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
           THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
@@ -532,12 +531,6 @@ const links = [];
             Get Result
           </Button>
         </div>
-      </div>
-      <div className="view-2" style={{ display: "block" }}>
-        <h3 style={{ marginBottom: 20, marginTop: 40 }}>
-          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
-        </h3>
-        {/* <svg width="800" height="600"></svg> */}
       </div>
       {/* {console.log(appData.result.data.individuals)} */}
     </div>
