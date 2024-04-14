@@ -17,6 +17,7 @@ import { over } from "stompjs";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
+import { compileString } from "sass";
 
 let stompClient = null;
 export default function MatchingOutputPage() {
@@ -223,9 +224,15 @@ export default function MatchingOutputPage() {
     setLoadingMessage(payloadData.message);
   };
 
+  console.log(appData);
+
   //Get data from sever
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
+  const inputIndividuals = appData.problem.individuals
+
+  console.log(matchesArray);
+  console.log(leftOversArray);
 
   console.log(appData.result.data)
   const fitnessValue = appData.result.data.fitnessValue.toFixed(3);
@@ -237,18 +244,20 @@ export default function MatchingOutputPage() {
   // Loop through result
   // Success couple
   matchesArray.forEach((match, index) => {
-    var individualName = appData.result.data.individuals[index].IndividualName;
+    var individualName = inputIndividuals[index].individualName;
     var individualMatches = "";
     if (Object.values(match).length==0) {
       individualMatches = "There are no individual matches";
     } else {
       for (let i = 0; i < Object.values(match).length; i++) {
         if (i == Object.values(match).length - 1) {
-          individualMatches += appData.result.data.individuals[Object.values(match)[i]].IndividualName;
-        }else
-        individualMatches += appData.result.data.individuals[Object.values(match)[i]].IndividualName + ", ";
+          individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
+        }
+        else {
+        individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
       }
     }
+  }
     htmlOutput.push(
       <tr className="table-success" key={"C" + index}>
         {/* <td>Couple {index + 1}</td> */}
@@ -274,53 +283,64 @@ export default function MatchingOutputPage() {
     htmlLeftOvers.push(
       <tr className="table-danger" key={"L" + index}>
         <td>{index+1}</td>
-        <td>{appData.result.data.individuals[individual].IndividualName}</td>
+        <td>{inputIndividuals[individual].individualName}</td>
       </tr>
     );
   });
 
-  // //Change view
-  // const changeView = (event, view1, view2) => {
-  //   //change style current page
-  //   const view1Class = document.getElementsByClassName(view1);
-  //   let view1Style = view1Class[0].getAttribute("style");
-  //   let array1Style = view1Style.split(";");
-  //   array1Style.pop();
-  //   array1Style.pop();
-  //   array1Style.push("display:block");
+  //Change view
+  const changeView = (event, view1, view2) => {
+    //change style current page
+    const view1Class = document.getElementsByClassName(view1);
+    let view1Style = view1Class[0].getAttribute("style");
+    let array1Style = view1Style.split(";");
+    array1Style.pop();
+    array1Style.pop();
+    array1Style.push("display:block");
 
-  //   let temp1Style = "";
-  //   temp1Style += array1Style[0];
+    let temp1Style = "";
+    temp1Style += array1Style[0];
 
-  //   view1Class[0].setAttribute("style", temp1Style);
+    view1Class[0].setAttribute("style", temp1Style);
 
-  //   // console.log(view1Style);
-  //   // console.log(array1Style);
-  //   // console.log(temp1Style);
+    //change style the other page
+    const view2Class = document.getElementsByClassName(view2);
+    let view2Style = view2Class[0].getAttribute("style");
+    let array2Style = view2Style.split(";");
+    array2Style.pop();
+    array2Style.pop();
+    array2Style.push("display:none");
 
-  //   //change style the other page
-  //   const view2Class = document.getElementsByClassName(view2);
-  //   let view2Style = view2Class[0].getAttribute("style");
-  //   let array2Style = view2Style.split(";");
-  //   array2Style.pop();
-  //   array2Style.pop();
-  //   array2Style.push("display:none");
+    let temp2Style = "";
+    temp2Style += array2Style[0];
 
-  //   let temp2Style = "";
-  //   temp2Style += array2Style[0];
+    view2Class[0].setAttribute("style", temp2Style);
+  };
 
-  //   view2Class[0].setAttribute("style", temp2Style);
+  // function generateColor(index) {
+  //   const colors = ["red", "blue", "green", "orange", "purple", "yellow"]; // Define your desired colors
+  //   const randomIndex = index % colors.length;
+  //   return colors[randomIndex];
+  // }
 
-  //   // console.log(view2Style);
-  //   // console.log(array2Style);
-  //   // console.log(temp2Style);
-  // };
+  // Bipartite graph
+  const group1 = [];
+  const group2 = [];
 
-  function generateColor(index) {
-    const colors = ["red", "blue", "green", "orange", "purple", "yellow"]; // Define your desired colors
-    const randomIndex = index % colors.length;
-    return colors[randomIndex];
-  }
+  const nodes = [
+    inputIndividuals.map((individual, index) => ({
+    ["id"]: index,
+    ["group"]: individual.setType,
+    ["name"]: individual.individualName
+  }))
+]
+
+const links = [];
+
+
+
+  console.log(nodes)
+  console.log(links)
 
   return (
     <div className="matching-output-page">
@@ -367,7 +387,7 @@ export default function MatchingOutputPage() {
         <p>Used Algorithm: {usedAlgorithm}</p>
         <p>Runtime: {runtime} ms</p>
       </div>
-      {/* <div
+      <div
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: 30 }}
       >
@@ -398,8 +418,46 @@ export default function MatchingOutputPage() {
         >
           Graph View
         </Button>
-      </div> */}
+      </div>
       <div className="view-1" style={{ display: "block" }}>
+        <h3 style={{ marginBottom: 20, marginTop: 40 }}>
+          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
+        </h3>
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr className="table-success">
+              {/* <th>#</th> */}
+              <th>First Partner</th>
+              <th>Second Partner</th>
+              <th>Couple fitness</th>
+            </tr>
+          </thead>
+          <tbody>{htmlOutput}</tbody>
+        </Table>
+
+        <h3 style={{ marginTop: 50, marginBottom: 20 }}>
+          THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
+        </h3>
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr className="table-danger">
+              <th>No.</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>{htmlLeftOvers}</tbody>
+        </Table>
+        <div className="d-grid gap-2">
+          <Button
+            variant="primary"
+            size="md"
+            style={{ justifyContent: "center", margin: "auto", width: 150 }}
+          >
+            Get Result
+          </Button>
+        </div>
+      </div>
+      <div className="view-2" style={{ display: "block" }}>
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
           THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
         </h3>

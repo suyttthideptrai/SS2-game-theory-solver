@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bipartite Graph with D3.js</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <svg width="800" height="600"></svg>
+
+  <script>
+    // Sample data for bipartite graph
+    const nodes = [
+      { id: 1, group: 1, name: "Alice" },
+      { id: 2, group: 1, name: "Bob" },
+      { id: 3, group: 1, name: "Charlie" },
+      { id: 4, group: 2, name: "David" },
+      { id: 5, group: 2, name: "Eve" },
+      { id: 6, group: 2, name: "Frank" }
+    ];
+
+    const links = [
+      { source: 1, target: 4 },
+      { source: 1, target: 5 },
+      { source: 2, target: 5 },
+      { source: 3, target: 4 },
+      { source: 3, target: 6 }
+    ];
+
+    // Create the SVG container
+    const svg = d3.select("svg"),
+      width = +svg.attr("width"),
+      height = +svg.attr("height");
+
+    // Create the D3 force simulation
+    const simulation = d3.forceSimulation(nodes)
+      .force("charge", d3.forceManyBody().strength(-200))
+      .force("link", d3.forceLink(links).id(d => d.id))
+      .force("x", d3.forceX(width / 2).strength(0.1))
+      .force("y", d3.forceY(height / 2).strength(0.1))
+      .on("tick", ticked);
+
+    // Draw links
+    const link = svg.selectAll(".link")
+      .data(links)
+      .enter().append("line")
+      .attr("class", "link")
+      .style("stroke", "gray");
+
+
+    // Draw nodes
+    const node = svg.selectAll(".node")
+      .data(nodes)
+      .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", 10)
+      .attr("fill", d => d.group === 1 ? "red" : "blue");
+
+    // Add node labels
+    node.append("title")
+      .text(d => d.name);
+
+    // Update node and link positions on each tick
+    function ticked() {
+      link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
+      node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+    }
+  </script>
+</body>
+</html>
