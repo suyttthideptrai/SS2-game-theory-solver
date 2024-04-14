@@ -17,7 +17,9 @@ import { over } from "stompjs";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-import { compileString } from "sass";
+
+import d3Js from 'https://d3js.org/d3.v3.min.js';
+import * as d3 from 'd3';
 
 let stompClient = null;
 export default function MatchingOutputPage() {
@@ -224,15 +226,10 @@ export default function MatchingOutputPage() {
     setLoadingMessage(payloadData.message);
   };
 
-  console.log(appData);
-
   //Get data from sever
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
   const inputIndividuals = appData.problem.individuals
-
-  console.log(matchesArray);
-  console.log(leftOversArray);
 
   console.log(appData.result.data)
   const fitnessValue = appData.result.data.fitnessValue.toFixed(3);
@@ -252,12 +249,10 @@ export default function MatchingOutputPage() {
       for (let i = 0; i < Object.values(match).length; i++) {
         if (i == Object.values(match).length - 1) {
           individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
-        }
-        else {
+        }else
         individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
       }
     }
-  }
     htmlOutput.push(
       <tr className="table-success" key={"C" + index}>
         {/* <td>Couple {index + 1}</td> */}
@@ -288,7 +283,7 @@ export default function MatchingOutputPage() {
     );
   });
 
-  //Change view
+  // //Change view
   const changeView = (event, view1, view2) => {
     //change style current page
     const view1Class = document.getElementsByClassName(view1);
@@ -303,6 +298,10 @@ export default function MatchingOutputPage() {
 
     view1Class[0].setAttribute("style", temp1Style);
 
+    // console.log(view1Style);
+    // console.log(array1Style);
+    // console.log(temp1Style);
+
     //change style the other page
     const view2Class = document.getElementsByClassName(view2);
     let view2Style = view2Class[0].getAttribute("style");
@@ -315,13 +314,17 @@ export default function MatchingOutputPage() {
     temp2Style += array2Style[0];
 
     view2Class[0].setAttribute("style", temp2Style);
+
+    // console.log(view2Style);
+    // console.log(array2Style);
+    // console.log(temp2Style);
   };
 
-  // function generateColor(index) {
-  //   const colors = ["red", "blue", "green", "orange", "purple", "yellow"]; // Define your desired colors
-  //   const randomIndex = index % colors.length;
-  //   return colors[randomIndex];
-  // }
+  function generateColor(index) {
+    const colors = ["red", "blue", "green", "orange", "purple", "yellow"]; // Define your desired colors
+    const randomIndex = index % colors.length;
+    return colors[randomIndex];
+  }
 
   // Bipartite graph
   const group1 = [];
@@ -337,10 +340,83 @@ export default function MatchingOutputPage() {
 
 const links = [];
 
+  matchesArray.forEach((matches, index) => {
+    if (matches.length ===0) {
+      links.push([
+        {
+          ["source"]: index,
+          ["target"]: -1
+        }
+      ])
+    }
+    else if (matches.length === 1) {
+      links.push([
+        {
+          ["source"]: index,
+          ["target"]: matches[0]
+        }
+      ])
+    }
+    else {
+      matches.forEach((match, index1) => {
+        links.push([
+          {
+            ["source"]: index,
+            ["target"]: match
+          }
+        ])
+      })
+    }
+  })
 
-
-  console.log(nodes)
+  console.log(nodes);
   console.log(links)
+
+//   // Create the SVG container
+//   const svg = d3.select("svg"),
+//   width = +svg.attr("width"),
+//   height = +svg.attr("height");
+
+// // Create the D3 force simulation
+// const simulation = d3.forceSimulation(nodes)
+//   .force("charge", d3.forceManyBody().strength(-200))
+//   .force("link", d3.forceLink(links).id(d => d.id))
+//   .force("x", d3.forceX(width / 2).strength(0.1))
+//   .force("y", d3.forceY(height / 2).strength(0.1))
+//   .on("tick", ticked);
+
+// // Draw links
+// const link = svg.selectAll(".link")
+//   .data(links)
+//   .enter().append("line")
+//   .attr("class", "link")
+//   .style("stroke", "gray");
+
+
+// // Draw nodes
+// const node = svg.selectAll(".node")
+//   .data(nodes)
+//   .enter().append("circle")
+//   .attr("class", "node")
+//   .attr("r", 10)
+//   .attr("fill", d => d.group === 1 ? "red" : "blue");
+
+// // Add node labels
+// node.append("title")
+//   .text(d => d.name);
+
+// // Update node and link positions on each tick
+// function ticked() {
+//   link
+//     .attr("x1", d => d.source.x)
+//     .attr("y1", d => d.source.y)
+//     .attr("x2", d => d.target.x)
+//     .attr("y2", d => d.target.y);
+
+//   node
+//     .attr("cx", d => d.x)
+//     .attr("cy", d => d.y);
+// }
 
   return (
     <div className="matching-output-page">
@@ -461,39 +537,7 @@ const links = [];
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
           THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
         </h3>
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr className="table-success">
-              {/* <th>#</th> */}
-              <th>First Partner</th>
-              <th>Second Partner</th>
-              <th>Couple fitness</th>
-            </tr>
-          </thead>
-          <tbody>{htmlOutput}</tbody>
-        </Table>
-
-        <h3 style={{ marginTop: 50, marginBottom: 20 }}>
-          THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
-        </h3>
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr className="table-danger">
-              <th>No.</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>{htmlLeftOvers}</tbody>
-        </Table>
-        <div className="d-grid gap-2">
-          <Button
-            variant="primary"
-            size="md"
-            style={{ justifyContent: "center", margin: "auto", width: 150 }}
-          >
-            Get Result
-          </Button>
-        </div>
+        {/* <svg width="800" height="600"></svg> */}
       </div>
       {/* {console.log(appData.result.data.individuals)} */}
     </div>
