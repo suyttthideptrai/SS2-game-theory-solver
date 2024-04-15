@@ -1,11 +1,8 @@
 import { useRef, useEffect } from "react";
 import * as d3 from "d3";
-import { useContext } from "react";
-import DataContext from "../../context/DataContext";
 import useSize from "../../context/WindowResize";
 
-const BipartiteGraph = () => {
-  const { appData } = useContext(DataContext);
+export default function BipartiteGraph({appData})  {
   const svgRef = useRef();
 
   useEffect(() => {
@@ -223,4 +220,3 @@ const BipartiteGraph = () => {
   );
 };
 
-export default BipartiteGraph;

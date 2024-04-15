@@ -434,7 +434,7 @@ export default function MatchingOutputPage() {
           THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
         </h3>
         <div style={{display:"flex", justifyContent: "center"}}>
-          <BipartiteGraph></BipartiteGraph>
+          <BipartiteGraph appData={appData}></BipartiteGraph>
         </div>
       </div>
     </div>
