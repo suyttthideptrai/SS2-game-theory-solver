@@ -10,6 +10,7 @@ import Popup from "../../../components/Popup";
 import axios from "axios";
 import ParamSettingBox from "../../../components/ParamSettingBox";
 import PopupContext from "../../../context/PopupContext";
+import BipartiteGraph from "../../../components/BipartiteGraph";
 
 import SockJS from "sockjs-client";
 import { v4 } from "uuid";
@@ -18,7 +19,7 @@ import { over } from "stompjs";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 
-import * as d3 from 'd3';
+
 
 let stompClient = null;
 export default function MatchingOutputPage() {
@@ -37,7 +38,6 @@ export default function MatchingOutputPage() {
   const [populationSizeParam, setPopulationSizeParam] = useState(1000);
   const [generationParam, setGenerationParam] = useState(100);
   const [maxTimeParam, setMaxTimeParam] = useState(5000);
-
   // const [abc, setABC] = useState([]);
   // const getABC = () => {
   //   axios
@@ -230,12 +230,13 @@ export default function MatchingOutputPage() {
   const leftOversArray = appData.result.data.matches.leftOvers;
   const inputIndividuals = appData.problem.individuals
 
-  console.log(appData.result.data)
   const fitnessValue = appData.result.data.fitnessValue.toFixed(3);
   const usedAlgorithm = appData.result.data.algorithm;
   const runtime=appData.result.data.runtime.toFixed(3);
   const htmlOutput = [];
   const htmlLeftOvers = [];
+
+  console.log(appData);
 
   // Loop through result
   // Success couple
@@ -282,141 +283,40 @@ export default function MatchingOutputPage() {
     );
   });
 
-  // //Change view
-  // const changeView = (event, view1, view2) => {
-  //   //change style current page
-  //   const view1Class = document.getElementsByClassName(view1);
-  //   let view1Style = view1Class[0].getAttribute("style");
-  //   let array1Style = view1Style.split(";");
-  //   array1Style.pop();
-  //   array1Style.pop();
-  //   array1Style.push("display:block");
+  //Change view
+  const changeView = (event, view1, view2) => {
+    //change style current page
+    const view1Class = document.getElementsByClassName(view1);
+    let view1Style = view1Class[0].getAttribute("style");
+    let array1Style = view1Style.split(";");
+    array1Style.pop();
+    array1Style.pop();
+    array1Style.push("display:block");
 
-  //   let temp1Style = "";
-  //   temp1Style += array1Style[0];
+    let temp1Style = "";
+    temp1Style += array1Style[0];
 
-  //   view1Class[0].setAttribute("style", temp1Style);
+    view1Class[0].setAttribute("style", temp1Style);
 
-  //   // console.log(view1Style);
-  //   // console.log(array1Style);
-  //   // console.log(temp1Style);
+    // console.log(view1Style);
+    // console.log(array1Style);
+    // console.log(temp1Style);
 
-  //   //change style the other page
-  //   const view2Class = document.getElementsByClassName(view2);
-  //   let view2Style = view2Class[0].getAttribute("style");
-  //   let array2Style = view2Style.split(";");
-  //   array2Style.pop();
-  //   array2Style.pop();
-  //   array2Style.push("display:none");
+    //change style the other page
+    const view2Class = document.getElementsByClassName(view2);
+    let view2Style = view2Class[0].getAttribute("style");
+    let array2Style = view2Style.split(";");
+    array2Style.pop();
+    array2Style.pop();
+    array2Style.push("display:none");
 
-  //   let temp2Style = "";
-  //   temp2Style += array2Style[0];
+    let temp2Style = "";
+    temp2Style += array2Style[0];
 
-  //   view2Class[0].setAttribute("style", temp2Style);
+    view2Class[0].setAttribute("style", temp2Style);
+  };
 
-  //   // console.log(view2Style);
-  //   // console.log(array2Style);
-  //   // console.log(temp2Style);
-  // };
-
-  function generateColor(index) {
-    const colors = ["red", "blue", "green", "orange", "purple", "yellow"]; // Define your desired colors
-    const randomIndex = index % colors.length;
-    return colors[randomIndex];
-  }
-
-  // Bipartite graph
-  const group1 = [];
-  const group2 = [];
-
-  const nodes = [
-    inputIndividuals.map((individual, index) => ({
-    ["id"]: index,
-    ["group"]: individual.setType,
-    ["name"]: individual.individualName
-  }))
-]
-
-const links = [];
-
-  matchesArray.forEach((matches, index) => {
-    if (matches.length ===0) {
-      links.push([
-        {
-          ["source"]: index,
-          ["target"]: -1
-        }
-      ])
-    }
-    else if (matches.length === 1) {
-      links.push([
-        {
-          ["source"]: index,
-          ["target"]: matches[0]
-        }
-      ])
-    }
-    else {
-      matches.forEach((match, index1) => {
-        links.push([
-          {
-            ["source"]: index,
-            ["target"]: match
-          }
-        ])
-      })
-    }
-  })
-
-  console.log(nodes);
-  console.log(links)
-
-  // Create the SVG container
-  const svg = d3.select("svg"),
-  width = +svg.attr("width"),
-  height = +svg.attr("height");
-
-// Create the D3 force simulation
-const simulation = d3.forceSimulation(nodes)
-  .force("charge", d3.forceManyBody().strength(-200))
-  .force("link", d3.forceLink(links).id(d => d.id))
-  .force("x", d3.forceX(width / 2).strength(0.1))
-  .force("y", d3.forceY(height / 2).strength(0.1))
-  .on("tick", ticked);
-
-// Draw links
-const link = svg.selectAll(".link")
-  .data(links)
-  .enter().append("line")
-  .attr("class", "link")
-  .style("stroke", "gray");
-
-
-// Draw nodes
-const node = svg.selectAll(".node")
-  .data(nodes)
-  .enter().append("circle")
-  .attr("class", "node")
-  .attr("r", 10)
-  .attr("fill", d => d.group === 1 ? "red" : "blue");
-
-// Add node labels
-node.append("title")
-  .text(d => d.name);
-
-// Update node and link positions on each tick
-function ticked() {
-  link
-    .attr("x1", d => d.source.x)
-    .attr("y1", d => d.source.y)
-    .attr("x2", d => d.target.x)
-    .attr("y2", d => d.target.y);
-
-  node
-    .attr("cx", d => d.x)
-    .attr("cy", d => d.y);
-}
-
+    // Define your state variables here
   return (
     <div className="matching-output-page">
       <h2 id="head-title">MATCHING THEORY OUTPUT PAGE</h2>
@@ -453,16 +353,13 @@ function ticked() {
             <img src={GraphImage} alt="" />
           </div>
         </div>
-        
-      <div className="d-flex align-items-center justify-content-center">
-        
-        </div>
+      </div>
       <div className="result-information">
         <p>Fitness Value: {fitnessValue}</p>
         <p>Used Algorithm: {usedAlgorithm}</p>
         <p>Runtime: {runtime} ms</p>
       </div>
-      {/* <div
+      <div
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: 30 }}
       >
@@ -493,7 +390,7 @@ function ticked() {
         >
           Graph View
         </Button>
-      </div> */}
+      </div>
       <div className="view-1" style={{ display: "block" }}>
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
           THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
@@ -510,7 +407,7 @@ function ticked() {
           <tbody>{htmlOutput}</tbody>
         </Table>
 
-        <h3 style={{ marginTop: 50, marginBottom: 20 }}>
+        <h3 style={{ marginBottom: 20, marginTop: 40 , textAlign:"center"}}>
           THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
         </h3>
         <Table striped bordered hover responsive>
@@ -532,8 +429,14 @@ function ticked() {
           </Button>
         </div>
       </div>
-      {/* {console.log(appData.result.data.individuals)} */}
-    </div>
+      <div className="view-2" style={{ display: "none" }}>
+        <h3 style={{ marginBottom: 20, marginTop: 40 , textAlign:"center"}}>
+          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
+        </h3>
+        <div style={{display:"flex", justifyContent: "center"}}>
+          <BipartiteGraph></BipartiteGraph>
+        </div>
+      </div>
     </div>
   );
 }
