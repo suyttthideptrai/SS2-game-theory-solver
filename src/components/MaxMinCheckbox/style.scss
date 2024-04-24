@@ -17,9 +17,15 @@
         border: 1px solid black;
         width: 20px;
         height: 20px;
-        display: block; 
+        display: flex; 
         text-align: center;
+<<<<<<< HEAD
         line-height: 8px;
+=======
+        justify-content: center;
+        align-items: center;
+        line-height: 20px;
+>>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
         font-size: 10px;
         border-radius: 50%;
 
@@ -27,5 +33,11 @@
             cursor: pointer;
         }
     }
+<<<<<<< HEAD
 
+=======
+    p { 
+        margin: 0;
+    }
+>>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
 }

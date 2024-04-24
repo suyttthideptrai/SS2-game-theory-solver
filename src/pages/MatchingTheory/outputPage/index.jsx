@@ -1,27 +1,25 @@
 import React from "react";
 import "./style.scss";
-import PlayerResult from "../../../components/PlayerResult";
-import ExcelImage from "../../../images/excel.png";
 import GraphImage from "../../../images/graph.png";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import DataContext from "../../../context/DataContext";
 import { useNavigate } from "react-router-dom";
 import NothingToShow from "../../../components/NothingToShow";
 import Loading from "../../../components/Loading";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import Popup from "../../../components/Popup";
 import axios from "axios";
 import ParamSettingBox from "../../../components/ParamSettingBox";
 import PopupContext from "../../../context/PopupContext";
+import BipartiteGraph from "../../../components/BipartiteGraph";
 
 import SockJS from "sockjs-client";
 import { v4 } from "uuid";
-import { overWS } from "stompjs";
 import { over } from "stompjs";
 
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
+
+
 
 let stompClient = null;
 export default function MatchingOutputPage() {
@@ -40,7 +38,6 @@ export default function MatchingOutputPage() {
   const [populationSizeParam, setPopulationSizeParam] = useState(1000);
   const [generationParam, setGenerationParam] = useState(100);
   const [maxTimeParam, setMaxTimeParam] = useState(5000);
-
   // const [abc, setABC] = useState([]);
   // const getABC = () => {
   //   axios
@@ -231,19 +228,26 @@ export default function MatchingOutputPage() {
   //Get data from sever
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
+  const inputIndividuals = appData.problem.individuals
 
+<<<<<<< HEAD
   console.log(appData.result.data);
+=======
+>>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
   const fitnessValue = appData.result.data.fitnessValue.toFixed(3);
   const usedAlgorithm = appData.result.data.algorithm;
   const runtime = appData.result.data.runtime.toFixed(3);
   const htmlOutput = [];
   const htmlLeftOvers = [];
 
+  console.log(appData);
+
   // Loop through result
 
   let fileContent = "";
 
   // Success couple
+<<<<<<< HEAD
 
   for (let i = 0, size = matchesArray.length; i < size; i++) {
     let individualMatchesArray = "";
@@ -262,6 +266,19 @@ export default function MatchingOutputPage() {
         let matchedIndividual =
           appData.result.data.individuals[indexMatchedArray[j]].IndividualName;
           individualMatchesArray += matchedIndividual + semicolon
+=======
+  matchesArray.forEach((match, index) => {
+    var individualName = inputIndividuals[index].individualName;
+    var individualMatches = "";
+    if (Object.values(match).length==0) {
+      individualMatches = "There are no individual matches";
+    } else {
+      for (let i = 0; i < Object.values(match).length; i++) {
+        if (i == Object.values(match).length - 1) {
+          individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
+        }else
+        individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
+>>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
       }
     }
 
@@ -277,7 +294,7 @@ export default function MatchingOutputPage() {
             individualMatchesArray
           }
         </td>
-        {/* <td>{appData.result.data.matches.coupleFitness[index]}</td> */}
+        <td>{appData.result.data.setSatisfactions[index].toFixed(3)}</td>
       </tr>
     );
   }
@@ -320,8 +337,13 @@ export default function MatchingOutputPage() {
   leftOversArray.forEach((individual, index) => {
     htmlLeftOvers.push(
       <tr className="table-danger" key={"L" + index}>
+<<<<<<< HEAD
         <td>{index + 1}</td>
         <td>{appData.result.data.individuals[individual].IndividualName}</td>
+=======
+        <td>{index+1}</td>
+        <td>{inputIndividuals[individual].individualName}</td>
+>>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
       </tr>
     );
     leftoverArray.push(
@@ -347,49 +369,40 @@ export default function MatchingOutputPage() {
   // // Remove the link from the body
   // document.body.removeChild(downloadLink);
 
-  // //Change view
-  // const changeView = (event, view1, view2) => {
-  //   //change style current page
-  //   const view1Class = document.getElementsByClassName(view1);
-  //   let view1Style = view1Class[0].getAttribute("style");
-  //   let array1Style = view1Style.split(";");
-  //   array1Style.pop();
-  //   array1Style.pop();
-  //   array1Style.push("display:block");
+  //Change view
+  const changeView = (event, view1, view2) => {
+    //change style current page
+    const view1Class = document.getElementsByClassName(view1);
+    let view1Style = view1Class[0].getAttribute("style");
+    let array1Style = view1Style.split(";");
+    array1Style.pop();
+    array1Style.pop();
+    array1Style.push("display:block");
 
-  //   let temp1Style = "";
-  //   temp1Style += array1Style[0];
+    let temp1Style = "";
+    temp1Style += array1Style[0];
 
-  //   view1Class[0].setAttribute("style", temp1Style);
+    view1Class[0].setAttribute("style", temp1Style);
 
-  //   // console.log(view1Style);
-  //   // console.log(array1Style);
-  //   // console.log(temp1Style);
+    // console.log(view1Style);
+    // console.log(array1Style);
+    // console.log(temp1Style);
 
-  //   //change style the other page
-  //   const view2Class = document.getElementsByClassName(view2);
-  //   let view2Style = view2Class[0].getAttribute("style");
-  //   let array2Style = view2Style.split(";");
-  //   array2Style.pop();
-  //   array2Style.pop();
-  //   array2Style.push("display:none");
+    //change style the other page
+    const view2Class = document.getElementsByClassName(view2);
+    let view2Style = view2Class[0].getAttribute("style");
+    let array2Style = view2Style.split(";");
+    array2Style.pop();
+    array2Style.pop();
+    array2Style.push("display:none");
 
-  //   let temp2Style = "";
-  //   temp2Style += array2Style[0];
+    let temp2Style = "";
+    temp2Style += array2Style[0];
 
-  //   view2Class[0].setAttribute("style", temp2Style);
+    view2Class[0].setAttribute("style", temp2Style);
+  };
 
-  //   // console.log(view2Style);
-  //   // console.log(array2Style);
-  //   // console.log(temp2Style);
-  // };
-
-  function generateColor(index) {
-    const colors = ["red", "blue", "green", "orange", "purple", "yellow"]; // Define your desired colors
-    const randomIndex = index % colors.length;
-    return colors[randomIndex];
-  }
-
+    // Define your state variables here
   return (
     <div className="matching-output-page">
       <h2 id="head-title">MATCHING THEORY OUTPUT PAGE</h2>
@@ -428,6 +441,7 @@ export default function MatchingOutputPage() {
             <img src={GraphImage} alt="" />
           </div>
         </div>
+<<<<<<< HEAD
 
         <div className="d-flex align-items-center justify-content-center"></div>
         <div className="result-information">
@@ -436,6 +450,15 @@ export default function MatchingOutputPage() {
           <p>Runtime: {runtime} ms</p>
         </div>
         {/* <div
+=======
+      </div>
+      <div className="result-information">
+        <p>Fitness Value: {fitnessValue}</p>
+        <p>Used Algorithm: {usedAlgorithm}</p>
+        <p>Runtime: {runtime} ms</p>
+      </div>
+      <div
+>>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: 30 }}
       >
@@ -466,6 +489,7 @@ export default function MatchingOutputPage() {
         >
           Graph View
         </Button>
+<<<<<<< HEAD
       </div> */}
         <div className="view-1" style={{ display: "block" }}>
           <h3 style={{ marginBottom: 20, marginTop: 40 }}>
@@ -504,9 +528,59 @@ export default function MatchingOutputPage() {
               Get Result
             </Button>
           </div>
+=======
+      </div>
+      <div className="view-1" style={{ display: "block" }}>
+        <h3 style={{ marginBottom: 20, marginTop: 40 }}>
+          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
+        </h3>
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr className="table-success">
+              {/* <th>#</th> */}
+              <th>First Partner</th>
+              <th>Second Partner</th>
+              <th>Couple fitness</th>
+            </tr>
+          </thead>
+          <tbody>{htmlOutput}</tbody>
+        </Table>
+
+        <h3 style={{ marginBottom: 20, marginTop: 40 , textAlign:"center"}}>
+          THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
+        </h3>
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr className="table-danger">
+              <th>No.</th>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>{htmlLeftOvers}</tbody>
+        </Table>
+        <div className="d-grid gap-2">
+          <Button
+            variant="primary"
+            size="md"
+            style={{ justifyContent: "center", margin: "auto", width: 150 }}
+          >
+            Get Result
+          </Button>
+>>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
         </div>
         {/* {console.log(appData.result.data.individuals)} */}
       </div>
+<<<<<<< HEAD
+=======
+      <div className="view-2" style={{ display: "none" }}>
+        <h3 style={{ marginBottom: 20, marginTop: 40 , textAlign:"center"}}>
+          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
+        </h3>
+        <div style={{display:"flex", justifyContent: "center"}}>
+          <BipartiteGraph appData={appData}></BipartiteGraph>
+        </div>
+      </div>
+>>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
     </div>
   );
 }

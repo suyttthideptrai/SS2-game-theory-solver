@@ -22,10 +22,18 @@
         border: 1px solid black;
         width: 20px;
         height: 20px;
+        display: flex; 
         text-align: center;
+<<<<<<< HEAD
         display: block;
         line-height: 8px;
         font-size: 12px;
+=======
+        justify-content: center;
+        align-items: center;
+        line-height: 20px;
+        font-size: 10px;
+>>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
         border-radius: 50%;
 
         &:hover {
