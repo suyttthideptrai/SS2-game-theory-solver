@@ -230,10 +230,6 @@ export default function MatchingOutputPage() {
   const leftOversArray = appData.result.data.matches.leftOvers;
   const inputIndividuals = appData.problem.individuals
 
-<<<<<<< HEAD
-  console.log(appData.result.data);
-=======
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
   const fitnessValue = appData.result.data.fitnessValue.toFixed(3);
   const usedAlgorithm = appData.result.data.algorithm;
   const runtime = appData.result.data.runtime.toFixed(3);
@@ -247,26 +243,6 @@ export default function MatchingOutputPage() {
   let fileContent = "";
 
   // Success couple
-<<<<<<< HEAD
-
-  for (let i = 0, size = matchesArray.length; i < size; i++) {
-    let individualMatchesArray = "";
-    let semicolon = "; ";
-    let matchingIndividual = appData.result.data.individuals[i].IndividualName;
-    let indexMatchedArray = matchesArray[i].individualMatches;
-    if (matchesArray[i].individualMatches.length === 0) {
-      individualMatchesArray = "There are no individual matches";
-    } else {
-      for (
-        let j = 0, size = matchesArray[i].individualMatches.length;
-        j < size;
-        j++
-      ) {
-        
-        let matchedIndividual =
-          appData.result.data.individuals[indexMatchedArray[j]].IndividualName;
-          individualMatchesArray += matchedIndividual + semicolon
-=======
   matchesArray.forEach((match, index) => {
     var individualName = inputIndividuals[index].individualName;
     var individualMatches = "";
@@ -278,26 +254,25 @@ export default function MatchingOutputPage() {
           individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
         }else
         individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
       }
     }
 
-    fileContent += `${matchingIndividual} -> ${individualMatchesArray}\n`;
+    fileContent += `${individualName} -> ${individualMatches}\n`;
 
     htmlOutput.push(
       <tr className="table-success" key={"C" + i}>
         {/* <td>Couple {index + 1}</td> */}
-        <td>{matchingIndividual}</td>
+        <td>{individualName}</td>
         <td>
           {
             // appData.result.data.individuals[Object.values(match)[2]].IndividualName
-            individualMatchesArray
+            individualMatches
           }
         </td>
         <td>{appData.result.data.setSatisfactions[index].toFixed(3)}</td>
       </tr>
     );
-  }
+  })
 
   // matchesArray.forEach((match, index) => {
   //   var individualName =
@@ -337,13 +312,8 @@ export default function MatchingOutputPage() {
   leftOversArray.forEach((individual, index) => {
     htmlLeftOvers.push(
       <tr className="table-danger" key={"L" + index}>
-<<<<<<< HEAD
-        <td>{index + 1}</td>
-        <td>{appData.result.data.individuals[individual].IndividualName}</td>
-=======
         <td>{index+1}</td>
         <td>{inputIndividuals[individual].individualName}</td>
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
       </tr>
     );
     leftoverArray.push(
@@ -441,16 +411,6 @@ export default function MatchingOutputPage() {
             <img src={GraphImage} alt="" />
           </div>
         </div>
-<<<<<<< HEAD
-
-        <div className="d-flex align-items-center justify-content-center"></div>
-        <div className="result-information">
-          <p>Fitness Value: {fitnessValue}</p>
-          <p>Used Algorithm: {usedAlgorithm}</p>
-          <p>Runtime: {runtime} ms</p>
-        </div>
-        {/* <div
-=======
       </div>
       <div className="result-information">
         <p>Fitness Value: {fitnessValue}</p>
@@ -458,7 +418,6 @@ export default function MatchingOutputPage() {
         <p>Runtime: {runtime} ms</p>
       </div>
       <div
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: 30 }}
       >
@@ -489,46 +448,6 @@ export default function MatchingOutputPage() {
         >
           Graph View
         </Button>
-<<<<<<< HEAD
-      </div> */}
-        <div className="view-1" style={{ display: "block" }}>
-          <h3 style={{ marginBottom: 20, marginTop: 40 }}>
-            THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
-          </h3>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr className="table-success">
-                {/* <th>#</th> */}
-                <th>First Partner</th>
-                <th>Second Partner</th>
-                <th>Couple fitness</th>
-              </tr>
-            </thead>
-            <tbody>{htmlOutput}</tbody>
-          </Table>
-
-          <h3 style={{ marginTop: 50, marginBottom: 20 }}>
-            THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
-          </h3>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr className="table-danger">
-                <th>No.</th>
-                <th>Name</th>
-              </tr>
-            </thead>
-            <tbody>{htmlLeftOvers}</tbody>
-          </Table>
-          <div className="d-grid gap-2">
-            <Button
-              variant="primary"
-              size="md"
-              style={{ justifyContent: "center", margin: "auto", width: 150 }}
-            >
-              Get Result
-            </Button>
-          </div>
-=======
       </div>
       <div className="view-1" style={{ display: "block" }}>
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
@@ -566,12 +485,9 @@ export default function MatchingOutputPage() {
           >
             Get Result
           </Button>
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
         </div>
         {/* {console.log(appData.result.data.individuals)} */}
       </div>
-<<<<<<< HEAD
-=======
       <div className="view-2" style={{ display: "none" }}>
         <h3 style={{ marginBottom: 20, marginTop: 40 , textAlign:"center"}}>
           THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
@@ -580,7 +496,6 @@ export default function MatchingOutputPage() {
           <BipartiteGraph appData={appData}></BipartiteGraph>
         </div>
       </div>
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
     </div>
   );
 }
