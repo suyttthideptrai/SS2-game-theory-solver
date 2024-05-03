@@ -11,11 +11,11 @@ import axios from "axios";
 import ParamSettingBox from "../../../components/ParamSettingBox";
 import PopupContext from "../../../context/PopupContext";
 import BipartiteGraph from "../../../components/BipartiteGraph";
-
+import * as XLSX from 'xlsx';
 import SockJS from "sockjs-client";
 import { v4 } from "uuid";
 import { over } from "stompjs";
-
+import { saveAs } from 'file-saver';
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 
@@ -60,65 +60,83 @@ export default function MatchingOutputPage() {
   if (appData == null) {
     return <NothingToShow />;
   }
+  const matchesArray = appData.result.data.matches.matches;
+  const leftOversArray = appData.result.data.matches.leftOvers;
+  const inputIndividuals = appData.problem.individuals
 
-  // const handleExportToExcel = async () => {
-  //   const workbook = XLSX.utils.book_new();
-  //   // write result data to sheet 1
-  //   const sheet1 = XLSX.utils.aoa_to_sheet([
-  //     ["Fitness value", appData.result.data.fitnessValue],
-  //     ["Used algorithm", appData.result.params.usedAlgorithm],
-  //     ["Runtime (in seconds)", appData.result.data.runtime],
-  //     ["Player name", "Choosen strategy name", "Payoff value"],
-  //   ]);
+  const handleExportToExcel = async () => {
+    const workbook = XLSX.utils.book_new();
+    // write result data to sheet 1
+    const sheet1 = XLSX.utils.aoa_to_sheet([
+      ["Fitness value", appData.result.data.fitnessValue],
+      ["Used algorithm", appData.result.params.usedAlgorithm],
+      ["Runtime (in seconds)", appData.result.data.runtime],
+      ["Individual Name", "Individual Matches", "Satisfaction value"],
+    ]);
 
-  //   // append players data to sheet 1
-  //   appData.result.data.players.forEach((player) => {
-  //     const row = [player.playerName, player.strategyName, player.payoff];
-  //     XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
-  //   });
+    // append players data to sheet 1
+    // matchesArray.forEach((match,index) => {
+    //   const row = [match.individualName, match.individualMatches, match.setSatisfactions];
+    //   XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
+    // });
+    matchesArray.forEach((match, index) => {
+      var individualName = inputIndividuals[index].individualName;
+      var individualMatches = "";
+      if (Object.values(match).length==0) {
+        individualMatches = "There are no individual matches";
+      } else {
+        for (let i = 0; i < Object.values(match).length; i++) {
+          if (i == Object.values(match).length - 1) {
+            individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
+          }else
+          individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
+        }
+        const row=[individualName,individualMatches,appData.result.data.setSatisfactions[index].toFixed(3)]
+        console.log(row);
+        XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
+  }})
+    // write parameter configurations to sheet 2
+    const numberOfCores =
+      appData.result.params.distributedCoreParam == "all"
+        ? "All available cores"
+        : appData.result.params.distributedCoreParam + " cores";
+    const sheet2 = XLSX.utils.aoa_to_sheet([
+      ["Number of distributed cores", numberOfCores],
+      ["Population size", appData.result.params.populationSizeParam],
+      ["Number of crossover generation", appData.result.params.generationParam],
+      [
+        "Optimization execution max time (in milliseconds)",
+        appData.result.params.maxTimeParam,
+      ],
+    ]);
 
-  //   // write parameter configurations to sheet 2
-  //   const numberOfCores =
-  //     appData.result.params.distributedCoreParam == "all"
-  //       ? "All available cores"
-  //       : appData.result.params.distributedCoreParam + " cores";
-  //   const sheet2 = XLSX.utils.aoa_to_sheet([
-  //     ["Number of distributed cores", numberOfCores],
-  //     ["Population size", appData.result.params.populationSizeParam],
-  //     ["Number of crossover generation", appData.result.params.generationParam],
-  //     [
-  //       "Optimization execution max time (in milliseconds)",
-  //       appData.result.params.maxTimeParam,
-  //     ],
-  //   ]);
+    // write computer specs to sheet 3
+    const sheet3 = XLSX.utils.aoa_to_sheet([
+      ["Operating System Family", appData.result.data.computerSpecs.osFamily],
+      [
+        "Operating System Manufacturer",
+        appData.result.data.computerSpecs.osManufacturer,
+      ],
+      ["Operating System Version", appData.result.data.computerSpecs.osVersion],
+      ["CPU Name", appData.result.data.computerSpecs.cpuName],
+      ["CPU Physical Cores", appData.result.data.computerSpecs.cpuLogicalCores],
+      ["CPU Logical Cores", appData.result.data.computerSpecs.cpuPhysicalCores],
+      ["Total Memory", appData.result.data.computerSpecs.totalMemory],
+    ]);
 
-  //   // write computer specs to sheet 3
-  //   const sheet3 = XLSX.utils.aoa_to_sheet([
-  //     ["Operating System Family", appData.result.data.computerSpecs.osFamily],
-  //     [
-  //       "Operating System Manufacturer",
-  //       appData.result.data.computerSpecs.osManufacturer,
-  //     ],
-  //     ["Operating System Version", appData.result.data.computerSpecs.osVersion],
-  //     ["CPU Name", appData.result.data.computerSpecs.cpuName],
-  //     ["CPU Physical Cores", appData.result.data.computerSpecs.cpuLogicalCores],
-  //     ["CPU Logical Cores", appData.result.data.computerSpecs.cpuPhysicalCores],
-  //     ["Total Memory", appData.result.data.computerSpecs.totalMemory],
-  //   ]);
+    // append sheets to workbook
+    XLSX.utils.book_append_sheet(workbook, sheet1, "Optiomal solution");
+    XLSX.utils.book_append_sheet(workbook, sheet2, "Parameter Configurations");
+    XLSX.utils.book_append_sheet(workbook, sheet3, "Computer Specifications");
 
-  //   // append sheets to workbook
-  //   XLSX.utils.book_append_sheet(workbook, sheet1, "Optiomal solution");
-  //   XLSX.utils.book_append_sheet(workbook, sheet2, "Parameter Configurations");
-  //   XLSX.utils.book_append_sheet(workbook, sheet3, "Computer Specifications");
-
-  //   // write workbook to file
-  //   const wbout = await XLSX.write(workbook, {
-  //     bookType: "xlsx",
-  //     type: "array",
-  //   });
-  //   const blob = new Blob([wbout], { type: "application/octet-stream" });
-  //   saveAs(blob, "result.xlsx");
-  // };
+    // write workbook to file
+    const wbout = await XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([wbout], { type: "application/octet-stream" });
+    saveAs(blob, "result.xlsx");
+  };
 
   const handleGetMoreInsights = () => {
     setIsShowPopup(true);
@@ -226,14 +244,9 @@ export default function MatchingOutputPage() {
   };
 
   //Get data from sever
-  const matchesArray = appData.result.data.matches.matches;
-  const leftOversArray = appData.result.data.matches.leftOvers;
-  const inputIndividuals = appData.problem.individuals
 
-<<<<<<< HEAD
+
   console.log(appData.result.data);
-=======
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
   const fitnessValue = appData.result.data.fitnessValue.toFixed(3);
   const usedAlgorithm = appData.result.data.algorithm;
   const runtime = appData.result.data.runtime.toFixed(3);
@@ -247,26 +260,6 @@ export default function MatchingOutputPage() {
   let fileContent = "";
 
   // Success couple
-<<<<<<< HEAD
-
-  for (let i = 0, size = matchesArray.length; i < size; i++) {
-    let individualMatchesArray = "";
-    let semicolon = "; ";
-    let matchingIndividual = appData.result.data.individuals[i].IndividualName;
-    let indexMatchedArray = matchesArray[i].individualMatches;
-    if (matchesArray[i].individualMatches.length === 0) {
-      individualMatchesArray = "There are no individual matches";
-    } else {
-      for (
-        let j = 0, size = matchesArray[i].individualMatches.length;
-        j < size;
-        j++
-      ) {
-        
-        let matchedIndividual =
-          appData.result.data.individuals[indexMatchedArray[j]].IndividualName;
-          individualMatchesArray += matchedIndividual + semicolon
-=======
   matchesArray.forEach((match, index) => {
     var individualName = inputIndividuals[index].individualName;
     var individualMatches = "";
@@ -278,26 +271,25 @@ export default function MatchingOutputPage() {
           individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
         }else
         individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
       }
     }
 
-    fileContent += `${matchingIndividual} -> ${individualMatchesArray}\n`;
+    fileContent += `${individualName} -> ${individualMatches}\n`;
 
     htmlOutput.push(
-      <tr className="table-success" key={"C" + i}>
+      <tr className="table-success" key={"C" + (index+1)}>
         {/* <td>Couple {index + 1}</td> */}
-        <td>{matchingIndividual}</td>
+        <td>{individualName}</td>
         <td>
           {
             // appData.result.data.individuals[Object.values(match)[2]].IndividualName
-            individualMatchesArray
+            individualMatches
           }
         </td>
         <td>{appData.result.data.setSatisfactions[index].toFixed(3)}</td>
       </tr>
     );
-  }
+  })
 
   // matchesArray.forEach((match, index) => {
   //   var individualName =
@@ -337,13 +329,8 @@ export default function MatchingOutputPage() {
   leftOversArray.forEach((individual, index) => {
     htmlLeftOvers.push(
       <tr className="table-danger" key={"L" + index}>
-<<<<<<< HEAD
-        <td>{index + 1}</td>
-        <td>{appData.result.data.individuals[individual].IndividualName}</td>
-=======
         <td>{index+1}</td>
         <td>{inputIndividuals[individual].individualName}</td>
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
       </tr>
     );
     leftoverArray.push(
@@ -441,7 +428,6 @@ export default function MatchingOutputPage() {
             <img src={GraphImage} alt="" />
           </div>
         </div>
-<<<<<<< HEAD
 
         <div className="d-flex align-items-center justify-content-center"></div>
         <div className="result-information">
@@ -450,15 +436,6 @@ export default function MatchingOutputPage() {
           <p>Runtime: {runtime} ms</p>
         </div>
         {/* <div
-=======
-      </div>
-      <div className="result-information">
-        <p>Fitness Value: {fitnessValue}</p>
-        <p>Used Algorithm: {usedAlgorithm}</p>
-        <p>Runtime: {runtime} ms</p>
-      </div>
-      <div
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: 30 }}
       >
@@ -489,46 +466,7 @@ export default function MatchingOutputPage() {
         >
           Graph View
         </Button>
-<<<<<<< HEAD
       </div> */}
-        <div className="view-1" style={{ display: "block" }}>
-          <h3 style={{ marginBottom: 20, marginTop: 40 }}>
-            THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
-          </h3>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr className="table-success">
-                {/* <th>#</th> */}
-                <th>First Partner</th>
-                <th>Second Partner</th>
-                <th>Couple fitness</th>
-              </tr>
-            </thead>
-            <tbody>{htmlOutput}</tbody>
-          </Table>
-
-          <h3 style={{ marginTop: 50, marginBottom: 20 }}>
-            THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
-          </h3>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr className="table-danger">
-                <th>No.</th>
-                <th>Name</th>
-              </tr>
-            </thead>
-            <tbody>{htmlLeftOvers}</tbody>
-          </Table>
-          <div className="d-grid gap-2">
-            <Button
-              variant="primary"
-              size="md"
-              style={{ justifyContent: "center", margin: "auto", width: 150 }}
-            >
-              Get Result
-            </Button>
-          </div>
-=======
       </div>
       <div className="view-1" style={{ display: "block" }}>
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
@@ -563,24 +501,13 @@ export default function MatchingOutputPage() {
             variant="primary"
             size="md"
             style={{ justifyContent: "center", margin: "auto", width: 150 }}
+            onClick={handleExportToExcel}
           >
             Get Result
           </Button>
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
         </div>
         {/* {console.log(appData.result.data.individuals)} */}
       </div>
-<<<<<<< HEAD
-=======
-      <div className="view-2" style={{ display: "none" }}>
-        <h3 style={{ marginBottom: 20, marginTop: 40 , textAlign:"center"}}>
-          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
-        </h3>
-        <div style={{display:"flex", justifyContent: "center"}}>
-          <BipartiteGraph appData={appData}></BipartiteGraph>
-        </div>
       </div>
->>>>>>> cdb4ba4bfe5edd6ff593fc9352965bc399c95b52
-    </div>
   );
 }

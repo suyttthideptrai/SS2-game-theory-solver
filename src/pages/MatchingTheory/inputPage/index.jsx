@@ -498,6 +498,11 @@ export default function InputPage() {
       `
     Hàm fitness được lấy từ dữ liệu người dùng nhập trên trang input
     Cách nhập hàm:
+    Hiện tại, evaluate function có thể xử lý theo 3 loại biến:
+    *$: R: requirement của các individual đối với 1 characteristic cụ thể
+    *$: P: properties của các individidual đối với 1 characteristic cụ thể
+    *$: W: trọng số của characteristic đối với individual (characteristic đó quan trọng ở mức nào đối với inidividual)
+    *$: Ví dụ cụ thể: P1*R1*W1+P2*R2*W2 sẽ là hàm mà phần mềm có thể xử lý được. Phần mềm không xử lý kiểu hàm cũ, trừ khi người dùng để default
      * $: i - index of MatchSet in "matches"
              * $: set - value (1 or 2) represent set 1 (0) or set 2 (1)
              * $: S(set) - Sum of all payoff scores of "set" evaluate by opposite set
@@ -522,12 +527,6 @@ export default function InputPage() {
       "Set 1 là Set Many do người dùng đã tick trong phần lựa chọn ở trang input",
       "Set 2 là Set One do người dùng đã tick trong phần lựa chọn ở trang input",
       `Người dùng nhập chỉ số yêu cầu của từng cá thể
-      + Đối với các requirement giới hạn một phía (ví dụ như > 20, < 10): Các nhóm khi nhập vào file excel 
-      sẽ nhập dưới dạng x++(đối với > x) và x--(đối với < x).
-      + Đối với các requirement giới hạn hai phía (ví dụ như 20<n<30): Các nhóm khi nhập vào file excel sẽ
-       nhập dưới dạng 20:30 (x:y với x<y)
-       Đối với các characteristic của các set: 
-        Khi nhập thông tin vào file excel, nếu cá thể nào không có characteristic đang nhập thì nhập vào giá trị 0.
 - Về phần các characteristic của các Individual:
        + Đối với các characteristic dạng chữ, có thể phân tích thành nhiều input khác nhau không có quy luật(ví dụ như skills có thể có cooking, swimming, drawing,...): 
         Các nhóm cần chia thành từng characteristic theo các input đấy (ví dụ như skills thì sẽ tách ra thành cooking, swimming,... và để thành characteristic riêng biệt)
