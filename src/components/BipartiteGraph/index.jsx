@@ -16,8 +16,9 @@ export default function BipartiteGraph({appData})  {
     var height = +svg.attr("height");
 
     var startX = width / 3;
-    var startY = 50;
-    var y1, y2 = startY;
+    var startY = 100;
+    var y1 = 50;
+    var y2 = 50
 
     const nodes = [];
     inputIndividuals.forEach((individual, index) => {
