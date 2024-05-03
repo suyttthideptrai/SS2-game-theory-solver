@@ -17,8 +17,7 @@ export default function BipartiteGraph({appData})  {
 
     var startX = width / 3;
     var startY = 50;
-    var y1 = startY;
-    var y2 = startY;
+    var y1, y2 = startY;
 
     const nodes = [];
     inputIndividuals.forEach((individual, index) => {
@@ -57,22 +56,24 @@ export default function BipartiteGraph({appData})  {
       }
     });
 
+    // Find leftovers in links array
     const valLink = links.filter((link) => link.target === -1);
 
+    //create a new nodes to store the leftovers
     const node2 = [];
     nodes.forEach((node, index) => {
-      console.log(node.id);
+      // console.log(node.id);
       for (var i = 0; i < valLink.length; i++) {
         if (valLink[i].source == node.id) {
-          console.log(node);
+          // console.log(node);
           node2.push(node);
         }
       }
     });
 
-    console.log(node2);
+    // console.log(node2);
 
-    console.log(valLink);
+    // console.log(valLink);
 
     svg.selectAll("circle").remove();
     svg.selectAll("line").remove();
