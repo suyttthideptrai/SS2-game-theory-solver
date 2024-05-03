@@ -260,7 +260,7 @@ export default function MatchingOutputPage() {
     fileContent += `${individualName} -> ${individualMatches}\n`;
 
     htmlOutput.push(
-      <tr className="table-success" key={"C" + i}>
+      <tr className="table-success" key={"C" + index}>
         {/* <td>Couple {index + 1}</td> */}
         <td>{individualName}</td>
         <td>
