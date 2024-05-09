@@ -54,8 +54,8 @@ export default function InputProcessingPage() {
             }
             setIsLoading(true);
             console.log("MAKE a POST request to: ");
-            const res = await axios.post(`http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/game-theory-solver`, body);
-            // const reswait axios.post(`http://172.20.0.2:${process.env.REACT_APP_BACKEND_PORT}/api/game-theory-solver`, body);
+            //const res = await axios.post(`http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/game-theory-solver`, body);
+            const res = await axios.post(`http://${process.env.REACT_APP_BACKEND_URL}/api/game-theory-solver`, body);
             console.log(res.data.data);
             const runtime = res.data.data.runtime;
             const usedAlgorithm = res.data.data.algorithm;

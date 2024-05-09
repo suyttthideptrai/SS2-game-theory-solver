@@ -89,7 +89,8 @@ export default function InputProcessingPage() {
         JSON.stringify(requestBody, null, 2)
       );
       const res = await axios.post(
-        `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
+        //`http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
+        `http://${process.env.REACT_APP_BACKEND_URL}/api/stable-matching-solver`,     
         requestBody
       );
       console.log(res.data.data);

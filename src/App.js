@@ -30,7 +30,8 @@ function App() {
     }
   }
   console.log("Backend URL:");
-  console.log(`${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}`);
+  // console.log(`${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}`);
+  console.log(`${process.env.REACT_APP_BACKEND_URL}`);
   return (
     <DataContext.Provider value={{ appData, setAppData, guideSectionIndex, setGuideSectionIndex }}>
       <PopupContext.Provider value={{ displayPopup }}>
