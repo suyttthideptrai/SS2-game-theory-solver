@@ -159,7 +159,8 @@ export default function MatchingOutputPage() {
       setIsLoading(true);
       await connectWebSocket(); // connect to websocket to get the progress percentage
       const res = await axios.post(
-        `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/matching-problem-result-insights/${sessionCode}`,
+        // `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/matching-problem-result-insights/${sessionCode}`,
+        `http://${process.env.REACT_APP_BACKEND_URL}/api/matching-problem-result-insights/${sessionCode}`,
         body
       );
       setIsLoading(false);
@@ -187,8 +188,10 @@ export default function MatchingOutputPage() {
   };
 
   const connectWebSocket = async () => {
+    //URL rewrited, forward to server's local port, no need specify port
     let Sock = new SockJS(
-      `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/ws`
+      // `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/ws`
+      `http://${process.env.REACT_APP_BACKEND_URL}/ws`
     );
     stompClient = over(Sock);
     await stompClient.connect({}, onConnected, onError);
