@@ -64,13 +64,13 @@ export default function InsightPage() {
 
         // write computer specifications to the fourth sheet
         const sheet4 = XLSX.utils.aoa_to_sheet([
-            ["Operating System Family", appData.insights.data.computerSpecs.osFamily],
-            ["Operating System Manufacturer", appData.insights.data.computerSpecs.osManufacturer],
-            ["Operating System Version", appData.insights.data.computerSpecs.osVersion],
-            ["CPU Name", appData.insights.data.computerSpecs.cpuName],
-            ["CPU Physical Cores", appData.insights.data.computerSpecs.cpuLogicalCores],
-            ["CPU Logical Cores", appData.insights.data.computerSpecs.cpuPhysicalCores],
-            ["Total Memory", appData.insights.data.computerSpecs.totalMemory],
+            ["Operating System Family", appData.insights?.data?.computerSpecs?.osFamily || "unknown" ],
+            ["Operating System Manufacturer", appData.insights?.data?.computerSpecs?.osManufacturer || "unknown" ],
+            ["Operating System Version", appData.insights?.data?.computerSpecs?.osVersion || "unknown" ],
+            ["CPU Name", appData.insights?.data?.computerSpecs?.cpuName || "unknown" ],
+            ["CPU Physical Cores", appData.insights?.data?.computerSpecs?.cpuPhysicalCores || "unknown" ],
+            ["CPU Logical Cores", appData.insights?.data?.computerSpecs?.cpuLogicalCores || "unknown" ],
+            ["Total Memory", appData.insights?.data?.computerSpecs?.totalMemory || "unknown" ],
         ]);
 
         // add sheets to the workbook
