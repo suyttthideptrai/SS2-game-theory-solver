@@ -112,16 +112,35 @@ export default function MatchingOutputPage() {
 
     // write computer specs to sheet 3
     const sheet3 = XLSX.utils.aoa_to_sheet([
-      ["Operating System Family", appData.result.data.computerSpecs.osFamily],
+      ["Operating System Family",
+        // appData.result.data.computerSpecs.osFamily
+        "Unknown"
+      ],
       [
         "Operating System Manufacturer",
-        appData.result.data.computerSpecs.osManufacturer,
+        // appData.result.data.computerSpecs,
+        "Unknown"
       ],
-      ["Operating System Version", appData.result.data.computerSpecs.osVersion],
-      ["CPU Name", appData.result.data.computerSpecs.cpuName],
-      ["CPU Physical Cores", appData.result.data.computerSpecs.cpuLogicalCores],
-      ["CPU Logical Cores", appData.result.data.computerSpecs.cpuPhysicalCores],
-      ["Total Memory", appData.result.data.computerSpecs.totalMemory],
+      ["Operating System Version",
+        // appData.result.data.computerSpecs.osVersion
+        "Unknown"
+      ],
+      ["CPU Name",
+        // appData.result.data.computerSpecs.cpuName
+        "Unknown"
+      ],
+      ["CPU Physical Cores",
+        // appData.result.data.computerSpecs.cpuLogicalCores
+        "Unknown"
+      ],
+      ["CPU Logical Cores",
+        // appData.result.data.computerSpecs.cpuPhysicalCores
+        "Unknown"
+      ],
+      ["Total Memory",
+        // appData.result.data.computerSpecs.totalMemory
+        "Unknown"
+      ],
     ]);
 
     // append sheets to workbook
@@ -334,7 +353,7 @@ export default function MatchingOutputPage() {
       </tr>
     );
     leftoverArray.push(
-      appData.result.data.individuals[individual].IndividualName
+      appData.problem.individuals[individual].IndividualName
     );
   });
   fileContent += `Left over = [${leftoverArray}]`;

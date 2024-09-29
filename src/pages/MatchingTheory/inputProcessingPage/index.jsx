@@ -3,7 +3,6 @@ import "./style.scss";
 import { useNavigate } from "react-router";
 
 import { useContext, useState, useEffect } from "react";
-import Player from "../../../components/Player";
 import axios from "axios";
 import DataContext from "../../../context/DataContext";
 import NothingToShow from "../../../components/NothingToShow";
