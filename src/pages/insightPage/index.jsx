@@ -8,7 +8,7 @@ import { Chart, registerables } from 'chart.js';
 
 import { useContext } from 'react';
 import DataContext from '../../context/DataContext';
-import * as XLSX from 'xlsx';
+import * as XLSX from '@e965/xlsx';
 import { saveAs } from 'file-saver';
 import ExcelImage from '../../images/excel.png'
 

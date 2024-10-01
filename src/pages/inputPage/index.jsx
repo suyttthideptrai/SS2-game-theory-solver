@@ -5,17 +5,16 @@ import SpecialPlayerInput from "../../components/specialPlayerInput";
 import Input from "../../components/input";
 import ExcelImage from '../../images/excel.png'
 import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
+import * as XLSX from '@e965/xlsx';
 import { useContext } from 'react';
 import DataContext from "../../context/DataContext"
 
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'
 
 import Loading from '../../components/Loading';
 import MaxMinCheckbox from '../../components/MaxMinCheckbox'
 import PopupContext from '../../context/PopupContext';
-import ParamSettingBox from '../../components/ParamSettingBox'
 export default function InputPage() {
     //initialize form data
     const [excelFile, setExcelFile] = useState(null);

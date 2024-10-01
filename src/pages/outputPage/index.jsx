@@ -3,12 +3,12 @@ import "./style.scss"
 import PlayerResult from '../../components/PlayerResult'
 import ExcelImage from '../../images/excel.png'
 import GraphImage from '../../images/graph.png'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import DataContext from "../../context/DataContext"
 import { useNavigate } from 'react-router-dom';
 import NothingToShow from '../../components/NothingToShow';
 import Loading from '../../components/Loading';
-import * as XLSX from 'xlsx';
+import * as XLSX from '@e965/xlsx';
 import { saveAs } from 'file-saver';
 import Popup from '../../components/Popup';
 import axios from 'axios'
@@ -17,7 +17,6 @@ import PopupContext from '../../context/PopupContext'
 
 import SockJS from 'sockjs-client';
 import { v4 } from 'uuid';
-import { overWS } from 'stompjs'
 import { over } from 'stompjs';
 
 let stompClient = null
@@ -27,7 +26,7 @@ export default function OutputPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isShowPopup, setIsShowPopup] = useState(false);
   const { displayPopup } = useContext(PopupContext)
-  const [sessionCode, setSessionCode] = useState(v4())
+  const [sessionCode] = useState(v4())
   const [loadingMessage, setLoadingMessage] = useState("Processing to get problem insights, please wait...")
   const [loadingEstimatedTime, setLoadingEstimatedTime] = useState(null)
   const [loadingPercentage, setLoadingPercentage] = useState()
@@ -35,12 +34,6 @@ export default function OutputPage() {
   const [populationSizeParam, setPopulationSizeParam] = useState(1000)
   const [generationParam, setGenerationParam] = useState(100)
   const [maxTimeParam, setMaxTimeParam] = useState(5000)
-
-  const navigateToHome = () => {
-    setAppData(null)
-    navigate('/')
-  }
-
 
   if (appData == null) {
     return (
@@ -66,7 +59,7 @@ export default function OutputPage() {
 
 
     // write parameter configurations to sheet 2
-    const numberOfCores = appData.result.params.distributedCoreParam == 'all' ? 'All available cores' : appData.result.params.distributedCoreParam + " cores"
+    const numberOfCores = appData.result.params.distributedCoreParam === 'all' ? 'All available cores' : appData.result.params.distributedCoreParam + " cores"
     const sheet2 = XLSX.utils.aoa_to_sheet([
       ["Number of distributed cores", numberOfCores],
       ["Population size", appData.result.params.populationSizeParam],

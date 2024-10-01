@@ -1,9 +1,9 @@
 // Phuc
 import React from 'react'
 import "./style.scss"
-import { useNavigate } from 'react-router'
+import {useNavigate} from 'react-router-dom'
 
-import { useContext, useState, useEffect } from 'react'
+import {useContext, useState, useEffect} from 'react'
 import Player from '../../components/Player';
 import axios from 'axios';
 import DataContext from "../../context/DataContext"
@@ -14,7 +14,7 @@ import PopupContext from '../../context/PopupContext';
 //TODO: algorithm selection
 export default function InputProcessingPage() {
     const navigate = useNavigate();
-    const { appData, setAppData } = useContext(DataContext);
+    const {appData, setAppData} = useContext(DataContext);
     const [isLoading, setIsLoading] = useState(false);
     const [algorithm, setAlgorithm] = useState('NSGAII');
     const [distributedCoreParam, setDistributedCoreParam] = useState("all")
@@ -22,7 +22,7 @@ export default function InputProcessingPage() {
     const [generationParam, setGenerationParam] = useState(100)
     const [maxTimeParam, setMaxTimeParam] = useState(5000)
 
-    const { displayPopup } = useContext(PopupContext)
+    const {displayPopup} = useContext(PopupContext)
 
     useEffect(() => {
         if (!appData || !appData.problem) return;
@@ -34,7 +34,7 @@ export default function InputProcessingPage() {
     // navigate to home page if there is no problem data
     if (!appData || !appData.problem) {
         return (
-            <NothingToShow />
+            <NothingToShow/>
         )
     }
 
@@ -72,7 +72,7 @@ export default function InputProcessingPage() {
                 }
 
             }
-            setAppData({ ...appData, result });
+            setAppData({...appData, result});
             setIsLoading(false);
             navigate('/result')
         } catch (err) {
@@ -84,13 +84,10 @@ export default function InputProcessingPage() {
     }
 
 
-
     return (
         <div className='input-processing-page'>
-            <Loading isLoading={isLoading} message='Solve your problem, please do not close this window...' />
+            <Loading isLoading={isLoading} message='Solve your problem, please do not close this window...'/>
             <h1 className="problem-name">{appData.problem.name}</h1>
-
-
 
 
             <ParamSettingBox
@@ -128,7 +125,7 @@ export default function InputProcessingPage() {
             <div className="player-container">
                 {appData.problem.players.map((player, index) => (
                     <div key={index}>
-                        <Player index={index} name={player.name} strategies={player.strategies} />
+                        <Player index={index} name={player.name} strategies={player.strategies}/>
                     </div>
                 ))}
             </div>

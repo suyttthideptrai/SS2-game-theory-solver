@@ -7,8 +7,8 @@ import GuidePage from "./pages/guidePage";
 import OutputPage from "./pages/outputPage";
 import MatchingTheoryOutpuPage from "./pages/MatchingTheory/outputPage";
 import "./App.scss";
-import { Routes, Route, useNavigate } from 'react-router-dom'
-import { createContext, useState } from "react";
+import { Routes, Route } from 'react-router-dom'
+import { useState } from "react";
 import DataContext from "./context/DataContext";
 import InsightPage from "./pages/insightPage";
 import PopupContext from "./context/PopupContext";

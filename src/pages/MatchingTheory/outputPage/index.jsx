@@ -10,8 +10,7 @@ import Popup from "../../../components/Popup";
 import axios from "axios";
 import ParamSettingBox from "../../../components/ParamSettingBox";
 import PopupContext from "../../../context/PopupContext";
-import BipartiteGraph from "../../../components/BipartiteGraph";
-import * as XLSX from 'xlsx';
+import * as XLSX from '@e965/xlsx';
 import SockJS from "sockjs-client";
 import { v4 } from "uuid";
 import { over } from "stompjs";
@@ -38,20 +37,6 @@ export default function MatchingOutputPage() {
   const [populationSizeParam, setPopulationSizeParam] = useState(1000);
   const [generationParam, setGenerationParam] = useState(100);
   const [maxTimeParam, setMaxTimeParam] = useState(5000);
-  // const [abc, setABC] = useState([]);
-  // const getABC = () => {
-  //   axios
-  //     .get(
-  //       `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-result`
-  //     )
-  //     .then((response) => {
-  //       setABC(response.data.data);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
-
   const navigateToHome = () => {
     setAppData(null);
     navigate("/");
