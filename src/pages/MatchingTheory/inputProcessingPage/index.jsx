@@ -1,7 +1,6 @@
 import React from "react";
 import "./style.scss";
 import {useNavigate} from "react-router-dom";
-
 import {useContext, useState, useEffect} from "react";
 import axios from "axios";
 import DataContext from "../../../context/DataContext";
@@ -9,6 +8,7 @@ import NothingToShow from "../../../components/NothingToShow";
 import Loading from "../../../components/Loading";
 import ParamSettingBox from "../../../components/ParamSettingBox";
 import PopupContext from "../../../context/PopupContext";
+
 //TODO: algorithm selection
 export default function InputProcessingPage() {
     const navigate = useNavigate();
@@ -16,11 +16,13 @@ export default function InputProcessingPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [algorithm, setAlgorithm] = useState("NSGAII");
     const [distributedCoreParam, setDistributedCoreParam] = useState("all");
+    const [problemType, setProblemType] = useState('one-to-one');
     const [populationSizeParam, setPopulationSizeParam] = useState(1000);
     const [generationParam, setGenerationParam] = useState(100);
     const [maxTimeParam, setMaxTimeParam] = useState(5000);
 
     const {displayPopup} = useContext(PopupContext);
+
     const [body, setBody] = useState(null);
     useEffect(() => {
         if (appData && appData.problem) {
@@ -31,6 +33,12 @@ export default function InputProcessingPage() {
     const handleChange = (event) => {
         setAlgorithm(event.target.value);
     };
+
+    // Hàm thay đổi problemType
+    const handleChangeProblemType = (event) => {
+        setProblemType(event.target.value);
+    };
+
     // navigate to home page if there is no problem data
     if (!appData || !appData.problem) {
         return <NothingToShow/>;
@@ -80,17 +88,26 @@ export default function InputProcessingPage() {
             };
             // console.log("Evaluate Function:", appData?.problem?.evaluateFunction);
             // console.log("Request Body:", requestBody);
-            setBody(requestBody);
+
+            //Thêm phần One to One
+            const endpoint = problemType === "one-to-one"
+                ? "http://localhost:8080/api/stable-matching-oto-solver"
+                : "http://localhost:8080/api/stable-matching-solver";
+
+
             setIsLoading(true);
             // console.log(evaluateFunctionStrings);
             console.log(
                 "MAKE a POST request to: ",
                 JSON.stringify(requestBody, null, 2)
             );
-            const res = await axios.post(
-                `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
-                requestBody
-            );
+            //const res = await axios.post(
+            //`http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
+            //requestBody
+            //);
+            //thay đổi phần res này để phù hợp
+            const res = await axios.post(endpoint, requestBody);
+
             console.log(res.data.data);
             const runtime = res.data.data.runtime;
             const usedAlgorithm = res.data.data.algorithm;
@@ -135,11 +152,19 @@ export default function InputProcessingPage() {
             {
                 algorithm == 'PAES' &&
                 <p className="error-text">Population size takes no effect for PAES algorithm</p>
-
             }
+
+            {/* Lựa chọn Problem type */}
+            <div className="problem-type-chooser">
+                <p className='problem-type-text bold'>Choose a problem type: </p>
+                <select value={problemType} onChange={handleChangeProblemType} className='problem-type-select'>
+                    <option value="one-to-one">One to One</option>
+                    <option value="one-to-many">One to Many / Many to Many</option>
+                </select>
+            </div>
+
             <div className="algo-chooser">
                 <p className='algorithm-text bold'>Choose an algorithm: </p>
-
                 <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
                     <option value="NSGAII">NSGAII</option>
                     <option value="NSGAIII">NSGAIII</option>
@@ -150,6 +175,7 @@ export default function InputProcessingPage() {
                     <option value="MOEAD">MOEAD</option>
                 </select>
             </div>
+
             <div>
                 <p className="solve-now-btn" onClick={handleSolveNow}>
                     Solve now
@@ -164,29 +190,65 @@ export default function InputProcessingPage() {
                                 overflowX: "auto",
                             }}
                         >
-            {JSON.stringify(body, null, 2)}
-          </pre>
+                        {JSON.stringify(body, null, 2)}
+                    </pre>
                     </div>
                 )}
             </div>
-            // {/* <p className="playerNum bold">{appData.Ind} {appData.problem.players.length < 2 ? 'Player' : "Players"}  </p> */}
 
-            // {/* <div className="player-container">
-    //         {appData.problem && appData.problem.individuals.map((individual, index) => (
-    //     <div key={index}>
-    //       <p className="individual-info">
-    //         <span className="bold">Name:</span> {individual.name},
-    //         <span className="bold"> Set:</span> {individual.set}
-    //       </p>
-    //       <p className="characteristics-info">
-    //         <span className="bold">Characteristics:</span> {individual.characteristics.join(', ')}
-    //       </p>
-    //       <p className="argument-info">
-    //         <span className="bold">Argument:</span> {JSON.stringify(individual.argument)}
-    //       </p>
-    //     </div>
-    //   ))}
-    //         </div> */}
-            // </div>
+            {/* Hiển thị thông tin */}
+            <div className="info-display">
+                <h3>Information:</h3>
+                <table className="info-table">
+                    <tbody>
+                    <tr>
+                        <td><strong>Name</strong></td>
+                        <td>{appData.problem.nameOfProblem}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Number of sets</strong></td>
+                        <td>{appData.problem.numberOfSets}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Number of individuals</strong></td>
+                        <td>{appData.problem.numberOfIndividuals}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Attributes</strong></td>
+                        <td>{appData.problem.characteristics.join(', ')}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Bảng hiển thị dữ liệu Individuals */}
+            <div className="individuals-table-container">
+                <h2>Individuals Data</h2>
+                <table className="individuals-table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Set Type</th>
+                        <th>Capacity</th>
+                        <th>Properties</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {appData.problem.individuals.map((individual, index) => (
+                        <tr key={index}>
+                            <td>{individual.individualName}</td>
+                            <td>{individual.setType}</td>
+                            <td>{individual.capacity}</td>
+                            <td>{individual.argument.map((arg, i) => (
+                                <div key={i}>{JSON.stringify(arg)}</div>
+                            ))}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     );
+
+
 }
