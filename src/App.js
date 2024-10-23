@@ -5,7 +5,7 @@ import InputProcessingPageMatchingTheory from "./pages/MatchingTheory/inputProce
 import InputProcessingPage from "./pages/inputProcessingPage";
 import GuidePage from "./pages/guidePage";
 import OutputPage from "./pages/outputPage";
-import MatchingTheoryOutpuPage from "./pages/MatchingTheory/outputPage";
+import MatchingTheoryOutputPage from "./pages/MatchingTheory/outputPage";
 import "./App.scss";
 import { Routes, Route } from 'react-router-dom'
 import { useState } from "react";
@@ -20,7 +20,7 @@ function App() {
   const [popupTitle, setPopupTitle] = useState("")
   const [popupMessage, setPopupMessage] = useState("")
   const [showPopup, setShowPopup] = useState(false)
-  const [popupOkCallBack, setPopupOkCallBack] = useState()
+  const [popupOkCallBack] = useState()
   const displayPopup = (title, message, error) => {
     setShowPopup(true)
     setPopupTitle(title)
@@ -46,7 +46,7 @@ function App() {
             <Route path="/input-processing" element={<InputProcessingPage />} />
             <Route path="/matching-theory/input-processing" element={<InputProcessingPageMatchingTheory />} />
             <Route path="/result" element={<OutputPage />} />
-            <Route path="/matching-theory/result" element={< MatchingTheoryOutpuPage />} />
+            <Route path="/matching-theory/result" element={< MatchingTheoryOutputPage />} />
             <Route path='/insights' element={<InsightPage />} />
             <Route path="*" element={<InputPage />} />
           </Routes>
