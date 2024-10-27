@@ -1,6 +1,6 @@
 import React from 'react';
 import './style.scss';
-import ErrorImage from '../../image/error.png'
+import ErrorImage from '../../asset/image/error.png'
 export default function Popup({ title, isShow, setIsShow, message, okCallback, error }) {
 
     const handleCancelClick = () => {

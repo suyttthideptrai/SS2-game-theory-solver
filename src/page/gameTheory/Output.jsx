@@ -1,8 +1,8 @@
 import React from 'react'
 import "../../module/gameTheory/css/output.scss"
 import PlayerResult from '../../module/gameTheory/component/PlayerResult'
-import ExcelImage from '../../module/core/image/excel.png'
-import GraphImage from '../../module/core/image/graph.png'
+import ExcelImage from '../../module/core/asset/image/excel.png'
+import GraphImage from '../../module/core/asset/image/graph.png'
 import { useContext, useState } from 'react'
 import DataContext from "../../context/DataContext"
 import { useNavigate } from 'react-router-dom';

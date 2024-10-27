@@ -2,7 +2,7 @@
 import React from 'react';
 import './style.scss';
 import { useNavigate } from 'react-router-dom';
-import AstronautImage from '../../image/astronaut.png'
+import AstronautImage from '../../asset/image/astronaut.png'
 export default function NothingToShow() {
     const navigate = useNavigate();
 

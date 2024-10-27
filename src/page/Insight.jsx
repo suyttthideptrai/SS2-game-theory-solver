@@ -1,5 +1,5 @@
 import React from 'react'
-import "../module/core/css/insight.scss"
+import "../module/core/asset/css/insight.scss"
 
 import { useNavigate } from 'react-router-dom';
 import NothingToShow from '../module/core/component/NothingToShow';
@@ -10,7 +10,7 @@ import { useContext } from 'react';
 import DataContext from '../context/DataContext';
 import * as XLSX from '@e965/xlsx';
 import { saveAs } from 'file-saver';
-import ExcelImage from '../module/core/image/excel.png'
+import ExcelImage from '../module/core/asset/image/excel.png'
 
 export default function InsightPage() {
     const { appData } = useContext(DataContext);

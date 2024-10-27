@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import "../../module/gameTheory/css/input.scss";
 import SpecialPlayerInput from "../../module/gameTheory/component/specialPlayerInput";
 import Input from "../../module/core/component/input";
-import ExcelImage from '../../module/core/image/excel.png'
+import ExcelImage from '../../module/core/asset/image/excel.png'
 import { saveAs } from 'file-saver';
 import * as XLSX from '@e965/xlsx';
 import { useContext } from 'react';

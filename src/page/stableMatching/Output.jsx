@@ -1,6 +1,6 @@
 import React from "react";
 import "../../module/stableMatching/css/output.scss";
-import GraphImage from "../../module/core/image/graph.png";
+import GraphImage from "../../module/core/asset/image/graph.png";
 import { useContext, useState } from "react";
 import DataContext from "../../context/DataContext";
 import { useNavigate } from "react-router-dom";

@@ -1,8 +1,8 @@
 import React from "react";
-import "../module/core/css/guide.scss";
+import "../module/core/asset/css/guide.scss";
 import {useRef, useContext, useEffect, useState} from "react";
 import DataContext from "../context/DataContext";
-import MathConversionImage from "../module/core/image/math-conversion.png";
+import MathConversionImage from "../module/core/asset/image/math-conversion.png";
 
 export default function GuidePage() {
     const gettingStartedRef = useRef();
