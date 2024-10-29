@@ -31,13 +31,29 @@ export default function InputPage() {
     const [totalIndividualsNumError, setTotalIndividualsNumError] = useState("");
     const [fitnessFunctionError, setFitnessFunctionError] = useState("");
 
+
+    const [setCharacteristics, setSetCharacteristics] = useState("");
     const {setAppData, setGuideSectionIndex} = useContext(DataContext);
     const {displayPopup} = useContext(PopupContext);
     const [rowNums, setRowNums] = useState(2);
     const [colNums, setColNums] = useState(0);
     const [setEvaluateFunction, setSetEvaluateFunction] = useState(Array.from({length: colNums}, () => ""));
     const [setIndividuals, setSetIndividuals] = useState(Array.from({length: colNums}, () => ""));
-    const [setCharacteristics, setSetCharacteristics] = useState(Array.from({length: colNums}, () => ""));
+//new variables
+        const [numberOfProperties, setNumberOfProperties] = useState("");
+        const [individualProperties, setIndividualProperties] = useState([]);
+        const [individualRequirements, setIndividualRequirements] = useState([]);
+        const [individualWeights, setIndividualWeights] = useState([]);
+        const [individualSetIndexes, setIndividualSetIndexes] = useState([]);
+        const [individualCapacities, setIndividualCapacities] = useState([]);
+        const [numberOfPropertiesError, setNumberOfPropertiesError] = useState("");
+        const [individualSetIndexesError, setIndividualSetIndexesError] = useState("");
+        const [individualCapacitiesError, setIndividualCapacitiesError] = useState("");
+        const [individualPropertiesError, setIndividualPropertiesError] = useState("");
+        const [individualRequirementsError, setIndividualRequirementsError] = useState("");
+        const [individualWeightsError, setIndividualWeightsError] = useState("");
+
+
     const [setMany, setSetMany] = useState(Array.from({length: colNums}, () => false));
     const navigate = useNavigate();
     const validateExcelFile = (file) => {
@@ -46,7 +62,7 @@ export default function InputPage() {
             setExcelFileError("");
             return true; // File is valid
         } else {
-            setExcelFileError("The file was not an Excel file!");
+            displayPopup("Something went wrong!", "The file was not an Excel file!", true);
             throw new Error("The file was not an Excel file!");
         }
     };
@@ -82,7 +98,12 @@ export default function InputPage() {
                         nameOfProblem: problemInfo.problemName,
                         numberOfSets: problemInfo.setNum,
                         numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
-                        characteristics: problemInfo.characteristics,
+                        characteristicsNum: problemInfo.characteristics,
+                        individualSetIndexes: problemInfo.individualSetIndexes,
+                        individualCapacities: problemInfo.individualCapacities,
+                        individualProperties: problemInfo.individualProperties,
+                        individualRequirements: problemInfo.individualRequirements,
+                        individualWeights: problemInfo.individualWeights,
                         individuals: problemInfo.individuals,
                         fitnessFunction: problemInfo.fitnessFunction,
                         evaluateFunctions: problemInfo.setEvaluateFunction,
@@ -104,21 +125,29 @@ export default function InputPage() {
         const totalNumberOfIndividuals = await sheet["B3"]["v"];
         const characteristicNum = await sheet["B4"]["v"];
         const fitnessFunction = await sheet["B5"]["v"];
+
+        let columnCount = 0;
         let currentRow = 6 + Number(setNum);
         let currentIndividual = 0;
         let characteristics = [];
         let errorMessage = "";
 
         try {
-            // LOAD CHARACTERISTICS
-            for (let i1 = 4; i1 < characteristicNum + 4; i1++) {
-                const characteristicName = await sheet[XLSX.utils.encode_cell({
-                    c: i1, r: currentRow - 1,
-                })];
+            // Load number of properties
+            const startingColumn = "E"; // Starting from column E
+            let currentColumnIndex = XLSX.utils.decode_col(startingColumn);
 
-                if (characteristicName) {
-                    characteristics.push(characteristicName["v"]);
+            for (let i = currentColumnIndex; ; i++) {
+                // Create the cell reference for the current column in row 8
+                const cellAddress = XLSX.utils.encode_cell({ c: i, r: currentRow - 1 }); // `r: startingRow - 1` because row start from 0
+                const cell = sheet[cellAddress];
+
+                // Break if cell is empty or undefined
+                if (!cell || !cell.v) {
+                    break;
                 }
+                columnCount++;
+                characteristics = columnCount;
             }
 
             // LOAD SET
@@ -130,65 +159,58 @@ export default function InputPage() {
             let argumentCell = null;
             let individualName = null;
             let setType = null;
-            let capacity = null;
             let setName = null;
+            let capacityNum = null;
 
-            // Add evaluate function
+            // Load evaluate functions for each set
             for (let j = 0; j < setNum; j++) {
-                let evaluateFunction = await sheet[`B${6 + j}`]["v"];
+                const evaluateFunction = sheet[`B${6 + j}`]?.v || "";
                 setEvaluateFunction.push(evaluateFunction);
             }
+
+
+
             for (let g = 0; g < setNum; g++) {
                 setName = await sheet[`A${currentRow}`]["v"];
                 setType = await sheet[`B${currentRow}`]["v"];
-
                 if (g === 0) {
                     setType = 0;
                 } else if (g === 1) {
                     setType = 1;
                 }
 
-                // CHECK THE INDIVIDUAL NUMBER IS NUMBER
-                individualNum = await sheet[`D${currentRow}`];
-                if (typeof individualNum["v"] !== "number") {
-                    errorMessage = `Error when loading Set_${currentIndividual + 1}, row = ${currentRow} . Number of individual is invalid`;
-                    throw new Error();
-                } else {
-                    individualNum = await sheet[`D${currentRow}`]["v"];
+                individualNum = await sheet[`D${currentRow}`]?.v;
+                for (let i = 0; i < individualNum; i++) {
+                    const properties = [];
+                    const requirements = [];
+                    const weights = [];
 
-                    // LOAD INDIVIDUAL
-                    for (let i = 0; i < individualNum; i++) {
-                        let argument = [];
-                        individualName = await sheet[`A${currentRow + 1}`]["v"];
-                        capacity = await sheet[`C${currentRow + 1}`][`v`];
-
-                        for (let k = 0; k < row; k++) {
-                            argument[k] = [];
-                            for (let l = 0; l < col; l++) {
-                                argumentCell = await sheet[XLSX.utils.encode_cell({
-                                    c: k + 4, r: currentRow + l,
-                                })];
-
-                                if (argumentCell === undefined) {
-                                    errorMessage = `Error when loading Individual_${currentIndividual + 1}, row = ${currentRow}, column = ${k + 1}. Characteristic_ of strategy are invalid`;
-                                    throw new Error();
-                                }
-                                argument[k][l] = argumentCell["v"];
-                            }
-                        }
-                        let individual = {
-                            set: setName,
-                            setType: setType,
-                            individualName: individualName,
-                            capacity: capacity,
-                            argument: argument,
-                        };
-                        individuals.push(individual);
-                        currentRow += 3;
+                    for (let k = 0; k < characteristicNum; k++) {
+                        properties.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow })]?.v || 0);
+                        requirements.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 1 })]?.v || 0);
+                        weights.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 2 })]?.v || 0);
                     }
-                    currentRow += 1;
+                    individualSetIndexes.push(g);
+                    individualProperties.push(properties);
+                    individualRequirements.push(requirements);
+                    individualWeights.push(weights);
+
+                    // Load capacity
+                    const capacityValue = await sheet[`C${currentRow + 1}`]?.v;  // Read the value in column C
+                    if (capacityValue !== undefined && capacityValue !== null) {
+                        individualCapacities.push(capacityValue);  // Push the capacity value
+                    }
+
+                    currentRow += 3;
                 }
+
+                currentRow += 1;
             }
+        console.log("si: " + individualSetIndexes);
+        console.log("c: " + individualCapacities);
+        console.log("p: " + individualProperties);
+        console.log("r: " + individualRequirements);
+        console.log("w: " + individualWeights);
 
             return {
                 problemName,
@@ -196,6 +218,11 @@ export default function InputPage() {
                 setNum,
                 totalNumberOfIndividuals,
                 characteristics,
+                individualSetIndexes,
+                individualCapacities,
+                individualRequirements,
+                individualProperties,
+                individualWeights,
                 individuals,
                 fitnessFunction,
                 setEvaluateFunction,
