@@ -6,11 +6,11 @@ import {useNavigate} from 'react-router-dom'
 import {useContext, useState, useEffect} from 'react'
 import Player from '../../module/gameTheory/component/Player';
 import axios from 'axios';
-import DataContext from "../../context/DataContext"
+import DataContext from "../../module/core/context/DataContext"
 import NothingToShow from '../../module/core/component/NothingToShow';
 import Loading from '../../module/core/component/Loading';
 import ParamSettingBox from '../../module/core/component/ParamSettingBox';
-import PopupContext from '../../context/PopupContext';
+import PopupContext from '../../module/core/context/PopupContext';
 //TODO: algorithm selection
 export default function InputProcessingPage() {
     const navigate = useNavigate();

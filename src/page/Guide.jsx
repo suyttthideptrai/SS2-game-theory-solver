@@ -1,7 +1,7 @@
 import React from "react";
 import "../module/core/asset/css/guide.scss";
 import {useRef, useContext, useEffect, useState} from "react";
-import DataContext from "../context/DataContext";
+import DataContext from "../module/core/context/DataContext";
 import MathConversionImage from "../module/core/asset/image/math-conversion.png";
 
 export default function GuidePage() {

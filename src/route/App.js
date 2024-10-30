@@ -3,9 +3,9 @@ import InputPage from "../page/gameTheory/Input";
 import "../module/core/css/index.scss";
 import { Routes, Route } from 'react-router-dom'
 import { useState } from "react";
-import DataContext from "../context/DataContext";
+import DataContext from "../module/core/context/DataContext";
 import InsightPage from "../page/Insight";
-import PopupContext from "../context/PopupContext";
+import PopupContext from "../module/core/context/PopupContext";
 import Popup from '../module/core/component/Popup'
 import stableMatchingRouter from "./stableMatching";
 import gameTheoryRouter from "./gameTheory";

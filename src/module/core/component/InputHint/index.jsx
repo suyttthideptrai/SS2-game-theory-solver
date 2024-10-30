@@ -2,7 +2,7 @@ import React from 'react';
 import "./style.scss";
 import { Link } from 'react-router-dom'
 import { useState, useContext } from 'react';
-import DataContext from '../../../../context/DataContext';
+import DataContext from '../../context/DataContext';
 
 export default function InputHint({ showHint, setShowHint, heading, description, guideSectionIndex }) {
 // onMouseLeave={setShowHint(false)}

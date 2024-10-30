@@ -4,7 +4,7 @@ import PlayerResult from '../../module/gameTheory/component/PlayerResult'
 import ExcelImage from '../../module/core/asset/image/excel.png'
 import GraphImage from '../../module/core/asset/image/graph.png'
 import { useContext, useState } from 'react'
-import DataContext from "../../context/DataContext"
+import DataContext from "../../module/core/context/DataContext"
 import { useNavigate } from 'react-router-dom';
 import NothingToShow from '../../module/core/component/NothingToShow';
 import Loading from '../../module/core/component/Loading';
@@ -13,7 +13,7 @@ import { saveAs } from 'file-saver';
 import Popup from '../../module/core/component/Popup';
 import axios from 'axios'
 import ParamSettingBox from '../../module/core/component/ParamSettingBox';
-import PopupContext from '../../context/PopupContext'
+import PopupContext from '../../module/core/context/PopupContext'
 
 import SockJS from 'sockjs-client';
 import { v4 } from 'uuid';

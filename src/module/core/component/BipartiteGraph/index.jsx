@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import * as d3 from "d3";
-import useSize from "../../../../context/WindowResize";
+import useSize from "../../context/WindowResize";
 
 export default function BipartiteGraph({appData})  {
     const svgRef = useRef();

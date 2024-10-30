@@ -5,13 +5,13 @@ import ExcelImage from "../../module/core/asset/image/excel.png";
 import {saveAs} from "file-saver";
 import * as XLSX from "@e965/xlsx";
 import {useContext} from "react";
-import DataContext from "../../context/DataContext";
+import DataContext from "../../module/core/context/DataContext";
 import ExcelJS from "exceljs";
 import {useNavigate, Link} from "react-router-dom";
 import "../../module/stableMatching/css/input.scss";
 
 import Loading from "../../module/core/component/Loading";
-import PopupContext from "../../context/PopupContext";
+import PopupContext from "../../module/core/context/PopupContext";
 
 
 export default function InputPage() {
