@@ -311,6 +311,9 @@ export default function InputPage() {
 
     const validateForm = () => {
         let error = false
+        const maxSets = 10; // Số lượng tập tối đa
+        const maxCharacteristics = 15; // Số lượng đặc điểm tối đa
+        const maxTotalIndividuals = 100; // Số lượng cá nhân tối đa
 
         // check if the problem name is empty
         if (!problemName) {
@@ -360,6 +363,30 @@ export default function InputPage() {
             error = true;
         } else {
             setPlayerPayoffFunctionError("");
+        }
+
+        // Kiểm tra số lượng tập
+        if (!setNum || setNum > maxSets) {
+            setSetNumError(`Số lượng tập phải từ 1 đến ${maxSets}`);
+            error = true;
+        } else {
+            setSetNumError("");
+        }
+
+        // Kiểm tra số lượng đặc điểm
+        if (!characteristicsNum || characteristicsNum > maxCharacteristics) {
+            setCharacteristicsNumError(`Số lượng đặc điểm phải từ 1 đến ${maxCharacteristics}`);
+            error = true;
+        } else {
+            setCharacteristicsNumError("");
+        }
+
+        // Kiểm tra số lượng cá nhân
+        if (!totalIndividualsNum || totalIndividualsNum > maxTotalIndividuals) {
+            setTotalIndividualsNumError(`Số lượng cá nhân phải từ 1 đến ${maxTotalIndividuals}`);
+            error = true;
+        } else {
+            setTotalIndividualsNumError("");
         }
 
         // if there is no error, return true
