@@ -63,19 +63,20 @@ export default function InputProcessingPage() {
                 numberOfSets: appData.problem.numberOfSets,
                 //numberOfSets: appData.stableMatchingProblem.sets.length,
                 numberOfIndividuals: appData.problem.numberOfIndividuals,
-                allPropertyNames: appData.problem.characteristics,
-                // mapping over the individuals directly from appData.stableMatchingProblem
-                // and creating a new array of objects based on the properties of each individual.
-                // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-
-                Individuals: appData.problem.individuals.map((individual) => ({
-                    // IndividualSet: individual.set,
-
-                    SetType: individual.setType,
-                    IndividualName: individual.individualName,
-                    Capacity: individual.capacity,
-                    Properties: individual.argument.map((arg) => [...arg]),
-                })),
+                numberOfProperty: appData.problem.characteristicsNum,
+                individualSetIndexes: appData.problem.individualSetIndexes,
+                individualCapacities: appData.problem.individualCapacities,
+                individualProperties: appData.problem.individualProperties,
+                individualRequirements: appData.problem.individualRequirements,
+                individualWeights: appData.problem.individualWeights,
+//                 Individuals: appData.problem.individuals.map((individual) => ({
+//                     // IndividualSet: individual.set,
+//
+//                     SetType: individual.setType,
+//                     IndividualName: individual.individualName,
+//                     Capacity: individual.capacity,
+//                     Properties: individual.argument.map((arg) => [...arg]),
+//                 })),
                 fitnessFunction: appData.problem.fitnessFunction,
                 // evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
                 evaluateFunction: evaluateFunction,
@@ -165,6 +166,7 @@ export default function InputProcessingPage() {
 
             <div className="algo-chooser">
                 <p className='algorithm-text bold'>Choose an algorithm: </p>
+
                 <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
                     <option value="NSGAII">NSGAII</option>
                     <option value="NSGAIII">NSGAIII</option>
@@ -249,6 +251,4 @@ export default function InputProcessingPage() {
             </div>
         </div>
     );
-
-
 }
