@@ -10,6 +10,8 @@ import ParamSettingBox from "../../module/core/component/ParamSettingBox";
 import PopupContext from "../../module/core/context/PopupContext";
 import { ENDPOINTS } from "../../module/core/context/apiEndpoints"; // Adjust the path as needed
 
+const INVALID_MATH_SYMBOLS = ["π","∞","Σ","√","∛","∜","∫","∬","∭","∮","∯","∰","∱","∲","∳","∀","∁","∂","∃","∄","∅","∆","∇","∈","∉","∊","∋","∌","∍","∎","∏","∐","∑","−","∓","∔","∕","∖","∗","∘","∙","∝","∟","∠","∡","∢","∣","∤","∥","∦","∧","∨","∩","∪","∴","∵","∶","∷","∸","∹","∺","∻","∼","∽","∾","∿","≀","≁","≂","≃","≄","≅","≆","≇","≈","≉","≊","≋","≌","≍","≎","≏","≐","≑","≒","≓","≔","≕","≖","≗","≘","≙","≚","≛","≜","≝","≞","≟","≠","≡","≢","≣","≤","≥","≦","≧","≨","≩","≪","≫","≬","≭","≮","≯","≰","≱","≲","≳","≴","≵","≶","≷","≸","≹","≺","≻","≼","≽","≾","≿","⊀","⊁","⊂","⊃","⊄","⊅","⊆","⊇","⊈","⊉","⊊","⊋","⊌","⊍","⊎","⊏","⊐","⊑","⊒","⊓","⊔","⊕","⊖","⊗","⊘","⊙","⊚","⊛","⊜","⊝","⊞","⊟","⊠","⊡","⊢","⊣","⊤","⊥","⊦","⊧","⊨","⊩","⊪","⊫","⊬","⊭","⊮","⊯","⊰","⊱","⊲","⊳","⊴","⊵","⊶","⊷","⊸","⊹","⊺","⊻","⊼","⊽","⊾","⊿","⋀","⋁","⋂","⋃","⋄","⋅","⋆","⋇","⋈","⋉","⋊","⋋","⋌","⋍","⋎","⋏","⋐","⋑","⋒","⋓","⋔","⋕","⋖","⋗","⋘","⋙","⋚","⋛","⋜","⋝","⋞","⋟","⋠","⋡","⋢","⋣","⋤","⋥","⋦","⋧","⋨","⋩","⋪","⋫","⋬","⋭","⋮","⋯","⋰","⋱","⁺","⁻","⁼","⁽","⁾","ⁿ","₊","₋","₌","₍","₎","✖","﹢","﹣","＋","－","／","＝","÷","±","×","²","³"];
+
 //TODO: algorithm selection
 export default function InputProcessingPage() {
     const navigate = useNavigate();
@@ -58,6 +60,20 @@ export default function InputProcessingPage() {
             // const evaluateFunctionStrings = evaluateFunction.map(item => ({
 
             // }))
+            // Validate evaluate func
+            for (const func of evaluateFunction) {
+                for (const keyword of INVALID_MATH_SYMBOLS){
+                    if (func.includes(keyword)) {
+                        return displayPopup("Invalid Evaluate Function(s)", `Evaluate function (${func}) contains invalid symbol (${keyword})`, true);
+                    }
+                }
+            }
+            // Validate fitness func
+            for (const keyword of INVALID_MATH_SYMBOLS){
+                if (appData.problem.fitnessFunction.includes(keyword)) {
+                    return displayPopup("Invalid Evaluate Function(s)", `Fitness function (${appData.problem.fitnessFunction}) contains invalid symbol (${keyword})`, true);
+                }
+            }
             console.log(evaluateFunction);
 
             const requestBody = {
