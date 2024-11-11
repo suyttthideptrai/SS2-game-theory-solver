@@ -217,6 +217,8 @@ export default function InputPage() {
         const maxSets = 10; // Số lượng tập tối đa
         const maxCharacteristics = 15; // Số lượng đặc điểm tối đa
         const maxTotalIndividuals = 100; // Số lượng cá nhân tối đa
+
+        const validFunctionPattern = /^[a-zA-Z0-9\s\+\-\*\/\^\(\)]+$/;
         // check if the problem name is empty
         if (!problemName) {
             setProblemNameError("Problem name must not be empty");
@@ -258,7 +260,7 @@ export default function InputPage() {
         }
         // Kiểm tra số lượng tập
         if (!setNum || setNum > maxSets) {
-            setSetNumError(`Số lượng tập phải từ 1 đến ${maxSets}`);
+            setSetNumError(`Number of set must be from 1 to ${maxSets}`);
             error = true;
         } else {
             setSetNumError("");
@@ -266,7 +268,7 @@ export default function InputPage() {
 
         // Kiểm tra số lượng đặc điểm
         if (!characteristicsNum || characteristicsNum > maxCharacteristics) {
-            setCharacteristicsNumError(`Số lượng đặc điểm phải từ 1 đến ${maxCharacteristics}`);
+            setCharacteristicsNumError(`The number of characteristics must be from 1 to ${maxCharacteristics}`);
             error = true;
         } else {
             setCharacteristicsNumError("");
@@ -274,11 +276,35 @@ export default function InputPage() {
 
         // Kiểm tra số lượng cá nhân
         if (!totalIndividualsNum || totalIndividualsNum > maxTotalIndividuals) {
-            setTotalIndividualsNumError(`Số lượng cá nhân phải từ 1 đến ${maxTotalIndividuals}`);
+            setTotalIndividualsNumError(`The number of individuals must be from 1 to ${maxTotalIndividuals}`);
             error = true;
         } else {
             setTotalIndividualsNumError("");
         }
+
+
+
+         //fitness
+         if (!fitnessFunction || !validFunctionPattern.test(fitnessFunction)) {
+            setFitnessFunctionError("Function value contains an invalid character");
+            error = true;
+        } else {
+            setFitnessFunctionError("");
+        }
+        setEvaluateFunction.forEach((evaluateFunction, index) => {
+            if (!evaluateFunction || !validFunctionPattern.test(evaluateFunction)) {
+                setEvaluateFunction(prevState => {
+                    const newState = [...prevState];
+                    newState[index] = "Function value contains an invalid character";
+                    return newState;
+                });
+                error = true;
+            }
+        });
+
+
+
+
         // if there is no error, return true
         if (error) {
             return false;
