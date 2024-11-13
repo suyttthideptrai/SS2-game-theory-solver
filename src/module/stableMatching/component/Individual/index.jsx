@@ -1,5 +1,5 @@
 import React from "react"
-import "./style.scss";
+import "../../asset/css/styleIndividual.scss";
 import { useState } from 'react'
 export default function Individual({ index,allPropertyNames, IndividualName, Properties }) {
   const [showMore, setShowMore] = useState(false)
