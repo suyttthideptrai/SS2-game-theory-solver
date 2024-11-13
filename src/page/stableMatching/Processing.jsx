@@ -8,6 +8,9 @@ import NothingToShow from "../../module/core/component/NothingToShow";
 import Loading from "../../module/core/component/Loading";
 import ParamSettingBox from "../../module/core/component/ParamSettingBox";
 import PopupContext from "../../module/core/context/PopupContext";
+import { ENDPOINTS } from "../../module/core/context/apiEndpoints"; // Adjust the path as needed
+
+const INVALID_MATH_SYMBOLS = ["π","∞","Σ","√","∛","∜","∫","∬","∭","∮","∯","∰","∱","∲","∳","∀","∁","∂","∃","∄","∅","∆","∇","∈","∉","∊","∋","∌","∍","∎","∏","∐","∑","−","∓","∔","∕","∖","∗","∘","∙","∝","∟","∠","∡","∢","∣","∤","∥","∦","∧","∨","∩","∪","∴","∵","∶","∷","∸","∹","∺","∻","∼","∽","∾","∿","≀","≁","≂","≃","≄","≅","≆","≇","≈","≉","≊","≋","≌","≍","≎","≏","≐","≑","≒","≓","≔","≕","≖","≗","≘","≙","≚","≛","≜","≝","≞","≟","≠","≡","≢","≣","≤","≥","≦","≧","≨","≩","≪","≫","≬","≭","≮","≯","≰","≱","≲","≳","≴","≵","≶","≷","≸","≹","≺","≻","≼","≽","≾","≿","⊀","⊁","⊂","⊃","⊄","⊅","⊆","⊇","⊈","⊉","⊊","⊋","⊌","⊍","⊎","⊏","⊐","⊑","⊒","⊓","⊔","⊕","⊖","⊗","⊘","⊙","⊚","⊛","⊜","⊝","⊞","⊟","⊠","⊡","⊢","⊣","⊤","⊥","⊦","⊧","⊨","⊩","⊪","⊫","⊬","⊭","⊮","⊯","⊰","⊱","⊲","⊳","⊴","⊵","⊶","⊷","⊸","⊹","⊺","⊻","⊼","⊽","⊾","⊿","⋀","⋁","⋂","⋃","⋄","⋅","⋆","⋇","⋈","⋉","⋊","⋋","⋌","⋍","⋎","⋏","⋐","⋑","⋒","⋓","⋔","⋕","⋖","⋗","⋘","⋙","⋚","⋛","⋜","⋝","⋞","⋟","⋠","⋡","⋢","⋣","⋤","⋥","⋦","⋧","⋨","⋩","⋪","⋫","⋬","⋭","⋮","⋯","⋰","⋱","⁺","⁻","⁼","⁽","⁾","ⁿ","₊","₋","₌","₍","₎","✖","﹢","﹣","＋","－","／","＝","÷","±","×","²","³"];
 
 //TODO: algorithm selection
 export default function InputProcessingPage() {
@@ -56,6 +59,20 @@ export default function InputProcessingPage() {
             // const evaluateFunctionStrings = evaluateFunction.map(item => ({
 
             // }))
+            // Validate evaluate func
+            for (const func of evaluateFunction) {
+                for (const keyword of INVALID_MATH_SYMBOLS){
+                    if (func.includes(keyword)) {
+                        return displayPopup("Invalid Evaluate Function(s)", `Evaluate function (${func}) contains invalid symbol (${keyword})`, true);
+                    }
+                }
+            }
+            // Validate fitness func
+            for (const keyword of INVALID_MATH_SYMBOLS){
+                if (appData.problem.fitnessFunction.includes(keyword)) {
+                    return displayPopup("Invalid Evaluate Function(s)", `Fitness function (${appData.problem.fitnessFunction}) contains invalid symbol (${keyword})`, true);
+                }
+            }
             console.log(evaluateFunction);
 
             const requestBody = {
@@ -91,9 +108,8 @@ export default function InputProcessingPage() {
 
             //Thêm phần One to One
             const endpoint = problemType === "one-to-one"
-                ? "http://localhost:8080/api/stable-matching-oto-solver"
-                : "http://localhost:8080/api/stable-matching-solver";
-
+                ? ENDPOINTS.ONE_TO_ONE
+                : ENDPOINTS.ONE_TO_MANY;
 
             setIsLoading(true);
             // console.log(evaluateFunctionStrings);
@@ -226,24 +242,25 @@ export default function InputProcessingPage() {
                 <h2>Individuals Data</h2>
                 <table className="individuals-table">
                     <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Set Type</th>
-                        <th>Capacity</th>
-                        <th>Properties</th>
-                    </tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>Set Type</th>
+                            <th>Capacity</th>
+                            <th>Properties</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {appData.problem.individuals.map((individual, index) => (
-                        <tr key={index}>
-                            <td>{individual.individualName}</td>
-                            <td>{individual.setType}</td>
-                            <td>{individual.capacity}</td>
-                            <td>{individual.argument.map((arg, i) => (
-                                <div key={i}>{JSON.stringify(arg)}</div>
-                            ))}</td>
-                        </tr>
-                    ))}
+                        {appData.problem.individuals.slice(0, 5).map((individual, index) => (
+                            <tr key={index}>
+                                <td>{individual.individualName}</td>
+                                <td>{individual.setType}</td>
+                                <td>{individual.capacity}</td>
+                                <td>{individual.argument.map((arg, i) => (
+                                    <div key={i}>{JSON.stringify(arg)}</div>
+                                ))}</td>
+                            </tr>
+                        ))}
+
                     </tbody>
                 </table>
             </div>
