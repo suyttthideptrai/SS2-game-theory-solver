@@ -301,10 +301,6 @@ export default function InputPage() {
                 error = true;
             }
         });
-
-
-
-
         // if there is no error, return true
         if (error) {
             return false;

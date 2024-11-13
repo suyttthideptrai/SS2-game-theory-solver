@@ -20,7 +20,6 @@ export default function InputProcessingPage() {
     const [algorithm, setAlgorithm] = useState("NSGAII");
     const [distributedCoreParam, setDistributedCoreParam] = useState("all");
     const [problemType, setProblemType] = useState('one-to-one');
-    
     const [populationSizeParam, setPopulationSizeParam] = useState(1000);
     const [generationParam, setGenerationParam] = useState(100);
     const [maxTimeParam, setMaxTimeParam] = useState(5000);
@@ -111,7 +110,6 @@ export default function InputProcessingPage() {
             const endpoint = problemType === "one-to-one"
                 ? ENDPOINTS.ONE_TO_ONE
                 : ENDPOINTS.ONE_TO_MANY;
-
 
             setIsLoading(true);
             // console.log(evaluateFunctionStrings);
@@ -262,6 +260,7 @@ export default function InputProcessingPage() {
                                 ))}</td>
                             </tr>
                         ))}
+
                     </tbody>
                 </table>
             </div>
