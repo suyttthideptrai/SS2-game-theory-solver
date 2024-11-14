@@ -72,13 +72,12 @@ export default function InputProcessingPage() {
                     return displayPopup("Invalid Evaluate Function(s)", `Fitness function (${appData.problem.fitnessFunction}) contains invalid symbol (${keyword})`, true);
                 }
             }
-            console.log(evaluateFunction);
 
             const requestBody = {
                 problemName: appData.problem.nameOfProblem,
                 numberOfSets: appData.problem.numberOfSets,
                 numberOfIndividuals: appData.problem.numberOfIndividuals,
-                numberOfProperty: appData.problem.characteristicsNum,
+                numberOfProperty: appData.problem.characteristics.length,
                 individualSetIndexes: appData.problem.individualSetIndexes,
                 individualCapacities: appData.problem.individualCapacities,
                 individualProperties: appData.problem.individualProperties,
@@ -103,10 +102,7 @@ export default function InputProcessingPage() {
 
             setIsLoading(true);
             // console.log(evaluateFunctionStrings);
-            console.log(
-                "MAKE a POST request to: ",
-                JSON.stringify(requestBody, null, 2)
-            );
+            console.log(requestBody)
             //const res = await axios.post(
             //`http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/stable-matching-solver`,
             //requestBody

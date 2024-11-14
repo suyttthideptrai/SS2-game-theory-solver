@@ -91,7 +91,7 @@ export default function InputPage() {
                         setTypes: problemInfo.setTypes,
                         numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
                         individualNames: problemInfo.individualNames,
-                        characteristicsNum: problemInfo.characteristics,
+                        characteristics: problemInfo.characteristics,
                         individualSetIndexes: problemInfo.individualSetIndexes,
                         individualCapacities: problemInfo.individualCapacities,
                         individualProperties: problemInfo.individualProperties,
@@ -114,12 +114,12 @@ export default function InputPage() {
         const sheetName = await workbook.SheetNames[sheetNumber];
         const sheet = await workbook.Sheets[sheetName];
         const problemName = await sheet["B1"].v;
-        const setNum = await sheet["B2"].v;
+        const setNum = Number(await sheet["B2"].v);
         const totalNumberOfIndividuals = await sheet["B3"].v;
         const characteristicNum = await sheet["B4"].v;
         const fitnessFunction = await sheet["B5"].v;
 
-        let currentRow = 6 + Number(setNum);
+        let currentRow = 6 + setNum;
         let currentIndividual = 0;
         let characteristics = [];
         let errorMessage = "";
