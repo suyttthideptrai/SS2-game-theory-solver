@@ -8,20 +8,19 @@ import NothingToShow from "../../module/core/component/NothingToShow";
 import Loading from "../../module/core/component/Loading";
 import ParamSettingBox from "../../module/core/component/ParamSettingBox";
 import PopupContext from "../../module/core/context/PopupContext";
-import { ENDPOINTS } from "../../module/core/context/apiEndpoints"; // Adjust the path as needed
-
-const INVALID_MATH_SYMBOLS = ["π","∞","Σ","√","∛","∜","∫","∬","∭","∮","∯","∰","∱","∲","∳","∀","∁","∂","∃","∄","∅","∆","∇","∈","∉","∊","∋","∌","∍","∎","∏","∐","∑","−","∓","∔","∕","∖","∗","∘","∙","∝","∟","∠","∡","∢","∣","∤","∥","∦","∧","∨","∩","∪","∴","∵","∶","∷","∸","∹","∺","∻","∼","∽","∾","∿","≀","≁","≂","≃","≄","≅","≆","≇","≈","≉","≊","≋","≌","≍","≎","≏","≐","≑","≒","≓","≔","≕","≖","≗","≘","≙","≚","≛","≜","≝","≞","≟","≠","≡","≢","≣","≤","≥","≦","≧","≨","≩","≪","≫","≬","≭","≮","≯","≰","≱","≲","≳","≴","≵","≶","≷","≸","≹","≺","≻","≼","≽","≾","≿","⊀","⊁","⊂","⊃","⊄","⊅","⊆","⊇","⊈","⊉","⊊","⊋","⊌","⊍","⊎","⊏","⊐","⊑","⊒","⊓","⊔","⊕","⊖","⊗","⊘","⊙","⊚","⊛","⊜","⊝","⊞","⊟","⊠","⊡","⊢","⊣","⊤","⊥","⊦","⊧","⊨","⊩","⊪","⊫","⊬","⊭","⊮","⊯","⊰","⊱","⊲","⊳","⊴","⊵","⊶","⊷","⊸","⊹","⊺","⊻","⊼","⊽","⊾","⊿","⋀","⋁","⋂","⋃","⋄","⋅","⋆","⋇","⋈","⋉","⋊","⋋","⋌","⋍","⋎","⋏","⋐","⋑","⋒","⋓","⋔","⋕","⋖","⋗","⋘","⋙","⋚","⋛","⋜","⋝","⋞","⋟","⋠","⋡","⋢","⋣","⋤","⋥","⋦","⋧","⋨","⋩","⋪","⋫","⋬","⋭","⋮","⋯","⋰","⋱","⁺","⁻","⁼","⁽","⁾","ⁿ","₊","₋","₌","₍","₎","✖","﹢","﹣","＋","－","／","＝","÷","±","×","²","³"];
+import { ENDPOINTS } from "../../module/core/context/apiEndpoints";
+import { SMT, SMT_VALIDATE } from "../../consts";
 
 export default function InputProcessingPage() {
     const navigate = useNavigate();
     const {appData, setAppData} = useContext(DataContext);
     const [isLoading, setIsLoading] = useState(false);
-    const [algorithm, setAlgorithm] = useState("NSGAII");
-    const [distributedCoreParam, setDistributedCoreParam] = useState("all");
-    const [problemType, setProblemType] = useState('one-to-one');
-    const [populationSizeParam, setPopulationSizeParam] = useState(1000);
-    const [generationParam, setGenerationParam] = useState(100);
-    const [maxTimeParam, setMaxTimeParam] = useState(5000);
+    const [algorithm, setAlgorithm] = useState(SMT.DEFAULT_ALGORITHM);
+    const [distributedCoreParam, setDistributedCoreParam] = useState(SMT.DEFAULT_CORE_NUM);
+    const [problemType, setProblemType] = useState(SMT.PROBLEM_TYPES.OTO.ordinal);
+    const [populationSizeParam, setPopulationSizeParam] = useState(SMT.DEFAULT_POPULATION_SIZE);
+    const [generationParam, setGenerationParam] = useState(SMT.DEFAULT_GENERATION_NUM);
+    const [maxTimeParam, setMaxTimeParam] = useState(SMT.DEFAULT_MAXTIME);
 
     const {displayPopup} = useContext(PopupContext);
 
@@ -39,6 +38,7 @@ export default function InputProcessingPage() {
     // Hàm thay đổi problemType
     const handleChangeProblemType = (event) => {
         setProblemType(event.target.value);
+        console.log(problemType);
     };
 
     // navigate to home page if there is no problem data
@@ -60,14 +60,14 @@ export default function InputProcessingPage() {
             // }))
             // Validate evaluate func
             for (const func of evaluateFunction) {
-                for (const keyword of INVALID_MATH_SYMBOLS){
+                for (const keyword of SMT_VALIDATE.INVALID_MATH_SYMBOLS){
                     if (func.includes(keyword)) {
                         return displayPopup("Invalid Evaluate Function(s)", `Evaluate function (${func}) contains invalid symbol (${keyword})`, true);
                     }
                 }
             }
             // Validate fitness func
-            for (const keyword of INVALID_MATH_SYMBOLS){
+            for (const keyword of SMT_VALIDATE.INVALID_MATH_SYMBOLS){
                 if (appData.problem.fitnessFunction.includes(keyword)) {
                     return displayPopup("Invalid Evaluate Function(s)", `Fitness function (${appData.problem.fitnessFunction}) contains invalid symbol (${keyword})`, true);
                 }
@@ -77,7 +77,6 @@ export default function InputProcessingPage() {
             const requestBody = {
                 problemName: appData.problem.nameOfProblem,
                 numberOfSets: appData.problem.numberOfSets,
-                //numberOfSets: appData.stableMatchingProblem.sets.length,
                 numberOfIndividuals: appData.problem.numberOfIndividuals,
                 numberOfProperty: appData.problem.characteristicsNum,
                 individualSetIndexes: appData.problem.individualSetIndexes,
@@ -85,16 +84,7 @@ export default function InputProcessingPage() {
                 individualProperties: appData.problem.individualProperties,
                 individualRequirements: appData.problem.individualRequirements,
                 individualWeights: appData.problem.individualWeights,
-//                 Individuals: appData.problem.individuals.map((individual) => ({
-//                     // IndividualSet: individual.set,
-//
-//                     SetType: individual.setType,
-//                     IndividualName: individual.individualName,
-//                     Capacity: individual.capacity,
-//                     Properties: individual.argument.map((arg) => [...arg]),
-//                 })),
                 fitnessFunction: appData.problem.fitnessFunction,
-                // evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
                 evaluateFunction: evaluateFunction,
 
                 algorithm: algorithm,
@@ -166,30 +156,41 @@ export default function InputProcessingPage() {
                 setMaxTimeParam={setMaxTimeParam}
             />
             {
-                algorithm == 'PAES' &&
+                algorithm === 'PAES' &&
                 <p className="error-text">Population size takes no effect for PAES algorithm</p>
             }
 
             {/* Lựa chọn Problem type */}
             <div className="problem-type-chooser">
-                <p className='problem-type-text bold'>Choose a problem type: </p>
-                <select value={problemType} onChange={handleChangeProblemType} className='problem-type-select'>
-                    <option value="one-to-one">One to One</option>
-                    <option value="one-to-many">One to Many / Many to Many</option>
+                <p className="problem-type-text bold">Choose a problem
+                    type: </p>
+                <select
+                    value={problemType}
+                    onChange={handleChangeProblemType}
+                    className="problem-type-select"
+                >
+                    {Object.values(SMT.PROBLEM_TYPES).map(type => (
+                        <option key={type.ordinal} value={type.ordinal}>
+                            {type.displayName}
+                        </option>
+                    ))}
                 </select>
             </div>
 
             <div className="algo-chooser">
-                <p className='algorithm-text bold'>Choose an algorithm: </p>
+                <p className="algorithm-text bold">Choose an algorithm: </p>
 
-                <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
-                    <option value="NSGAII">NSGAII</option>
-                    <option value="NSGAIII">NSGAIII</option>
-                    <option value="eMOEA">εMOEA</option>
-                    <option value="PESA2">PESA2</option>
-                    <option value="VEGA">VEGA</option>
-                    <option value="PAES">PAES</option>
-                    <option value="MOEAD">MOEAD</option>
+                {/*drop down chọn thuật toán*/}
+                <select name="algorithm"
+                    value={algorithm}
+                    onChange={handleChange}
+                    className="algorithm-select"
+                >
+                    {SMT.ALGORITHMS.map(({displayName, value}) => (
+                        <option key={value} value={value}>
+                            {displayName}
+                        </option>
+                    ))}
                 </select>
             </div>
 
@@ -202,7 +203,7 @@ export default function InputProcessingPage() {
                         <h3>JSON Data to backend:</h3>
                         <pre
                             style={{
-                                whiteSpace: "pre-wrap",
+                                whiteSpace: 'pre-wrap',
                                 maxWidth: "800px",
                                 overflowX: "auto",
                             }}
@@ -232,7 +233,8 @@ export default function InputProcessingPage() {
                     </tr>
                     <tr>
                         <td><strong>Attributes</strong></td>
-                        <td>{appData.problem.characteristics.join(', ')}</td>
+                        {/*<td>{appData.problem.characteristics.join(', ')}</td>*/}
+                        <td>{appData.problem.characteristics}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -251,7 +253,8 @@ export default function InputProcessingPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {appData.problem.individuals.slice(0, 5).map((individual, index) => (
+                        {appData.problem.individuals
+                        .slice(0, SMT.DEFAULT_SAMPLE_DISPLAY_NUM).map((individual, index) => (
                             <tr key={index}>
                                 <td>{individual.individualName}</td>
                                 <td>{individual.setType}</td>
@@ -261,7 +264,6 @@ export default function InputProcessingPage() {
                                 ))}</td>
                             </tr>
                         ))}
-
                     </tbody>
                 </table>
             </div>
