@@ -26,8 +26,10 @@ function App() {
       setPopupError(error)
     }
   }
-  console.log("Backend URL:");
-  console.log(`${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}`);
+  if(appData === null && guideSectionIndex === 0) {
+    console.log("Backend URL:");
+    console.log(`${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}`);
+  }
   const StableMatchingRouter = stableMatchingRouter();
   const GameTheoryRouter = gameTheoryRouter();
   return (

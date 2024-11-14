@@ -1,18 +1,18 @@
-import React from "react";
-import {useState, useEffect} from "react";
-import Input from "../../module/core/component/input";
-import ExcelImage from "../../module/core/asset/image/excel.png";
-import {saveAs} from "file-saver";
-import * as XLSX from "@e965/xlsx";
-import {useContext} from "react";
-import DataContext from "../../module/core/context/DataContext";
-import ExcelJS from "exceljs";
-import {useNavigate, Link} from "react-router-dom";
-import "../../module/stableMatching/css/input.scss";
+import React, {useContext, useEffect, useState} from 'react';
+import Input from '../../module/core/component/input';
+import ExcelImage from '../../module/core/asset/image/excel.png';
+import {saveAs} from 'file-saver';
+import * as XLSX from '@e965/xlsx';
+import DataContext from '../../module/core/context/DataContext';
+import ExcelJS from 'exceljs';
+import {Link, useNavigate} from 'react-router-dom';
+import '../../module/stableMatching/css/input.scss';
 
-import Loading from "../../module/core/component/Loading";
-import PopupContext from "../../module/core/context/PopupContext";
-
+import Loading from '../../module/core/component/Loading';
+import PopupContext from '../../module/core/context/PopupContext';
+import {SMT} from '../../consts';
+import {validateExcelFile} from '../../utils/file_utils';
+import {MATCHING} from '../../const/excel_const'
 
 export default function InputPage() {
     //initialize from data
@@ -56,16 +56,6 @@ export default function InputPage() {
 
     const [setMany, setSetMany] = useState(Array.from({length: colNums}, () => false));
     const navigate = useNavigate();
-    const validateExcelFile = (file) => {
-        const extension = file.name.split(".").pop();
-        if (extension === "xlsx" || extension === "xlsm") {
-            setExcelFileError("");
-            return true; // File is valid
-        } else {
-            displayPopup("Something went wrong!", "The file was not an Excel file!", true);
-            throw new Error("The file was not an Excel file!");
-        }
-    };
 
     // useEffect to validate and read file when it changes
     useEffect(() => {
@@ -78,7 +68,7 @@ export default function InputPage() {
                     setExcelFileError("The file was not an Excel file!");
                 }
             } catch (error) {
-                console.error(error.message);
+                console.error(error);
                 displayPopup("Error", error.message, true);
             }
         }
@@ -92,12 +82,15 @@ export default function InputPage() {
                 const data = e.target.result;
                 const workbook = XLSX.read(data, {type: "binary"});
 
-                const problemInfo = await loadIndividual(workbook, 0);
+                const problemInfo = await loadProblemData(workbook, 0);
                 setAppData({
                     problem: {
                         nameOfProblem: problemInfo.problemName,
                         numberOfSets: problemInfo.setNum,
+                        setNames: problemInfo.setNames,
+                        setTypes: problemInfo.setTypes,
                         numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
+                        individualNames: problemInfo.individualNames,
                         characteristicsNum: problemInfo.characteristics,
                         individualSetIndexes: problemInfo.individualSetIndexes,
                         individualCapacities: problemInfo.individualCapacities,
@@ -117,42 +110,39 @@ export default function InputPage() {
             displayPopup("Something went wrong!", "Check the input file again for contact the admin!", true);
         }
     };
-    const loadIndividual = async (workbook, sheetNumber) => {
+    const loadProblemData = async (workbook, sheetNumber) => {
         const sheetName = await workbook.SheetNames[sheetNumber];
         const sheet = await workbook.Sheets[sheetName];
-        const problemName = await sheet["B1"]["v"];
-        const setNum = await sheet["B2"]["v"];
-        const totalNumberOfIndividuals = await sheet["B3"]["v"];
-        const characteristicNum = await sheet["B4"]["v"];
-        const fitnessFunction = await sheet["B5"]["v"];
+        const problemName = await sheet["B1"].v;
+        const setNum = await sheet["B2"].v;
+        const totalNumberOfIndividuals = await sheet["B3"].v;
+        const characteristicNum = await sheet["B4"].v;
+        const fitnessFunction = await sheet["B5"].v;
 
-        let columnCount = 0;
         let currentRow = 6 + Number(setNum);
         let currentIndividual = 0;
         let characteristics = [];
         let errorMessage = "";
 
         try {
-            // Load number of properties
-            const startingColumn = "E"; // Starting from column E
-            let currentColumnIndex = XLSX.utils.decode_col(startingColumn);
+            let currentColumnIndex = XLSX.utils.decode_col(MATCHING.CHARACTERISTIC_START_COL);
 
             for (let i = currentColumnIndex; ; i++) {
-                // Create the cell reference for the current column in row 8
-                const cellAddress = XLSX.utils.encode_cell({ c: i, r: currentRow - 1 }); // `r: startingRow - 1` because row start from 0
+                const cellAddress = XLSX.utils.encode_cell({ c: i, r: currentRow - 1 });
                 const cell = sheet[cellAddress];
-
                 // Break if cell is empty or undefined
                 if (!cell || !cell.v) {
                     break;
                 }
-                columnCount++;
-                characteristics = columnCount;
+                characteristics.push(cell.v);
             }
 
             // LOAD SET
             const individuals = [];
             let setEvaluateFunction = [];
+            let individualNames = [];
+            let setNames = [];
+            let setTypes = [];
             const row = characteristicNum;
             const col = 3;
             let individualNum = null;
@@ -168,19 +158,16 @@ export default function InputPage() {
                 setEvaluateFunction.push(evaluateFunction);
             }
 
-
-
             for (let g = 0; g < setNum; g++) {
                 setName = await sheet[`A${currentRow}`]["v"];
                 setType = await sheet[`B${currentRow}`]["v"];
-                if (g === 0) {
-                    setType = 0;
-                } else if (g === 1) {
-                    setType = 1;
-                }
+                setNames.push(setName);
+                setTypes.push(setType);
 
                 individualNum = await sheet[`D${currentRow}`]?.v;
+
                 for (let i = 0; i < individualNum; i++) {
+                    const name = sheet[`A${currentRow + 1}`]?.v;
                     const properties = [];
                     const requirements = [];
                     const weights = [];
@@ -190,6 +177,7 @@ export default function InputPage() {
                         requirements.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 1 })]?.v || 0);
                         weights.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 2 })]?.v || 0);
                     }
+                    individualNames.push(name)
                     individualSetIndexes.push(g);
                     individualProperties.push(properties);
                     individualRequirements.push(requirements);
@@ -206,17 +194,24 @@ export default function InputPage() {
 
                 currentRow += 1;
             }
-        console.log("si: " + individualSetIndexes);
-        console.log("c: " + individualCapacities);
-        console.log("p: " + individualProperties);
-        console.log("r: " + individualRequirements);
-        console.log("w: " + individualWeights);
+            // console.log('name: ' + individualNames);
+            // console.log('si: ' + individualSetIndexes);
+            // console.log('c: ' + individualCapacities);
+            // console.log('individualProperties')
+            // console.log(individualProperties);
+            // console.log('individualRequirements')
+            // console.log(individualRequirements);
+            // console.log('individualWeights')
+            // console.log(individualWeights);
 
             return {
                 problemName,
                 characteristicNum,
                 setNum,
+                setNames,
+                setTypes,
                 totalNumberOfIndividuals,
+                individualNames,
                 characteristics,
                 individualSetIndexes,
                 individualCapacities,
@@ -228,6 +223,7 @@ export default function InputPage() {
                 setEvaluateFunction,
             };
         } catch (error) {
+            console.error(error)
             displayPopup("Something went wrong!", errorMessage, true);
         }
         return sheet;
@@ -707,29 +703,34 @@ export default function InputPage() {
                 <button className="show-guideline-btn" onClick={handleShowGuideline}>
                     {showGuideline ? "Hide Guideline" : "Show Guideline"}
                 </button>
-
-                {showGuidelineText && (<div className="guideline-text">
+                {/*TODO: tách component cho phần này nhé, dài quá*/}
+                {showGuidelineText && (
+                    <div className="guideline-text">
                         <h5>Step 1: Enter the name of your problem (Text)</h5>
                         <h5>
-                            Step 2: Enter the number of sets{" "}
+                            Step 2: Enter the number of sets{' '}
                             <span
                                 onClick={handleToggle}
                                 className="toggle-icon"
                                 style={{
-                                    cursor: "pointer", color: isExpanded ? "gray" : "gray",
+                                    cursor: 'pointer',
+                                    color: isExpanded ? 'gray' : 'gray',
                                 }}
                             >
-                {isExpanded ? "(▼)" : "(▶)"}
-              </span>
+                                {isExpanded ? '(▼)' : '(▶)'}
+                            </span>
                         </h5>
-                        {isExpanded && (<div className="subsection" id="subsection">
+                        {isExpanded &&
+                            (<div className="subsection" id="subsection">
                                 <p>
-                                    The system will display a corresponding table after you fill
+                                    The system will display a corresponding
+                                    table after you fill
                                     in the information in Step 2.
                                 </p>
 
                                 <p>
-                                    Determine which set is one/many, then tick the blank box if
+                                    Determine which set is one/many, then tick
+                                    the blank box if
                                     that set is many. As instructed below:
                                 </p>
 
@@ -737,13 +738,15 @@ export default function InputPage() {
                                     <li>
                                         Set many: Capacity = 1
                                         <br/>
-                                        The number of individuals in the set {">"} the opponent's
+                                        The number of individuals in the
+                                        set {'>'} the opponent's
                                         set
                                     </li>
                                     <li>
-                                        Set one: Capacity {">"} 1
+                                        Set one: Capacity {'>'} 1
                                         <br/>
-                                        The number of individuals in the set {"<"} the opponent's
+                                        The number of individuals in the
+                                        set {'<'} the opponent's
                                         set
                                     </li>
                                 </ul>
@@ -752,30 +755,41 @@ export default function InputPage() {
                                     Fill in the information in the blank box:
                                     <ul>
                                         <li>
-                                            "Num individuals of Set_x" - the number of individuals of
+                                            "Num individuals of Set_x" - the
+                                            number of individuals of
                                             the corresponding set
                                         </li>
                                         <li>
-                                            "Evaluate Function Set_x" - the evaluation function
+                                            "Evaluate Function Set_x" - the
+                                            evaluation function
                                             corresponding to that set
                                         </li>
                                     </ul>
                                 </p>
-                            </div>)}
+                            </div>)
+                        }
 
-                        <h5>Step 3: Enter the number of characteristics of both sets</h5>
-                        <h5>Step 4: Enter the number of total individuals of both sets</h5>
-                        <h5>Step 5: Enter the fitness function which you initialize</h5>
+                        <h5>Step 3: Enter the number of characteristics of both
+                            sets</h5>
+                        <h5>Step 4: Enter the number of total individuals of
+                            both sets</h5>
+                        <h5>Step 5: Enter the fitness function which you
+                            initialize</h5>
                         <h5>
-                            Step 6: Click the button "Get Excel Templates" to receive the
-                            Excel file that contains all the information you entered above
+                            Step 6: Click the button "Get Excel Templates" to
+                            receive the
+                            Excel file that contains all the information you
+                            entered above
                         </h5>
                         <h5>
-                            Step 7: Select or drag and drop the Excel file you just received
-                            at the dotted line and the "Choose a file" button for the system
+                            Step 7: Select or drag and drop the Excel file you
+                            just received
+                            at the dotted line and the "Choose a file" button
+                            for the system
                             to process your problem
                         </h5>
-                    </div>)}
+                    </div>)
+                }
 
                 <Loading isLoading={isLoading}/>
                 <p className="header-text">Enter information about your problem</p>
@@ -794,12 +808,15 @@ export default function InputPage() {
                     </div>
 
                     <div className="row">
+                        {/*//TODO: thêm phần limit input cho number of set*/}
                         <Input
                             message="Number of set"
-                            type="text"
+                            type="number"
                             error={setNumError}
                             handleOnChange={handleColumnsChange}
                             value={setNum}
+                            min={SMT.MIN_SET}
+                            max={SMT.MAX_SET}
                             description="A positive number that reflects the number of set involved to ensure that the resulting is valid"
                             guideSectionIndex={2}
                         />
@@ -807,6 +824,7 @@ export default function InputPage() {
                     {setNum ? <div className="table">{generateTable()}</div> : null}
 
                     <div className="row">
+                        {/*//TODO: tương tự, limit 30 characteristics thôi*/}
                         <Input
                             message="Number of characteristics"
                             text="number"
@@ -816,6 +834,7 @@ export default function InputPage() {
                             description="A characteristic is the requirements and the properties that an individuals has that affects their weight during matching"
                             guideSectionIndex={3}
                         />
+                        {/*//TODO: tương tự, limit 50000 individuals*/}
                         <Input
                             message="Number of total individuals"
                             text="number"
@@ -860,7 +879,6 @@ export default function InputPage() {
                         Learn more on how to input to file Excel
                     </Link>
                 </div>
-
                 {excelFileError && <p className="file-error">{excelFileError}</p>}
                 <div
                     className={excelFileError ? "drag-area file-error" : "drag-area"}

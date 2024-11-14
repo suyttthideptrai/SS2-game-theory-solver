@@ -1,4 +1,4 @@
-import {ALGORITHMS} from './const/algorithmConst';
+import {ALGORITHMS} from './const/algorithm_const';
 import {
   DEFAULT_ALGORITHM,
   DEFAULT_PROBLEM_TYPE,
@@ -8,8 +8,8 @@ import {
   DEFAULT_MAXTIME,
   INVALID_MATH_SYMBOLS,
   DEFAULT_CORE_NUM
-} from './const/matchingConst';
-import {MATCHING_PROBLEM_TYPES} from './const/matchingTypes';
+} from './const/matching_const';
+import {MATCHING_PROBLEM_TYPES} from './const/matching_types';
 
 export const SMT = Object.freeze({
   ALGORITHMS: ALGORITHMS,
@@ -21,8 +21,10 @@ export const SMT = Object.freeze({
   DEFAULT_MAXTIME: DEFAULT_MAXTIME,
   DEFAULT_CORE_NUM: DEFAULT_CORE_NUM,
   PROBLEM_TYPES: MATCHING_PROBLEM_TYPES,
+  MIN_SET: 2,
+  MAX_SET: 10
 });
 
 export const SMT_VALIDATE = Object.freeze({
-  INVALID_MATH_SYMBOLS: INVALID_MATH_SYMBOLS
+  INVALID_MATH_SYMBOLS: INVALID_MATH_SYMBOLS,
 });

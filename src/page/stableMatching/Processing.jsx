@@ -140,6 +140,24 @@ export default function InputProcessingPage() {
         }
     };
 
+    const demoIndividuals = [];
+    const defaultDisNum = SMT.DEFAULT_SAMPLE_DISPLAY_NUM;
+    const numDemo = (appData.problem.numberOfIndividuals > defaultDisNum)
+        ? defaultDisNum
+        : appData.problem.numberOfIndividuals;
+    for (let i = 0; i < numDemo; i ++) {
+        demoIndividuals.push(
+            {
+                name: appData.problem.individualNames[i],
+                set: appData.problem.individualSetIndexes[i],
+                capacity: appData.problem.individualCapacities[i],
+                property: appData.problem.individualProperties[i],
+                weight: appData.problem.individualWeights[i],
+                requirement: appData.problem.individualRequirements[i]
+            }
+        )
+    }
+
     return (
         <div className='input-processing-page'>
             <Loading isLoading={isLoading} message='Solve your problem, please do not close this window...'/>
@@ -155,6 +173,7 @@ export default function InputProcessingPage() {
                 maxTimeParam={maxTimeParam}
                 setMaxTimeParam={setMaxTimeParam}
             />
+            {/*TODO: căn giữa cho text này, bôi màu cam cho text*/}
             {
                 algorithm === 'PAES' &&
                 <p className="error-text">Population size takes no effect for PAES algorithm</p>
@@ -253,15 +272,16 @@ export default function InputProcessingPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {appData.problem.individuals
-                        .slice(0, SMT.DEFAULT_SAMPLE_DISPLAY_NUM).map((individual, index) => (
+                        {demoIndividuals && demoIndividuals.map((elm, index) => (
                             <tr key={index}>
-                                <td>{individual.individualName}</td>
-                                <td>{individual.setType}</td>
-                                <td>{individual.capacity}</td>
-                                <td>{individual.argument.map((arg, i) => (
-                                    <div key={i}>{JSON.stringify(arg)}</div>
-                                ))}</td>
+                                <td>{elm.name}</td>
+                                <td>{elm.set}</td>
+                                <td>{elm.capacity}</td>
+                                <td>
+                                    P: {elm.property.join(' | ')} <br/>
+                                    W: {elm.weight.join(' | ')} <br/>
+                                    R: {elm.requirement.join(' | ')}
+                                </td>
                             </tr>
                         ))}
                     </tbody>

@@ -494,6 +494,7 @@ export default function InputPage() {
 
                     <div className="row">
                         <Input
+                            type='number'
                             message='Number of normal players'
                             text='number'
                             error={normalPlayerNumError}
