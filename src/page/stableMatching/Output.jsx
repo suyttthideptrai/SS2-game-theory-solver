@@ -17,6 +17,7 @@ import { over } from "stompjs";
 import { saveAs } from 'file-saver';
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
+import {isStringNullOrEmpty} from '../../utils/string_utils';
 
 
 
@@ -65,13 +66,13 @@ export default function MatchingOutputPage() {
     //   XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
     // });
     matchesArray.forEach((match, index) => {
-      var individualName = inputIndividuals[index].individualName;
-      var individualMatches = "";
-      if (Object.values(match).length==0) {
+      let individualName = inputIndividuals[index].individualName;
+      let individualMatches = "";
+      if (Object.values(match).length===0) {
         individualMatches = "There are no individual matches";
       } else {
         for (let i = 0; i < Object.values(match).length; i++) {
-          if (i == Object.values(match).length - 1) {
+          if (i === Object.values(match).length - 1) {
             individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
           }else
           individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
@@ -82,7 +83,7 @@ export default function MatchingOutputPage() {
   }})
     // write parameter configurations to sheet 2
     const numberOfCores =
-      appData.result.params.distributedCoreParam == "all"
+      appData.result.params.distributedCoreParam === "all"
         ? "All available cores"
         : appData.result.params.distributedCoreParam + " cores";
     const sheet2 = XLSX.utils.aoa_to_sheet([
@@ -156,12 +157,17 @@ export default function MatchingOutputPage() {
         maxTime: maxTimeParam,
       };
 
+      // build api endpoint
+      let problemType = appData.problemType;
+      let protocol = process.env.REACT_APP_BACKEND_PROTOCOL;
+      let port = isStringNullOrEmpty(process.env.REACT_APP_BACKEND_PORT)
+          ? '' : `:${process.env.REACT_APP_BACKEND_PORT}`;
+      let serviceEndpoint = problemType.insightEndpoint;
+      let endpoint = `${protocol}://${process.env.REACT_APP_BACKEND_URL}${port}${serviceEndpoint}/${sessionCode}`;
+
       setIsLoading(true);
       await connectWebSocket(); // connect to websocket to get the progress percentage
-      const res = await axios.post(
-        `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/matching-problem-result-insights/${sessionCode}`,
-        body
-      );
+      const res = await axios.post(endpoint, body);
       setIsLoading(false);
 
       const insights = {
