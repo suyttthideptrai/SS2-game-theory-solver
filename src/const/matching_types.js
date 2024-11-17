@@ -44,8 +44,15 @@ export const MATCHING_PROBLEM_TYPES = Object.freeze({
         "/api/matching-problem-result-insights"
     )
     ,
-    M3S: new MatchingProblemType(
+    RBO: new MatchingProblemType(
         4,
+        "Many to Many RBO",
+        "/api/stable-matching-rbo-solver",
+        "/api/rbo-matching-problem-result-insights"
+    )
+    ,
+    M3S: new MatchingProblemType(
+        5,
         "3 Sets",
         //TODO: Replace with actual endpoints when implemented
         "/api/stable-matching-solver",
@@ -53,7 +60,7 @@ export const MATCHING_PROBLEM_TYPES = Object.freeze({
     )
     ,
     MMS: new MatchingProblemType(
-        5,
+        6,
         "Multiple Sets",
         //TODO: Replace with actual endpoints when implemented
         "/api/stable-matching-solver",

@@ -1,16 +1,12 @@
-import React from 'react'
-import "../module/core/asset/css/insight.scss"
-
-import { useNavigate } from 'react-router-dom';
+import React, {useContext} from 'react';
+import '../module/core/asset/css/insight.scss';
 import NothingToShow from '../module/core/component/NothingToShow';
-import { Line } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
-
-import { useContext } from 'react';
+import {Line} from 'react-chartjs-2';
+import {Chart, registerables} from 'chart.js';
 import DataContext from '../module/core/context/DataContext';
 import * as XLSX from '@e965/xlsx';
-import { saveAs } from 'file-saver';
-import ExcelImage from '../module/core/asset/image/excel.png'
+import {saveAs} from 'file-saver';
+import ExcelImage from '../module/core/asset/image/excel.png';
 
 export default function InsightPage() {
     const { appData } = useContext(DataContext);
@@ -54,7 +50,7 @@ export default function InsightPage() {
         }
 
         // write parameter configurations to the third sheet
-        const numberOfCores = appData.insights.params.distributedCoreParam == 'all' ? 'All available cores' : appData.insights.params.distributedCoreParam + " cores"
+        const numberOfCores = appData.insights.params.distributedCoreParam === 'all' ? 'All available cores' : appData.insights.params.distributedCoreParam + " cores"
         const sheet3 = XLSX.utils.aoa_to_sheet([
             ["Number of distributed cores", numberOfCores],
             ["Population size", appData.insights.params.populationSizeParam],
@@ -157,7 +153,7 @@ export default function InsightPage() {
                 <table>
                     <thead>
                         <tr>
-                            <th class='first-col'>Iteration</th>
+                            <th className='first-col'>Iteration</th>
                             <th>NSGAII</th>
                             <th>NSGAIII</th>
                             <th>eMOEA</th>
@@ -170,7 +166,7 @@ export default function InsightPage() {
                             // loop from 1 to 10
                             Array.from(Array(10).keys()).map((index) => (
                                 <tr key={index}>
-                                    <td class='first-col'>{index + 1}</td>
+                                    <td className='first-col'>{index + 1}</td>
                                     <td>{appData.insights.data.fitnessValues.NSGAII[index]}</td>
                                     <td>{appData.insights.data.fitnessValues.NSGAIII[index]}</td>
                                     <td>{appData.insights.data.fitnessValues.eMOEA[index]}</td>
@@ -181,12 +177,12 @@ export default function InsightPage() {
                         }
                     </tbody>
                 </table>
-                <p class='figure-description'>Comparison of Fitness Values across different algorithms</p>
+                <p className='figure-description'>Comparison of Fitness Values across different algorithms</p>
 
             </div>
             <div className="runtime-graph">
                 <Line class='graph' data={graphData} option={graphOptions} />
-                <p class='figure-description'>Comparison of runtime (in seconds) across various algorithms</p>
+                <p className='figure-description'>Comparison of runtime (in seconds) across various algorithms</p>
 
             </div>
         </div>

@@ -656,24 +656,24 @@ export default function GuidePage() {
                     </ol>
                 </div>
                 <div className="gray-board">
-                    <iframe
-                        width="560"
-                        height="315"
-                        src="https://www.youtube.com/embed/Cn77RdWB6s8?si=jPKULyuFudKvD_7V"
-                        title="YouTube video player"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen
-                    ></iframe>
+                    <iframe width="560" height="315"
+                            src="https://www.youtube.com/embed/3vEiqil5d3Q?si=sTp-u0mwEHVpaccj"
+                            title="YouTube video player" frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerPolicy="strict-origin-when-cross-origin"
+                            allowFullScreen
+                    >
+                    </iframe>
                 </div>
             </section>
             <section
-                className={`section ${guideFor == "sm" ? "d-block" : "d-none"}`}
+                className={`section ${guideFor == 'sm' ? 'd-block' : 'd-none'}`}
                 ref={aboutSMRef}
                 id="10"
             >
                 <h1>About Stable Matching</h1>
-                <p>Matching theory explores the optimal assignment of individuals to partners or objects based on
+                <p>Matching theory explores the optimal assignment of
+                    individuals to partners or objects based on
                     preferences and constraints. It has applications in various fields such as economics, computer
                     science, and sociology. Stable matching and stable marriage are central concepts within matching
                     theory, aiming to find allocations that are both efficient and stable.</p>

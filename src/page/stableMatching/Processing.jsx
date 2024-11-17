@@ -18,6 +18,7 @@ export default function InputProcessingPage() {
   const [algorithm, setAlgorithm] = useState(SMT.DEFAULT_ALGORITHM);
   const [distributedCoreParam, setDistributedCoreParam] = useState(SMT.DEFAULT_CORE_NUM);
   const [problemType, setProblemType] = useState(SMT.PROBLEM_TYPES.OTO);
+  const [problemTypeOrdinal, setProblemTypeOrdinal] = useState(SMT.PROBLEM_TYPES.OTO.ordinal);
   const [populationSizeParam, setPopulationSizeParam] = useState(SMT.DEFAULT_POPULATION_SIZE);
   const [generationParam, setGenerationParam] = useState(SMT.DEFAULT_GENERATION_NUM);
   const [maxTimeParam, setMaxTimeParam] = useState(SMT.DEFAULT_MAXTIME);
@@ -30,13 +31,25 @@ export default function InputProcessingPage() {
     }
   }, [appData?.problem]);
 
+  useEffect(() => {
+    console.log(problemType)
+  }, [problemType]);
+
   const handleChange = (event) => {
     setAlgorithm(event.target.value);
   };
 
   // Hàm thay đổi problemType
   const handleChangeProblemType = (event) => {
-    setProblemType(event.target.value);
+    let ordinal = Number(event.target.value);
+    for (const key in SMT.PROBLEM_TYPES) {
+      if (SMT.PROBLEM_TYPES[key].ordinal === ordinal) {
+        setProblemTypeOrdinal(ordinal);
+        setProblemType(SMT.PROBLEM_TYPES[key]);
+        return;
+      }
+    }
+    //setProblemType(SMT.PROBLEM_TYPES.OTO);
   };
 
   // navigate to home page if there is no problem data
@@ -101,6 +114,7 @@ export default function InputProcessingPage() {
           ? '' : `:${process.env.REACT_APP_BACKEND_PORT}`;
       let serviceEndpoint = problemType.endpoint;
       let endpoint = `${protocol}://${process.env.REACT_APP_BACKEND_URL}${port}${serviceEndpoint}`;
+      console.log(endpoint);
 
       setIsLoading(true);
       console.log(requestBody);
@@ -129,6 +143,7 @@ export default function InputProcessingPage() {
       navigate('/matching-theory/result');
 
     } catch (err) {
+      console.error(err);
       //Handle Errors
       if (err instanceof AxiosError) {
 
@@ -136,8 +151,8 @@ export default function InputProcessingPage() {
         let message;
 
         if (err.response) {
-          title = 'Server responded with error';
-          message = `Error: ${err.response} \nStatus: ${err.response.status}`;
+          title = `Server responded with status ${err.response.status}`;
+          message = `Error: ${err.response.data.error}`;
         } else if (err.request) {
           title = 'No response received';
           message = 'Server maybe down at the moment!';
@@ -204,7 +219,7 @@ export default function InputProcessingPage() {
           <p className="problem-type-text bold">Choose a problem
             type: </p>
           <select
-              value={problemType}
+              value={problemTypeOrdinal}
               onChange={handleChangeProblemType}
               className="problem-type-select"
           >
