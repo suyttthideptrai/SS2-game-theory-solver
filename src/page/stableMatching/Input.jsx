@@ -12,7 +12,8 @@ import Loading from '../../module/core/component/Loading';
 import PopupContext from '../../module/core/context/PopupContext';
 import {SMT} from '../../consts';
 import {validateExcelFile} from '../../utils/file_utils';
-import {MATCHING} from '../../const/excel_const'
+import {loadProblemDataParallel, loadProblemDataOld} from '../../utils/excel_driver_utils'
+import Checkbox from '../../module/core/component/Checkbox';
 
 export default function InputPage() {
     //initialize from data
@@ -35,26 +36,13 @@ export default function InputPage() {
     const [setCharacteristics, setSetCharacteristics] = useState("");
     const {setAppData, setGuideSectionIndex} = useContext(DataContext);
     const {displayPopup} = useContext(PopupContext);
-    const [rowNums, setRowNums] = useState(2);
     const [colNums, setColNums] = useState(0);
     const [setEvaluateFunction, setSetEvaluateFunction] = useState(Array.from({length: colNums}, () => ""));
     const [setIndividuals, setSetIndividuals] = useState(Array.from({length: colNums}, () => ""));
-//new variables
-        const [numberOfProperties, setNumberOfProperties] = useState("");
-        const [individualProperties, setIndividualProperties] = useState([]);
-        const [individualRequirements, setIndividualRequirements] = useState([]);
-        const [individualWeights, setIndividualWeights] = useState([]);
-        const [individualSetIndexes, setIndividualSetIndexes] = useState([]);
-        const [individualCapacities, setIndividualCapacities] = useState([]);
-        const [numberOfPropertiesError, setNumberOfPropertiesError] = useState("");
-        const [individualSetIndexesError, setIndividualSetIndexesError] = useState("");
-        const [individualCapacitiesError, setIndividualCapacitiesError] = useState("");
-        const [individualPropertiesError, setIndividualPropertiesError] = useState("");
-        const [individualRequirementsError, setIndividualRequirementsError] = useState("");
-        const [individualWeightsError, setIndividualWeightsError] = useState("");
 
 
     const [setMany, setSetMany] = useState(Array.from({length: colNums}, () => false));
+    const [isUseParallelDriver, setIsUseParallelDriver] = useState(false);
     const navigate = useNavigate();
 
     // useEffect to validate and read file when it changes
@@ -82,7 +70,13 @@ export default function InputPage() {
                 const data = e.target.result;
                 const workbook = XLSX.read(data, {type: "binary"});
 
-                const problemInfo = await loadProblemData(workbook, 0);
+                let problemInfo;
+                if (isUseParallelDriver) {
+                    problemInfo = await loadProblemDataParallel(workbook, SMT.INDIVIDUAL_SHEET);
+                } else {
+                    problemInfo = await loadProblemDataOld(workbook, SMT.INDIVIDUAL_SHEET);
+                }
+
                 setAppData({
                     problem: {
                         nameOfProblem: problemInfo.problemName,
@@ -106,127 +100,10 @@ export default function InputPage() {
             };
             reader.readAsBinaryString(file);
         } catch (error) {
+            console.error(error)
             setIsLoading(false);
             displayPopup("Something went wrong!", "Check the input file again for contact the admin!", true);
         }
-    };
-    const loadProblemData = async (workbook, sheetNumber) => {
-        const sheetName = await workbook.SheetNames[sheetNumber];
-        const sheet = await workbook.Sheets[sheetName];
-        const problemName = await sheet["B1"].v;
-        const setNum = Number(await sheet["B2"].v);
-        const totalNumberOfIndividuals = await sheet["B3"].v;
-        const characteristicNum = await sheet["B4"].v;
-        const fitnessFunction = await sheet["B5"].v;
-
-        let currentRow = 6 + setNum;
-        let currentIndividual = 0;
-        let characteristics = [];
-        let errorMessage = "";
-
-        try {
-            let currentColumnIndex = XLSX.utils.decode_col(MATCHING.CHARACTERISTIC_START_COL);
-
-            for (let i = currentColumnIndex; ; i++) {
-                const cellAddress = XLSX.utils.encode_cell({ c: i, r: currentRow - 1 });
-                const cell = sheet[cellAddress];
-                // Break if cell is empty or undefined
-                if (!cell || !cell.v) {
-                    break;
-                }
-                characteristics.push(cell.v);
-            }
-
-            // LOAD SET
-            const individuals = [];
-            let setEvaluateFunction = [];
-            let individualNames = [];
-            let setNames = [];
-            let setTypes = [];
-            const row = characteristicNum;
-            const col = 3;
-            let individualNum = null;
-            let argumentCell = null;
-            let individualName = null;
-            let setType = null;
-            let setName = null;
-            let capacityNum = null;
-
-            // Load evaluate functions for each set
-            for (let j = 0; j < setNum; j++) {
-                const evaluateFunction = sheet[`B${6 + j}`]?.v || "";
-                setEvaluateFunction.push(evaluateFunction);
-            }
-
-            for (let g = 0; g < setNum; g++) {
-                setName = await sheet[`A${currentRow}`]["v"];
-                setType = await sheet[`B${currentRow}`]["v"];
-                setNames.push(setName);
-                setTypes.push(setType);
-
-                individualNum = await sheet[`D${currentRow}`]?.v;
-
-                for (let i = 0; i < individualNum; i++) {
-                    const name = sheet[`A${currentRow + 1}`]?.v;
-                    const properties = [];
-                    const requirements = [];
-                    const weights = [];
-
-                    for (let k = 0; k < characteristicNum; k++) {
-                        properties.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow })]?.v || 0);
-                        requirements.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 1 })]?.v || 0);
-                        weights.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 2 })]?.v || 0);
-                    }
-                    individualNames.push(name)
-                    individualSetIndexes.push(g);
-                    individualProperties.push(properties);
-                    individualRequirements.push(requirements);
-                    individualWeights.push(weights);
-
-                    // Load capacity
-                    const capacityValue = await sheet[`C${currentRow + 1}`]?.v;  // Read the value in column C
-                    if (capacityValue !== undefined && capacityValue !== null) {
-                        individualCapacities.push(capacityValue);  // Push the capacity value
-                    }
-
-                    currentRow += 3;
-                }
-
-                currentRow += 1;
-            }
-            // console.log('name: ' + individualNames);
-            // console.log('si: ' + individualSetIndexes);
-            // console.log('c: ' + individualCapacities);
-            // console.log('individualProperties')
-            // console.log(individualProperties);
-            // console.log('individualRequirements')
-            // console.log(individualRequirements);
-            // console.log('individualWeights')
-            // console.log(individualWeights);
-
-            return {
-                problemName,
-                characteristicNum,
-                setNum,
-                setNames,
-                setTypes,
-                totalNumberOfIndividuals,
-                individualNames,
-                characteristics,
-                individualSetIndexes,
-                individualCapacities,
-                individualRequirements,
-                individualProperties,
-                individualWeights,
-                individuals,
-                fitnessFunction,
-                setEvaluateFunction,
-            };
-        } catch (error) {
-            console.error(error)
-            displayPopup("Something went wrong!", errorMessage, true);
-        }
-        return sheet;
     };
 
     const handleGetExcelTemplate = () => {
@@ -325,10 +202,7 @@ export default function InputPage() {
             }
         });
         // if there is no error, return true
-        if (error) {
-            return false;
-        }
-        return true;
+        return !error;
     };
 
     const downloadExcel = async () => {
@@ -698,6 +572,10 @@ export default function InputPage() {
         setIsExpanded(!isExpanded);
     };
 
+    const handleChangeIsUseDriver = () => {
+        setIsUseParallelDriver(!isUseParallelDriver)
+    }
+
     return (<>
             <div className="input-page">
                 <button className="show-guideline-btn" onClick={handleShowGuideline}>
@@ -859,6 +737,12 @@ export default function InputPage() {
                         />
                     </div>
 
+                </div>
+                <div className='checkbox-container-dev'>
+                    <p>
+                        Use parallel RBO driver (for development purpose)
+                    </p>
+                    <Checkbox initialChecked={isUseParallelDriver} onChange={handleChangeIsUseDriver}/>
                 </div>
                 <div className="btn" onClick={handleGetExcelTemplate}>
                     <p>Get Excel Template</p>
