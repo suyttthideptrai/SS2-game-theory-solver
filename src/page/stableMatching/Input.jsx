@@ -62,6 +62,10 @@ export default function InputPage() {
         }
     }, [excelFile]);
 
+    useEffect(() => {
+        console.log(isUseParallelDriver);
+    }, [isUseParallelDriver]);
+
     // Function to read data from the Excel file
     const readExcelFile = async (file) => {
         const reader = new FileReader();
@@ -77,26 +81,42 @@ export default function InputPage() {
                     problemInfo = await loadProblemDataOld(workbook, SMT.INDIVIDUAL_SHEET);
                 }
 
-                setAppData({
-                    problem: {
-                        nameOfProblem: problemInfo.problemName,
-                        numberOfSets: problemInfo.setNum,
-                        setNames: problemInfo.setNames,
-                        setTypes: problemInfo.setTypes,
-                        numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
-                        individualNames: problemInfo.individualNames,
-                        characteristics: problemInfo.characteristics,
-                        individualSetIndexes: problemInfo.individualSetIndexes,
-                        individualCapacities: problemInfo.individualCapacities,
-                        individualProperties: problemInfo.individualProperties,
-                        individualRequirements: problemInfo.individualRequirements,
-                        individualWeights: problemInfo.individualWeights,
-                        individuals: problemInfo.individuals,
-                        fitnessFunction: problemInfo.fitnessFunction,
-                        evaluateFunctions: problemInfo.setEvaluateFunction,
-                    },
-                });
-                navigate("/matching-theory/input-processing");
+                setAppData(
+                    isUseParallelDriver
+                        ? {
+                            isUseParallelDriver: true,
+                            problem: {
+                                nameOfProblem: problemInfo.problemName,
+                                numberOfSets: problemInfo.setNum,
+                                setNames: problemInfo.setNames,
+                                setTypes: problemInfo.setTypes,
+                                numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
+                                individualNames: problemInfo.individualNames,
+                                characteristics: problemInfo.characteristics,
+                                individualSetIndexes: problemInfo.individualSetIndexes,
+                                individualCapacities: problemInfo.individualCapacities,
+                                individualProperties: problemInfo.individualProperties,
+                                individualRequirements: problemInfo.individualRequirements,
+                                individualWeights: problemInfo.individualWeights,
+                                individuals: problemInfo.individuals,
+                                fitnessFunction: problemInfo.fitnessFunction,
+                                evaluateFunctions: problemInfo.setEvaluateFunction,
+                            },
+                        } :
+                        {
+                            isUseParallelDriver: false,
+                            problem: {
+                                nameOfProblem: problemInfo.problemName,
+                                numberOfSets: problemInfo.setNum,
+                                numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
+                                characteristics: problemInfo.characteristics,
+                                individuals: problemInfo.individuals,
+                                fitnessFunction: problemInfo.fitnessFunction,
+                                evaluateFunctions: problemInfo.setEvaluateFunction,
+                            },
+                        },
+                );
+                navigate('/matching-theory/input-processing');
             };
             reader.readAsBinaryString(file);
         } catch (error) {

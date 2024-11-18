@@ -178,17 +178,34 @@ export default function InputProcessingPage() {
   const numDemo = (appData.problem.numberOfIndividuals > defaultDisNum)
       ? defaultDisNum
       : appData.problem.numberOfIndividuals;
-  for (let i = 0; i < numDemo; i++) {
-    demoIndividuals.push(
-        {
-          name: appData.problem.individualNames[i],
-          set: appData.problem.individualSetIndexes[i],
-          capacity: appData.problem.individualCapacities[i],
-          property: appData.problem.individualProperties[i],
-          weight: appData.problem.individualWeights[i],
-          requirement: appData.problem.individualRequirements[i],
-        },
-    );
+  const problem = appData.problem;
+  if (appData.isUseParallelDriver) {
+    for (let i = 0; i < numDemo; i++) {
+      demoIndividuals.push(
+          {
+            name: problem.individualNames[i],
+            set: problem.individualSetIndexes[i],
+            capacity: problem.individualCapacities[i],
+            property: `P: ${problem.individualProperties[i].join(' | ')} <br/>
+                       W: ${problem.individualWeights[i].join(' | ')} <br/>
+                       R: ${problem.individualRequirements[i].join(' | ')}`
+          },
+      );
+    }
+  } else {
+    for (let i = 0; i < numDemo; i++) {
+      let ind = problem.individuals[i]
+      demoIndividuals.push(
+          {
+            name: ind.individualName,
+            set: ind.setType,
+            capacity: ind.capacity,
+            property: ind.argument.map((arg, i) => (
+                <div key={i}>{JSON.stringify(arg)}</div>
+            )),
+          },
+      );
+    }
   }
 
   return (
@@ -312,11 +329,7 @@ export default function InputProcessingPage() {
                   <td>{elm.name}</td>
                   <td>{elm.set}</td>
                   <td>{elm.capacity}</td>
-                  <td>
-                    P: {elm.property.join(' | ')} <br/>
-                    W: {elm.weight.join(' | ')} <br/>
-                    R: {elm.requirement.join(' | ')}
-                  </td>
+                  <td>{elm.property}</td>
                 </tr>
             ))}
             </tbody>
