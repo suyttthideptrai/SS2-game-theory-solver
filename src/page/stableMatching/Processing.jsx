@@ -9,16 +9,23 @@ import Loading from '../../module/core/component/Loading';
 import ParamSettingBox from '../../module/core/component/ParamSettingBox';
 import PopupContext from '../../module/core/context/PopupContext';
 import {SMT, SMT_VALIDATE} from '../../consts';
-import {isStringNullOrEmpty} from '../../utils/string_utils';
+import {getBackendAddress} from '../../utils/http_utils';
 
 export default function InputProcessingPage() {
   const navigate = useNavigate();
   const {appData, setAppData} = useContext(DataContext);
+
+  const isParallel = appData.isUseParallelDriver;
+
   const [isLoading, setIsLoading] = useState(false);
   const [algorithm, setAlgorithm] = useState(SMT.DEFAULT_ALGORITHM);
   const [distributedCoreParam, setDistributedCoreParam] = useState(SMT.DEFAULT_CORE_NUM);
-  const [problemType, setProblemType] = useState(SMT.PROBLEM_TYPES.OTO);
-  const [problemTypeOrdinal, setProblemTypeOrdinal] = useState(SMT.PROBLEM_TYPES.OTO.ordinal);
+  const [problemType, setProblemType] = useState(() => {
+    return isParallel ? SMT.PROBLEM_TYPES.RBO : SMT.PROBLEM_TYPES.OTO
+  });
+  const [problemTypeOrdinal, setProblemTypeOrdinal] = useState(() => {
+    return isParallel ? SMT.PROBLEM_TYPES.RBO.ordinal : SMT.PROBLEM_TYPES.OTO.ordinal
+  });
   const [populationSizeParam, setPopulationSizeParam] = useState(SMT.DEFAULT_POPULATION_SIZE);
   const [generationParam, setGenerationParam] = useState(SMT.DEFAULT_GENERATION_NUM);
   const [maxTimeParam, setMaxTimeParam] = useState(SMT.DEFAULT_MAXTIME);
@@ -30,10 +37,6 @@ export default function InputProcessingPage() {
       document.title = appData.problem.name;
     }
   }, [appData?.problem]);
-
-  useEffect(() => {
-    console.log(problemType)
-  }, [problemType]);
 
   const handleChange = (event) => {
     setAlgorithm(event.target.value);
@@ -88,7 +91,7 @@ export default function InputProcessingPage() {
         }
       }
 
-      const requestBody = {
+      const requestBody = isParallel ? {
         problemName: appData.problem.nameOfProblem,
         numberOfSets: appData.problem.numberOfSets,
         numberOfIndividuals: appData.problem.numberOfIndividuals,
@@ -106,14 +109,30 @@ export default function InputProcessingPage() {
         populationSize: populationSizeParam,
         generation: generationParam,
         maxTime: maxTimeParam,
+      } : {
+        problemName: appData.problem.nameOfProblem,
+        numberOfSets: appData.problem.numberOfSets,
+        numberOfIndividuals: appData.problem.numberOfIndividuals,
+        allPropertyNames: appData.problem.characteristics,
+
+        Individuals: appData.problem.individuals.map((individual) => ({
+          SetType: individual.setType,
+          IndividualName: individual.individualName,
+          Capacity: individual.capacity,
+          Properties: individual.argument.map((arg) => [...arg]),
+        })),
+
+        fitnessFunction: appData.problem.fitnessFunction,
+        evaluateFunction: evaluateFunction,
+        algorithm: algorithm,
+        distributedCores: distributedCoreParam,
+        populationSize: populationSizeParam,
+        generation: generationParam,
+        maxTime: maxTimeParam,
       };
 
-      // build api endpoint
-      let protocol = process.env.REACT_APP_BACKEND_PROTOCOL;
-      let port = isStringNullOrEmpty(process.env.REACT_APP_BACKEND_PORT)
-          ? '' : `:${process.env.REACT_APP_BACKEND_PORT}`;
       let serviceEndpoint = problemType.endpoint;
-      let endpoint = `${protocol}://${process.env.REACT_APP_BACKEND_URL}${port}${serviceEndpoint}`;
+      let endpoint = `${getBackendAddress()}${serviceEndpoint}`;
       console.log(endpoint);
 
       setIsLoading(true);
@@ -127,7 +146,6 @@ export default function InputProcessingPage() {
       const result = {
         data: res.data.data,
         params: {
-          problemType: problemType,
           runtime: runtime,
           usedAlgorithm: usedAlgorithm,
           distributedCoreParam: distributedCoreParam,
@@ -137,7 +155,12 @@ export default function InputProcessingPage() {
         },
       };
 
-      setAppData({...appData, result});
+      setAppData({
+        ...appData,
+        result,
+        problemType: problemType
+      });
+
       setIsLoading(false);
       console.log(result);
       navigate('/matching-theory/result');
@@ -173,13 +196,14 @@ export default function InputProcessingPage() {
     }
   };
 
+  //Add demo individuals for displaying
   const demoIndividuals = [];
   const defaultDisNum = SMT.DEFAULT_SAMPLE_DISPLAY_NUM;
   const numDemo = (appData.problem.numberOfIndividuals > defaultDisNum)
       ? defaultDisNum
       : appData.problem.numberOfIndividuals;
   const problem = appData.problem;
-  if (appData.isUseParallelDriver) {
+  if (isParallel) {
     for (let i = 0; i < numDemo; i++) {
       demoIndividuals.push(
           {
@@ -235,7 +259,15 @@ export default function InputProcessingPage() {
         <div className="problem-type-chooser">
           <p className="problem-type-text bold">Choose a problem
             type: </p>
+          {
+            isParallel && (
+                  <i>
+                    RBO driver currently available for Many to Many RBO only
+                  </i>
+              )
+          }
           <select
+              disabled={isParallel}
               value={problemTypeOrdinal}
               onChange={handleChangeProblemType}
               className="problem-type-select"
@@ -305,7 +337,13 @@ export default function InputProcessingPage() {
             <tr>
               <td><strong>Attributes</strong></td>
               {/*<td>{appData.problem.characteristics.join(', ')}</td>*/}
-              <td>{appData.problem.characteristics}</td>
+              <td>
+                <ol>
+                {appData.problem.characteristics.map((elm, idx) => (
+                  <li key={idx}>{String(elm)}</li>
+                ))}
+                </ol>
+              </td>
             </tr>
             </tbody>
           </table>

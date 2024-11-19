@@ -1,4 +1,3 @@
-//TODO: implement two separate translate to object mechanism (old & RBO) for stable matching problem excel forms
 import * as XLSX from '@e965/xlsx';
 import {MATCHING} from '../const/excel_const';
 

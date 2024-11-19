@@ -1,4 +1,3 @@
-// Phuc
 import React from 'react'
 import "../../module/gameTheory/css/processing.scss"
 import {useNavigate} from 'react-router-dom'
@@ -11,7 +10,6 @@ import NothingToShow from '../../module/core/component/NothingToShow';
 import Loading from '../../module/core/component/Loading';
 import ParamSettingBox from '../../module/core/component/ParamSettingBox';
 import PopupContext from '../../module/core/context/PopupContext';
-//TODO: algorithm selection
 export default function InputProcessingPage() {
     const navigate = useNavigate();
     const {appData, setAppData} = useContext(DataContext);
