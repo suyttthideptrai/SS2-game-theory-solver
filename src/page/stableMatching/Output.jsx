@@ -17,6 +17,8 @@ import { over } from "stompjs";
 import { saveAs } from 'file-saver';
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
+import {isStringNullOrEmpty} from '../../utils/string_utils';
+import {getBackendAddress} from '../../utils/http_utils';
 
 
 
@@ -24,6 +26,9 @@ let stompClient = null;
 export default function MatchingOutputPage() {
   const navigate = useNavigate();
   const { appData, setAppData } = useContext(DataContext);
+
+  const isParallel = appData.isUseParallelDriver;
+
   const [isLoading, setIsLoading] = useState(false);
   const [isShowPopup, setIsShowPopup] = useState(false);
   const { displayPopup } = useContext(PopupContext);
@@ -65,13 +70,13 @@ export default function MatchingOutputPage() {
     //   XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
     // });
     matchesArray.forEach((match, index) => {
-      var individualName = inputIndividuals[index].individualName;
-      var individualMatches = "";
-      if (Object.values(match).length==0) {
+      let individualName = inputIndividuals[index].individualName;
+      let individualMatches = "";
+      if (Object.values(match).length===0) {
         individualMatches = "There are no individual matches";
       } else {
         for (let i = 0; i < Object.values(match).length; i++) {
-          if (i == Object.values(match).length - 1) {
+          if (i === Object.values(match).length - 1) {
             individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
           }else
           individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
@@ -82,7 +87,7 @@ export default function MatchingOutputPage() {
   }})
     // write parameter configurations to sheet 2
     const numberOfCores =
-      appData.result.params.distributedCoreParam == "all"
+      appData.result.params.distributedCoreParam === "all"
         ? "All available cores"
         : appData.result.params.distributedCoreParam + " cores";
     const sheet2 = XLSX.utils.aoa_to_sheet([
@@ -95,6 +100,7 @@ export default function MatchingOutputPage() {
       ],
     ]);
 
+    //TODO: tách thành một hàm riêng vào src/utils/excel_utils.js, sử dụng chung cho bên GT (nhớ test lại)
     // write computer specs to sheet 3
     const sheet3 = XLSX.utils.aoa_to_sheet([
       ["Operating System Family", appData.insights?.data?.computerSpecs?.osFamily || "unknown" ],
@@ -129,7 +135,24 @@ export default function MatchingOutputPage() {
       const evaluateFunction = appData.problem.evaluateFunctions || [];
 
       setIsShowPopup(false);
-      const body = {
+      const body = isParallel ? {
+        problemName: appData.problem.nameOfProblem,
+        numberOfSets: appData.problem.numberOfSets,
+        numberOfIndividuals: appData.problem.numberOfIndividuals,
+        numberOfProperty: appData.problem.characteristics.length,
+        individualSetIndexes: appData.problem.individualSetIndexes,
+        individualCapacities: appData.problem.individualCapacities,
+        individualProperties: appData.problem.individualProperties,
+        individualRequirements: appData.problem.individualRequirements,
+        individualWeights: appData.problem.individualWeights,
+        fitnessFunction: appData.problem.fitnessFunction,
+        evaluateFunction: evaluateFunction,
+
+        distributedCores: distributedCoreParam,
+        populationSize: populationSizeParam,
+        generation: generationParam,
+        maxTime: maxTimeParam,
+      } : {
         problemName: appData.problem.nameOfProblem,
         numberOfSets: appData.problem.numberOfSets,
         //numberOfSets: appData.stableMatchingProblem.sets.length,
@@ -156,12 +179,13 @@ export default function MatchingOutputPage() {
         maxTime: maxTimeParam,
       };
 
+      let problemType = appData.problemType;
+      let serviceEndpoint = problemType.insightEndpoint;
+      let endpoint = `${getBackendAddress()}${serviceEndpoint}/${sessionCode}`;
+
       setIsLoading(true);
       await connectWebSocket(); // connect to websocket to get the progress percentage
-      const res = await axios.post(
-        `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/api/matching-problem-result-insights/${sessionCode}`,
-        body
-      );
+      const res = await axios.post(endpoint, body);
       setIsLoading(false);
 
       const insights = {
@@ -177,6 +201,7 @@ export default function MatchingOutputPage() {
       closeWebSocketConnection();
       navigate("/insights"); // navigate to insights page
     } catch (err) {
+      console.error(err);
       setIsLoading(false);
       displayPopup(
         "Something went wrong!",
@@ -188,7 +213,7 @@ export default function MatchingOutputPage() {
 
   const connectWebSocket = async () => {
     let Sock = new SockJS(
-      `http://${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_PORT}/ws`
+      `${getBackendAddress()}/ws`
     );
     stompClient = over(Sock);
     await stompClient.connect({}, onConnected, onError);
@@ -273,39 +298,6 @@ export default function MatchingOutputPage() {
     );
   })
 
-  // matchesArray.forEach((match, index) => {
-  //   var individualName =
-  //     appData.result.data.individuals[Object.values(match)[1]].IndividualName;
-  //   var individualMatches = "";
-  //   if (Object.values(match)[2].length == 0) {
-  //     individualMatches = "There are no individual matches";
-  //   } else {
-  //     for (let i = 0; i < Object.values(match)[2].length; i++) {
-  //       if (i == Object.values(match)[2].length - 1) {
-  //         individualMatches +=
-  //           appData.result.data.individuals[Object.values(match)[2][i]]
-  //             .IndividualName;
-  //       } else
-  //         individualMatches +=
-  //           appData.result.data.individuals[Object.values(match)[2][i]]
-  //             .IndividualName + ", ";
-  //     }
-  //   }
-  //   htmlOutput.push(
-  //     <tr className="table-success" key={"C" + index}>
-  //       {/* <td>Couple {index + 1}</td> */}
-  //       <td>{individualName}</td>
-  //       <td>
-  //         {
-  //           // appData.result.data.individuals[Object.values(match)[2]].IndividualName
-  //           individualMatches
-  //         }
-  //       </td>
-  //       {/* <td>{appData.result.data.matches.coupleFitness[index]}</td> */}
-  //     </tr>
-  //   );
-  // });
-
   // LeftOves
   let leftoverArray = [];
   leftOversArray.forEach((individual, index) => {
@@ -330,46 +322,6 @@ export default function MatchingOutputPage() {
   const downloadLink = document.createElement("a");
   downloadLink.href = URL.createObjectURL(blob);
   downloadLink.download = "output.txt";
-
-  // // Append the link to the body and trigger the click event
-  // document.body.appendChild(downloadLink);
-  // downloadLink.click();
-
-  // // Remove the link from the body
-  // document.body.removeChild(downloadLink);
-
-  //Change view
-  const changeView = (event, view1, view2) => {
-    //change style current page
-    const view1Class = document.getElementsByClassName(view1);
-    let view1Style = view1Class[0].getAttribute("style");
-    let array1Style = view1Style.split(";");
-    array1Style.pop();
-    array1Style.pop();
-    array1Style.push("display:block");
-
-    let temp1Style = "";
-    temp1Style += array1Style[0];
-
-    view1Class[0].setAttribute("style", temp1Style);
-
-    // console.log(view1Style);
-    // console.log(array1Style);
-    // console.log(temp1Style);
-
-    //change style the other page
-    const view2Class = document.getElementsByClassName(view2);
-    let view2Style = view2Class[0].getAttribute("style");
-    let array2Style = view2Style.split(";");
-    array2Style.pop();
-    array2Style.pop();
-    array2Style.push("display:none");
-
-    let temp2Style = "";
-    temp2Style += array2Style[0];
-
-    view2Class[0].setAttribute("style", temp2Style);
-  };
 
     // Define your state variables here
   return (
@@ -417,38 +369,6 @@ export default function MatchingOutputPage() {
           <p>Used Algorithm: {usedAlgorithm}</p>
           <p>Runtime: {runtime} ms</p>
         </div>
-        {/* <div
-        className="d-flex align-items-center justify-content-center"
-        style={{ marginTop: 30 }}
-      >
-        <Button
-          variant="success"
-          size="md"
-          style={{
-            justifyContent: "center",
-            width: 150,
-            float: "left",
-            marginRight: 5,
-            display: "block",
-          }}
-          onClick={(e) => changeView(e, "view-1", "view-2")}
-        >
-          Table View
-        </Button>
-        <Button
-          variant="success"
-          size="md"
-          style={{
-            justifyContent: "center",
-            width: 150,
-            float: "right",
-            marginLeft: 5,
-          }}
-          onClick={(e) => changeView(e, "view-2", "view-1")}
-        >
-          Graph View
-        </Button>
-      </div> */}
       </div>
       <div className="view-1" style={{ display: "block" }}>
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
