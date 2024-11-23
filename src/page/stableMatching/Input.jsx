@@ -739,7 +739,6 @@ export default function InputPage() {
         </div>
 
         <div className="row">
-          {/*//TODO: thêm phần limit input cho number of set*/}
           <Input
               message="Number of set"
               type="number"
@@ -755,7 +754,6 @@ export default function InputPage() {
         {setNum ? <div className="table">{generateTable()}</div> : null}
 
         <div className="row">
-          {/*//TODO: tương tự, limit 30 characteristics thôi*/}
           <Input
               message="Number of characteristics"
               text="number"
@@ -766,7 +764,6 @@ export default function InputPage() {
               guideSectionIndex={3}
               max={30}
           />
-          {/*//TODO: tương tự, limit 50000 individuals*/}
           <Input
               message="Number of total individuals"
               text="number"
