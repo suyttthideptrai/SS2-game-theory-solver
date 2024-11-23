@@ -791,11 +791,10 @@ export default function InputPage() {
         </div>
 
       </div>
-      {/*TODO: căn giữa theo chiều dọc cho div này*/}
-      <div className="checkbox-container-dev">
-        <p>
+      <div className="d-flex align-items-center">
+        <div className="me-2">
           Use parallel RBO driver (for development purpose):
-        </p>
+        </div>
         <Checkbox initialChecked={isUseParallelDriver}
                   onChange={handleChangeIsUseDriver}/>
       </div>
