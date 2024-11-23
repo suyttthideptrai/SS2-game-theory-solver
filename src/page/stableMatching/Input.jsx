@@ -764,6 +764,7 @@ export default function InputPage() {
               value={characteristicsNum}
               description="A characteristic is the requirements and the properties that an individuals has that affects their weight during matching"
               guideSectionIndex={3}
+              max={30}
           />
           {/*//TODO: tương tự, limit 50000 individuals*/}
           <Input
@@ -774,6 +775,7 @@ export default function InputPage() {
               value={totalIndividualsNum}
               description="A positive number that reflects the number of individuals in each set involved to ensure that the resulting is valid"
               guideSectionIndex={4}
+              max={50000}
           />
         </div>
 
