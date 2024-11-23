@@ -34,7 +34,7 @@ export default function InputProcessingPage() {
 
   useEffect(() => {
     if (appData && appData.problem) {
-      document.title = appData.problem.name;
+      document.title = "Special Subject Solver";
     }
   }, [appData?.problem]);
 
