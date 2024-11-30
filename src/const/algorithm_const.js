@@ -1,10 +1,10 @@
 export const ALGORITHMS = Object.freeze([
   {
-    displayName: 'NSGAII',
+    displayName: 'NSGA-II',
     value: 'NSGAII',
   },
   {
-    displayName: 'NSGAIII',
+    displayName: 'NSGA-III',
     value: 'NSGAIII',
   },
   {
@@ -26,5 +26,22 @@ export const ALGORITHMS = Object.freeze([
   {
     displayName: 'MOEAD',
     value: 'MOEAD',
+  },
+    //Added 3 new algorithms for SS1 Fall 2024
+  {
+    displayName: 'IBEA',
+    value: 'IBEA',
+  },
+  {
+    displayName: 'OMOPSO',
+    value: 'OMOPSO',
+  },
+  // { // MOEA framework only implement OMOPSO & SMPSO for PSO variants
+  //   displayName: 'PSO',
+  //   value: 'PSO',
+  // },
+  {
+    displayName: 'SMPSO',
+    value: 'SMPSO',
   },
 ]);

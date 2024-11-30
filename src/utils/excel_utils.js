@@ -30,7 +30,7 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
   // LOAD SET
   const individuals = [];
   let setEvaluateFunction = [];
-  let individualSetIndexes = [];
+  let individualSetIndices = [];
   let individualNames = [];
   let individualProperties = [];
   let individualRequirements = [];
@@ -64,18 +64,20 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
       const weights = [];
 
       for (let k = 0; k < characteristicNum; k++) {
-        properties.push(
-            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow})]?.v || 0);
         requirements.push(
-            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow + 1})]?.v ||
-            0);
+            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow})]?.v
+            || 0);
         weights.push(
-            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow + 2})]?.v ||
-            0);
+            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow + 1})]?.v
+            || 0);
+        properties.push(
+            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow + 2})]?.v
+            || 0);
+
       }
 
       individualNames.push(name);
-      individualSetIndexes.push(g);
+      individualSetIndices.push(g);
       individualProperties.push(properties);
       individualRequirements.push(requirements);
       individualWeights.push(weights);
@@ -101,7 +103,7 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
     totalNumberOfIndividuals,
     individualNames,
     characteristics,
-    individualSetIndexes,
+    individualSetIndices,
     individualCapacities,
     individualRequirements,
     individualProperties,
