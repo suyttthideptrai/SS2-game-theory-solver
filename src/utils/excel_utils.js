@@ -1,33 +1,75 @@
 import * as XLSX from '@e965/xlsx';
-import {MATCHING} from '../const/excel_const';
+import { MATCHING } from '../const/excel_const';
 
+/**
+ * Tạo một sheet từ thông tin cấu hình máy tính.
+ * @param {Object} appData - Dữ liệu ứng dụng chứa thông tin cấu hình.
+ * @returns {Object} - Sheet được tạo.
+ */
+export const createSystemInfoSheet = (appData) => {
+  // Kiểm tra nếu appData hoặc computerSpecs không tồn tại
+  const computerSpecs = appData?.insights?.data?.computerSpecs || {};
+
+  return XLSX.utils.aoa_to_sheet([
+    ["Operating System Family", computerSpecs.osFamily || "unknown"],
+    ["Operating System Manufacturer", computerSpecs.osManufacturer || "unknown"],
+    ["Operating System Version", computerSpecs.osVersion || "unknown"],
+    ["CPU Name", computerSpecs.cpuName || "unknown"],
+    ["CPU Physical Cores", computerSpecs.cpuPhysicalCores || "unknown"],
+    ["CPU Logical Cores", computerSpecs.cpuLogicalCores || "unknown"],
+    ["Total Memory", computerSpecs.totalMemory || "unknown"],
+  ]);
+};
+
+/**
+ * Tạo một sheet từ các thông số cấu hình.
+ * @param {Object} appData - Dữ liệu ứng dụng chứa thông số cấu hình.
+ * @returns {Object} - Sheet 2 chứa các thông số.
+ */
+export const createParameterConfigSheet = (appData) => {
+  const numberOfCores = appData.result.params.distributedCoreParam === 'all' ? 'All available cores' : appData.result.params.distributedCoreParam + " cores";
+
+  return XLSX.utils.aoa_to_sheet([
+    ["Number of distributed cores", numberOfCores],
+    ["Population size", appData.result.params.populationSizeParam],
+    ["Number of crossover generation", appData.result.params.generationParam],
+    ["Optimization execution max time (in milliseconds)", appData.result.params.maxTimeParam],
+  ]);
+};
+
+/**
+ * Tải dữ liệu bài toán song song từ workbook
+ * @param {Object} workbook - Workbook Excel chứa dữ liệu bài toán
+ * @param {number} sheetNumber - Số thứ tự sheet cần đọc
+ * @returns {Object} - Dữ liệu bài toán
+ */
 export const loadProblemDataParallel = async (workbook, sheetNumber) => {
-
   const sheetName = workbook.SheetNames[sheetNumber];
   const sheet = workbook.Sheets[sheetName];
-  const problemName = sheet['B1'].v;
-  const setNum = Number(sheet['B2'].v);
-  const totalNumberOfIndividuals = sheet['B3'].v;
-  const characteristicNum = sheet['B4'].v;
-  const fitnessFunction = sheet['B5'].v;
+  
+  // Đọc các giá trị trong Excel
+  const problemName = sheet['B1']?.v || '';
+  const setNum = Number(sheet['B2']?.v) || 0;
+  const totalNumberOfIndividuals = sheet['B3']?.v || 0;
+  const characteristicNum = sheet['B4']?.v || 0;
+  const fitnessFunction = sheet['B5']?.v || '';
 
   let currentRow = 6 + setNum;
   let characteristics = [];
 
-  let currentColumnIndex = XLSX.utils.decode_col(
-      MATCHING.CHARACTERISTIC_START_COL);
+  let currentColumnIndex = XLSX.utils.decode_col(MATCHING.CHARACTERISTIC_START_COL);
 
+  // Đọc các đặc tính từ bảng
   for (let i = currentColumnIndex; ; i++) {
-    const cellAddress = XLSX.utils.encode_cell({c: i, r: currentRow - 1});
+    const cellAddress = XLSX.utils.encode_cell({ c: i, r: currentRow - 1 });
     const cell = sheet[cellAddress];
-    // Break if cell is empty or undefined
     if (!cell || !cell.v) {
       break;
     }
     characteristics.push(cell.v);
   }
 
-  // LOAD SET
+  // Đọc các bộ dữ liệu (sets)
   const individuals = [];
   let setEvaluateFunction = [];
   let individualSetIndexes = [];
@@ -50,28 +92,23 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
   }
 
   for (let g = 0; g < setNum; g++) {
-    setName = await sheet[`A${currentRow}`]['v'];
-    setType = await sheet[`B${currentRow}`]['v'];
+    setName = sheet[`A${currentRow}`]?.v || '';
+    setType = sheet[`B${currentRow}`]?.v || '';
     setNames.push(setName);
     setTypes.push(setType);
 
-    individualNum = await sheet[`D${currentRow}`]?.v;
+    individualNum = sheet[`D${currentRow}`]?.v || 0;
 
     for (let i = 0; i < individualNum; i++) {
-      const name = sheet[`A${currentRow + 1}`]?.v;
+      const name = sheet[`A${currentRow + 1}`]?.v || '';
       const properties = [];
       const requirements = [];
       const weights = [];
 
       for (let k = 0; k < characteristicNum; k++) {
-        properties.push(
-            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow})]?.v || 0);
-        requirements.push(
-            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow + 1})]?.v ||
-            0);
-        weights.push(
-            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow + 2})]?.v ||
-            0);
+        properties.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow })]?.v || 0);
+        requirements.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 1 })]?.v || 0);
+        weights.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 2 })]?.v || 0);
       }
 
       individualNames.push(name);
@@ -81,10 +118,8 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
       individualWeights.push(weights);
 
       // Load capacity
-      const capacityValue = await sheet[`C${currentRow + 1}`]?.v;
-      if (capacityValue !== undefined && capacityValue !== null) {
-        individualCapacities.push(capacityValue);
-      }
+      const capacityValue = sheet[`C${currentRow + 1}`]?.v || 0;
+      individualCapacities.push(capacityValue);
 
       currentRow += 3;
     }
@@ -112,27 +147,30 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
   };
 };
 
+/**
+ * Tải dữ liệu bài toán cũ từ workbook
+ * @param {Object} workbook - Workbook Excel chứa dữ liệu bài toán
+ * @param {number} sheetNumber - Số thứ tự sheet cần đọc
+ * @returns {Object} - Dữ liệu bài toán
+ */
 export const loadProblemDataOld = async (workbook, sheetNumber) => {
-  const sheetName = await workbook.SheetNames[sheetNumber];
-  const sheet = await workbook.Sheets[sheetName];
-  const problemName = await sheet['B1']['v'];
-  const setNum = await sheet['B2']['v'];
-  const totalNumberOfIndividuals = await sheet['B3']['v'];
-  const characteristicNum = await sheet['B4']['v'];
-  const fitnessFunction = await sheet['B5']['v'];
+  const sheetName = workbook.SheetNames[sheetNumber];
+  const sheet = workbook.Sheets[sheetName];
+  
+  // Đọc các giá trị trong Excel
+  const problemName = sheet['B1']?.v || '';
+  const setNum = sheet['B2']?.v || 0;
+  const totalNumberOfIndividuals = sheet['B3']?.v || 0;
+  const characteristicNum = sheet['B4']?.v || 0;
+  const fitnessFunction = sheet['B5']?.v || '';
+
   let currentRow = 6 + Number(setNum);
-  let currentIndividual = 0;
   let characteristics = [];
   let errorMessage = '';
 
   // LOAD CHARACTERISTICS
   for (let i1 = 4; i1 < characteristicNum + 4; i1++) {
-    const characteristicName = await sheet[
-        XLSX.utils.encode_cell({
-          c: i1,
-          r: currentRow - 1,
-        })
-        ];
+    const characteristicName = sheet[XLSX.utils.encode_cell({ c: i1, r: currentRow - 1 })];
 
     if (characteristicName) {
       characteristics.push(characteristicName['v']);
@@ -142,23 +180,22 @@ export const loadProblemDataOld = async (workbook, sheetNumber) => {
   // LOAD SET
   const individuals = [];
   let setEvaluateFunction = [];
-  const row = characteristicNum;
-  const col = 3;
-  let individualNum = null;
-  let argumentCell = null;
-  let individualName = null;
-  let setType = null;
-  let capacity = null;
   let setName = null;
+  let setType = null;
+  let individualNum = null;
+  let individualName = null;
+  let capacity = null;
 
   // Add evaluate function
   for (let j = 0; j < setNum; j++) {
-    let evaluateFunction = await sheet[`B${6 + j}`]['v'];
+    const evaluateFunction = sheet[`B${6 + j}`]?.v || '';
     setEvaluateFunction.push(evaluateFunction);
   }
+
+  // Load individuals
   for (let g = 0; g < setNum; g++) {
-    setName = await sheet[`A${currentRow}`]['v'];
-    setType = await sheet[`B${currentRow}`]['v'];
+    setName = sheet[`A${currentRow}`]?.v || '';
+    setType = sheet[`B${currentRow}`]?.v || '';
 
     if (g === 0) {
       setType = 0;
@@ -166,55 +203,34 @@ export const loadProblemDataOld = async (workbook, sheetNumber) => {
       setType = 1;
     }
 
-    // CHECK THE INDIVIDUAL NUMBER IS NUMBER
-    individualNum = await sheet[`D${currentRow}`];
-    if (typeof individualNum['v'] !== 'number') {
-      errorMessage = `Error when loading Set_${
-          currentIndividual + 1
-      }, row = ${currentRow} . Number of individual is invalid`;
-      throw new Error();
-    } else {
-      individualNum = await sheet[`D${currentRow}`]['v'];
+    individualNum = sheet[`D${currentRow}`]?.v || 0;
 
-      // LOAD INDIVIDUAL
-      for (let i = 0; i < individualNum; i++) {
-        let argument = [];
-        individualName = await sheet[`A${currentRow + 1}`]['v'];
-        capacity = await sheet[`C${currentRow + 1}`][`v`];
-
-        for (let k = 0; k < row; k++) {
-          argument[k] = [];
-          for (let l = 0; l < col; l++) {
-            argumentCell = await sheet[
-                XLSX.utils.encode_cell({
-                  c: k + 4,
-                  r: currentRow + l,
-                })
-                ];
-
-            if (argumentCell === undefined) {
-              errorMessage = `Error when loading Individual_${
-                  currentIndividual + 1
-              }, row = ${currentRow}, column = ${
-                  k + 1
-              }. Characteristic_ of strategy are invalid`;
-              throw new Error();
-            }
-            argument[k][l] = argumentCell['v'];
-          }
-        }
-        let individual = {
-          set: setName,
-          setType: setType,
-          individualName: individualName,
-          capacity: capacity,
-          argument: argument,
-        };
-        individuals.push(individual);
-        currentRow += 3;
-      }
-      currentRow += 1;
+    if (typeof individualNum !== 'number') {
+      errorMessage = `Error when loading Set_${g + 1}, row = ${currentRow}. Number of individual is invalid`;
+      throw new Error(errorMessage);
     }
+
+    for (let i = 0; i < individualNum; i++) {
+      individualName = sheet[`A${currentRow + 1}`]?.v || '';
+      capacity = sheet[`C${currentRow + 1}`]?.v || 0;
+
+      let argument = [];
+      for (let k = 0; k < characteristicNum; k++) {
+        argument[k] = [];
+        for (let l = 0; l < 3; l++) {
+          const argumentCell = sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + l })];
+          if (argumentCell === undefined) {
+            errorMessage = `Error when loading Individual_${i + 1}, row = ${currentRow}, column = ${k + 1}. Characteristic_ of strategy are invalid`;
+            throw new Error(errorMessage);
+          }
+          argument[k][l] = argumentCell['v'];
+        }
+      }
+
+      individuals.push({ set: setName, setType, individualName, capacity, argument });
+      currentRow += 3;
+    }
+    currentRow += 1;
   }
 
   return {
