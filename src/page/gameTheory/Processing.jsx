@@ -10,6 +10,7 @@ import NothingToShow from '../../module/core/component/NothingToShow';
 import Loading from '../../module/core/component/Loading';
 import ParamSettingBox from '../../module/core/component/ParamSettingBox';
 import PopupContext from '../../module/core/context/PopupContext';
+import {SMT} from '../../consts';
 export default function InputProcessingPage() {
     const navigate = useNavigate();
     const {appData, setAppData} = useContext(DataContext);
@@ -107,13 +108,11 @@ export default function InputProcessingPage() {
                 <p className='algorithm-text bold'>Choose an algorithm: </p>
 
                 <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
-                    <option value="NSGAII">NSGAII</option>
-                    <option value="NSGAIII">NSGAIII</option>
-                    <option value="eMOEA">εMOEA</option>
-                    <option value="PESA2">PESA2</option>
-                    <option value="VEGA">VEGA</option>
-                    <option value="PAES">PAES</option>
-                    <option value="IBEA">IBEA</option>
+                    {SMT.ALGORITHMS.map(({displayName, value}) => (
+                        <option key={value} value={value}>
+                            {displayName}
+                        </option>
+                    ))}
                 </select>
             </div>
 

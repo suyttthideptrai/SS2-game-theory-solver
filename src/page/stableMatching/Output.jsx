@@ -17,7 +17,6 @@ import { over } from "stompjs";
 import { saveAs } from 'file-saver';
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-import {isStringNullOrEmpty} from '../../utils/string_utils';
 import {getBackendAddress} from '../../utils/http_utils';
 import { createSystemInfoSheet, createParameterConfigSheet , loadProblemDataOld, loadProblemDataParallel } from '../../utils/excel_utils.js';
 
@@ -28,9 +27,6 @@ let stompClient = null;
 export default function MatchingOutputPage() {
   const navigate = useNavigate();
   const { appData, setAppData } = useContext(DataContext);
-
-  const isParallel = appData.isUseParallelDriver;
-
   const [isLoading, setIsLoading] = useState(false);
   const [isShowPopup, setIsShowPopup] = useState(false);
   const { displayPopup } = useContext(PopupContext);
@@ -54,7 +50,7 @@ export default function MatchingOutputPage() {
   }
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
-  const inputIndividuals = appData.problem.individuals
+  const problemData = appData.problem;
 
   const handleExportToExcel = async () => {
     const workbook = XLSX.utils.book_new();
@@ -72,18 +68,19 @@ export default function MatchingOutputPage() {
     //   XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
     // });
     matchesArray.forEach((match, index) => {
-      let individualName = inputIndividuals[index].individualName;
+      let individualName = problemData.individualNames[index]
       let individualMatches = "";
       if (Object.values(match).length===0) {
         individualMatches = "There are no individual matches";
       } else {
         for (let i = 0; i < Object.values(match).length; i++) {
+          let name = problemData.individualNames[Object.values(match)[i]];
           if (i === Object.values(match).length - 1) {
-            individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
+            individualMatches += name;
           }else
-          individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
+          individualMatches += name + ", ";
         }
-        const row=[individualName,individualMatches,appData.result.data.setSatisfactions[index].toFixed(3)]
+        const row=[individualName, individualMatches, appData.result.data.setSatisfactions[index].toFixed(3)]
         console.log(row);
         XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
   }})
@@ -113,47 +110,22 @@ export default function MatchingOutputPage() {
 
   const handlePopupOk = async () => {
     try {
-      const evaluateFunction = appData.problem.evaluateFunctions || [];
+      const evaluateFunctions = appData.problem.evaluateFunctions || [];
 
       setIsShowPopup(false);
-      const body = isParallel ? {
+      const body = {
         problemName: appData.problem.nameOfProblem,
         numberOfSets: appData.problem.numberOfSets,
         numberOfIndividuals: appData.problem.numberOfIndividuals,
         numberOfProperty: appData.problem.characteristics.length,
-        individualSetIndexes: appData.problem.individualSetIndexes,
+        individualSetIndices: appData.problem.individualSetIndices,
         individualCapacities: appData.problem.individualCapacities,
         individualProperties: appData.problem.individualProperties,
         individualRequirements: appData.problem.individualRequirements,
         individualWeights: appData.problem.individualWeights,
         fitnessFunction: appData.problem.fitnessFunction,
-        evaluateFunction: evaluateFunction,
+        evaluateFunctions: evaluateFunctions,
 
-        distributedCores: distributedCoreParam,
-        populationSize: populationSizeParam,
-        generation: generationParam,
-        maxTime: maxTimeParam,
-      } : {
-        problemName: appData.problem.nameOfProblem,
-        numberOfSets: appData.problem.numberOfSets,
-        //numberOfSets: appData.stableMatchingProblem.sets.length,
-        numberOfIndividuals: appData.problem.numberOfIndividuals,
-        allPropertyNames: appData.problem.characteristics,
-        // mapping over the individuals directly from appData.stableMatchingProblem
-        // and creating a new array of objects based on the properties of each individual.
-        // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-
-        Individuals: appData.problem.individuals.map((individual) => ({
-          // IndividualSet: individual.set,
-
-          SetType: individual.setType,
-          IndividualName: individual.individualName,
-          Capacity: individual.capacity,
-          Properties: individual.argument.map((arg) => [...arg]),
-        })),
-        fitnessFunction: appData.problem.fitnessFunction,
-        // evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
-        evaluateFunction: evaluateFunction,
         distributedCores: distributedCoreParam,
         populationSize: populationSizeParam,
         generation: generationParam,
@@ -249,16 +221,17 @@ export default function MatchingOutputPage() {
 
   // Success couple
   matchesArray.forEach((match, index) => {
-    var individualName = inputIndividuals[index].individualName;
+    let individualName = problemData.individualNames[index];
     var individualMatches = "";
-    if (Object.values(match).length==0) {
+    if (Object.values(match).length === 0) {
       individualMatches = "There are no individual matches";
     } else {
       for (let i = 0; i < Object.values(match).length; i++) {
-        if (i == Object.values(match).length - 1) {
-          individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
+        let name = problemData.individualNames[Object.values(match)[i]];
+        if (i === Object.values(match).length - 1) {
+          individualMatches += name;
         }else
-        individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
+        individualMatches += name + ", ";
       }
     }
 
@@ -285,12 +258,10 @@ export default function MatchingOutputPage() {
     htmlLeftOvers.push(
       <tr className="table-danger" key={"L" + index}>
         <td>{index+1}</td>
-        <td>{inputIndividuals[individual].individualName}</td>
+        <td>{problemData.individualNames[individual]}</td>
       </tr>
     );
-    leftoverArray.push(
-      appData.problem.individuals[individual].IndividualName
-    );
+    leftoverArray.push(problemData.individualNames[individual]);
   });
   fileContent += `Left over = [${leftoverArray}]`;
 

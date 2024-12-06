@@ -72,7 +72,7 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
   // Đọc các bộ dữ liệu (sets)
   const individuals = [];
   let setEvaluateFunction = [];
-  let individualSetIndexes = [];
+  let individualSetIndices = [];
   let individualNames = [];
   let individualProperties = [];
   let individualRequirements = [];
@@ -112,7 +112,7 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
       }
 
       individualNames.push(name);
-      individualSetIndexes.push(g);
+      individualSetIndices.push(g);
       individualProperties.push(properties);
       individualRequirements.push(requirements);
       individualWeights.push(weights);
@@ -136,7 +136,7 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
     totalNumberOfIndividuals,
     individualNames,
     characteristics,
-    individualSetIndexes,
+    individualSetIndices,
     individualCapacities,
     individualRequirements,
     individualProperties,

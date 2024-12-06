@@ -10,22 +10,16 @@ import ParamSettingBox from '../../module/core/component/ParamSettingBox';
 import PopupContext from '../../module/core/context/PopupContext';
 import {SMT, SMT_VALIDATE} from '../../consts';
 import {getBackendAddress} from '../../utils/http_utils';
+import {ALGORITHMS} from '../../const/algorithm_const';
 
 export default function InputProcessingPage() {
   const navigate = useNavigate();
   const {appData, setAppData} = useContext(DataContext);
-
-  const isParallel = appData.isUseParallelDriver;
-
   const [isLoading, setIsLoading] = useState(false);
   const [algorithm, setAlgorithm] = useState(SMT.DEFAULT_ALGORITHM);
   const [distributedCoreParam, setDistributedCoreParam] = useState(SMT.DEFAULT_CORE_NUM);
-  const [problemType, setProblemType] = useState(() => {
-    return isParallel ? SMT.PROBLEM_TYPES.RBO : SMT.PROBLEM_TYPES.OTO
-  });
-  const [problemTypeOrdinal, setProblemTypeOrdinal] = useState(() => {
-    return isParallel ? SMT.PROBLEM_TYPES.RBO.ordinal : SMT.PROBLEM_TYPES.OTO.ordinal
-  });
+  const [problemType, setProblemType] = useState(SMT.PROBLEM_TYPES.OTO);
+  const [problemTypeOrdinal, setProblemTypeOrdinal] = useState(SMT.PROBLEM_TYPES.OTO.ordinal);
   const [populationSizeParam, setPopulationSizeParam] = useState(SMT.DEFAULT_POPULATION_SIZE);
   const [generationParam, setGenerationParam] = useState(SMT.DEFAULT_GENERATION_NUM);
   const [maxTimeParam, setMaxTimeParam] = useState(SMT.DEFAULT_MAXTIME);
@@ -67,13 +61,8 @@ export default function InputProcessingPage() {
         return;
       }
 
-      const evaluateFunction = appData.problem.evaluateFunctions || [];
-      // const evaluateFunctionStrings = evaluateFunction.flatMap(item => Object.entries(item));
-      // const evaluateFunctionStrings = evaluateFunction.map(item => ({
-
-      // }))
-      // Validate evaluate func
-      for (const func of evaluateFunction) {
+      const evaluateFunctions = appData.problem.evaluateFunctions || [];
+      for (const func of evaluateFunctions) {
         for (const keyword of SMT_VALIDATE.INVALID_MATH_SYMBOLS) {
           if (func.includes(keyword)) {
             return displayPopup('Invalid Evaluate Function(s)',
@@ -91,39 +80,19 @@ export default function InputProcessingPage() {
         }
       }
 
-      const requestBody = isParallel ? {
+      const requestBody = {
         problemName: appData.problem.nameOfProblem,
         numberOfSets: appData.problem.numberOfSets,
         numberOfIndividuals: appData.problem.numberOfIndividuals,
         numberOfProperty: appData.problem.characteristics.length,
-        individualSetIndexes: appData.problem.individualSetIndexes,
+        individualSetIndices: appData.problem.individualSetIndices,
         individualCapacities: appData.problem.individualCapacities,
         individualProperties: appData.problem.individualProperties,
         individualRequirements: appData.problem.individualRequirements,
         individualWeights: appData.problem.individualWeights,
         fitnessFunction: appData.problem.fitnessFunction,
-        evaluateFunction: evaluateFunction,
+        evaluateFunctions: evaluateFunctions,
 
-        algorithm: algorithm,
-        distributedCores: distributedCoreParam,
-        populationSize: populationSizeParam,
-        generation: generationParam,
-        maxTime: maxTimeParam,
-      } : {
-        problemName: appData.problem.nameOfProblem,
-        numberOfSets: appData.problem.numberOfSets,
-        numberOfIndividuals: appData.problem.numberOfIndividuals,
-        allPropertyNames: appData.problem.characteristics,
-
-        Individuals: appData.problem.individuals.map((individual) => ({
-          SetType: individual.setType,
-          IndividualName: individual.individualName,
-          Capacity: individual.capacity,
-          Properties: individual.argument.map((arg) => [...arg]),
-        })),
-
-        fitnessFunction: appData.problem.fitnessFunction,
-        evaluateFunction: evaluateFunction,
         algorithm: algorithm,
         distributedCores: distributedCoreParam,
         populationSize: populationSizeParam,
@@ -203,12 +172,12 @@ export default function InputProcessingPage() {
       ? defaultDisNum
       : appData.problem.numberOfIndividuals;
   const problem = appData.problem;
-  if (isParallel) {
+
     for (let i = 0; i < numDemo; i++) {
       demoIndividuals.push(
           {
             name: problem.individualNames[i],
-            set: problem.individualSetIndexes[i],
+            set: problem.individualSetIndices[i],
             capacity: problem.individualCapacities[i],
             property: `P: ${problem.individualProperties[i].join(' | ')} <br/>
                        W: ${problem.individualWeights[i].join(' | ')} <br/>
@@ -216,21 +185,6 @@ export default function InputProcessingPage() {
           },
       );
     }
-  } else {
-    for (let i = 0; i < numDemo; i++) {
-      let ind = problem.individuals[i]
-      demoIndividuals.push(
-          {
-            name: ind.individualName,
-            set: ind.setType,
-            capacity: ind.capacity,
-            property: ind.argument.map((arg, i) => (
-                <div key={i}>{JSON.stringify(arg)}</div>
-            )),
-          },
-      );
-    }
-  }
 
   return (
       <div className="input-processing-page">
@@ -256,17 +210,8 @@ export default function InputProcessingPage() {
 
         {/* Lựa chọn Problem type */}
         <div className="problem-type-chooser">
-          <p className="problem-type-text bold">Choose a problem
-            type: </p>
-          {
-            isParallel && (
-                  <i>
-                    RBO driver currently available for Many to Many RBO only
-                  </i>
-              )
-          }
+          <p className="problem-type-text bold">Choose a problem type: </p>
           <select
-              disabled={isParallel}
               value={problemTypeOrdinal}
               onChange={handleChangeProblemType}
               className="problem-type-select"
@@ -288,7 +233,7 @@ export default function InputProcessingPage() {
                   onChange={handleChange}
                   className="algorithm-select"
           >
-            {SMT.ALGORITHMS.map(({displayName, value}) => (
+            {ALGORITHMS.map(({displayName, value}) => (
                 <option key={value} value={value}>
                   {displayName}
                 </option>
