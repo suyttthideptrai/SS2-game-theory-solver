@@ -280,9 +280,7 @@ export default function MatchingOutputPage() {
         <td>{problemData.individualNames[individual]}</td>
       </tr>
     );
-    leftoverArray.push(
-      appData.problem.individuals[individual].IndividualName
-    );
+    leftoverArray.push(problemData.individualNames[individual]);
   });
   fileContent += `Left over = [${leftoverArray}]`;
 
