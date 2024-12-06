@@ -99,10 +99,9 @@ export default function InputProcessingPage() {
                 maxTimeParam={maxTimeParam}
                 setMaxTimeParam={setMaxTimeParam}
             />
-            {/*TODO: căn giữa cho text này, bôi màu cam cho text*/}
             {
                 algorithm == 'PAES' &&
-                <p className="error-text">Population size takes no effect for PAES algorithm</p>
+                <p style={{color:"red", textAlign:"center"}}>Population size takes no effect for PAES algorithm</p>
 
             }
             <div className="algo-chooser">

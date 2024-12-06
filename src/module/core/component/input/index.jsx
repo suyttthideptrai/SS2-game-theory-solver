@@ -18,11 +18,17 @@ export default function Input({type, message, error, handleOnChange, value,
     setShowHint(false);
   };
 
+  const internalOnchangeEvent = (e) => {
+      if (Number.isSafeInteger(max) && e.target.value > max) e.target.value = max;
+      if (Number.isSafeInteger(min) && e.target.value < min) e.target.value = min;
+      handleOnChange(e);
+  }
+
   return (
       <>
           <div className={`input ${style}`}>
-              <input type={inputType} placeholder={message}
-                     onChange={handleOnChange}
+              <input min={min} max={max} type={inputType} placeholder={message}
+                     onChange={internalOnchangeEvent}
                      value={value}/>
               <i className="info fa-solid fa-info" onMouseOver={handleMouseOver}
                  onMouseLeave={handleMouseLeave}></i>
