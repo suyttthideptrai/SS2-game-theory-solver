@@ -53,9 +53,8 @@ export const MATCHING_PROBLEM_TYPES = Object.freeze({
   M3S: new MatchingProblemType(
       5,
       '3 Sets',
-      //TODO: Replace with actual endpoints when implemented
-      '/api/stable-matching-solver',
-      '/api/matching-problem-result-insights',
+      '/api/solve-triplet-matching',
+      '/api/rbo-triplet-problem-result-insights/',
   )
   ,
   MMS: new MatchingProblemType(
