@@ -1,15 +1,23 @@
 import * as XLSX from '@e965/xlsx';
 import {MATCHING} from '../const/excel_const';
+import {isNullOrUndefined} from './common_utils';
 
+/**
+ *
+ * @param workbook
+ * @param sheetNumber
+ * @returns {Promise<{totalNumberOfIndividuals: string | number | Date | boolean, setNames: *[], characteristics: *[], individualProperties: *[], setNum: number, individualWeights: *[], individualNames: *[], problemName: string | number | Date | boolean, individuals: *[], individualSetIndices: *[], individualRequirements: *[], setEvaluateFunction: *[], individualCapacities: *[], setTypes: *[], fitnessFunction: (string|string), characteristicNum: string | number | Date | boolean}>}
+ */
 export const loadProblemDataParallel = async (workbook, sheetNumber) => {
 
   const sheetName = workbook.SheetNames[sheetNumber];
   const sheet = workbook.Sheets[sheetName];
-  const problemName = sheet['B1'].v;
+  const problemName = getCellValueStr(sheet, 'B1');
   const setNum = Number(sheet['B2'].v);
   const totalNumberOfIndividuals = sheet['B3'].v;
   const characteristicNum = sheet['B4'].v;
-  const fitnessFunction = sheet['B5'].v;
+  // const fitnessFunction = getCellValueStr(sheet, 'B5');
+  const fitnessFunction = getCellValueStr(sheet, 'B5');
 
   let currentRow = 6 + setNum;
   let characteristics = [];
@@ -45,7 +53,7 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
 
   // Load evaluate functions for each set
   for (let j = 0; j < setNum; j++) {
-    const evaluateFunction = sheet[`B${6 + j}`]?.v || '';
+    const evaluateFunction = getCellValueStr(sheet, `B${6 + j}`)
     setEvaluateFunction.push(evaluateFunction);
   }
 
@@ -117,14 +125,21 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
   };
 };
 
+/**
+ * @deprecated
+ * @param workbook
+ * @param sheetNumber
+ * @returns {Promise<{totalNumberOfIndividuals: *, characteristics: *[], setNum: *, fitnessFunction: *, problemName: *, individuals: *[], characteristicNum: *, setEvaluateFunction: *[]}>}
+ */
 export const loadProblemDataOld = async (workbook, sheetNumber) => {
   const sheetName = await workbook.SheetNames[sheetNumber];
   const sheet = await workbook.Sheets[sheetName];
-  const problemName = await sheet['B1']['v'];
-  const setNum = await sheet['B2']['v'];
-  const totalNumberOfIndividuals = await sheet['B3']['v'];
-  const characteristicNum = await sheet['B4']['v'];
-  const fitnessFunction = await sheet['B5']['v'];
+  const problemName = getCellValueStr(sheet, 'B1');
+  const setNum = await getCellValueNum(sheet, 'B2');
+  const totalNumberOfIndividuals = getCellValueNum(sheet, 'B3');
+  const characteristicNum = await getCellValueNum(sheet, 'B4');
+  const fitnessFunction = getCellValueStr(sheet, 'B5');
+
   let currentRow = 6 + Number(setNum);
   let currentIndividual = 0;
   let characteristics = [];
@@ -158,7 +173,8 @@ export const loadProblemDataOld = async (workbook, sheetNumber) => {
 
   // Add evaluate function
   for (let j = 0; j < setNum; j++) {
-    let evaluateFunction = await sheet[`B${6 + j}`]['v'];
+    // let evaluateFunction = await sheet[`B${6 + j}`]['v'];
+    let evaluateFunction = getCellValueStr(sheet, `B${6 + j}`)
     setEvaluateFunction.push(evaluateFunction);
   }
   for (let g = 0; g < setNum; g++) {
@@ -233,3 +249,37 @@ export const loadProblemDataOld = async (workbook, sheetNumber) => {
     setEvaluateFunction,
   };
 };
+
+/**
+ * get cell value as String
+ *
+ * @param sheet
+ * @param address
+ * @returns {string} empty String if error
+ */
+const getCellValueStr = (sheet, address) => {
+  try {
+    return sheet[address]?.v?.toString() || "";
+  } catch (error) {
+    console.error(error);
+    return "";
+  }
+}
+
+/**
+ * get cell value as Number
+ *
+ * @param sheet
+ * @param address
+ * @returns
+ *
+ * @throws error if error
+ */
+const getCellValueNum = (sheet, address) => {
+  try {
+    return parseInt(sheet[address]?.v);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
