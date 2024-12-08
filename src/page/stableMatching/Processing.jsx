@@ -18,8 +18,8 @@ export default function InputProcessingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [algorithm, setAlgorithm] = useState(SMT.DEFAULT_ALGORITHM);
   const [distributedCoreParam, setDistributedCoreParam] = useState(SMT.DEFAULT_CORE_NUM);
-  const [problemType, setProblemType] = useState(SMT.PROBLEM_TYPES.RBO);
-  const [problemTypeOrdinal, setProblemTypeOrdinal] = useState(SMT.PROBLEM_TYPES.RBO.ordinal);
+  const [problemType, setProblemType] = useState(SMT.PROBLEM_TYPES.MTM);
+  const [problemTypeOrdinal, setProblemTypeOrdinal] = useState(SMT.PROBLEM_TYPES.MTM.ordinal);
   const [populationSizeParam, setPopulationSizeParam] = useState(SMT.DEFAULT_POPULATION_SIZE);
   const [generationParam, setGenerationParam] = useState(SMT.DEFAULT_GENERATION_NUM);
   const [maxTimeParam, setMaxTimeParam] = useState(SMT.DEFAULT_MAXTIME);
