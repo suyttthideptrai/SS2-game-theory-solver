@@ -46,6 +46,7 @@ export default function InputPage() {
 
   const [setMany, setSetMany] = useState(
       Array.from({length: colNums}, () => false));
+  const [isUseParallelDriver, setIsUseParallelDriver] = useState(false);
   const navigate = useNavigate();
 
   // useEffect to validate and read file when it changes
@@ -74,28 +75,50 @@ export default function InputPage() {
         const data = e.target.result;
         const workbook = XLSX.read(data, {type: 'binary'});
 
-        let problemInfo = await loadProblemDataParallel(workbook,
-            SMT.INDIVIDUAL_SHEET);
+        let problemInfo;
+        if (isUseParallelDriver) {
+          problemInfo = await loadProblemDataParallel(workbook,
+              SMT.INDIVIDUAL_SHEET);
+        } else {
+          problemInfo = await loadProblemDataOld(workbook,
+              SMT.INDIVIDUAL_SHEET);
+        }
 
-        setAppData({
-          problem: {
-            nameOfProblem: problemInfo.problemName,
-            numberOfSets: problemInfo.setNum,
-            setNames: problemInfo.setNames,
-            setTypes: problemInfo.setTypes,
-            numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
-            individualNames: problemInfo.individualNames,
-            characteristics: problemInfo.characteristics,
-            individualSetIndices: problemInfo.individualSetIndices,
-            individualCapacities: problemInfo.individualCapacities,
-            individualProperties: problemInfo.individualProperties,
-            individualRequirements: problemInfo.individualRequirements,
-            individualWeights: problemInfo.individualWeights,
-            individuals: problemInfo.individuals,
-            fitnessFunction: problemInfo.fitnessFunction,
-            evaluateFunctions: problemInfo.setEvaluateFunction,
-          }
-        })
+        setAppData(
+            isUseParallelDriver
+                ? {
+                  isUseParallelDriver: true,
+                  problem: {
+                    nameOfProblem: problemInfo.problemName,
+                    numberOfSets: problemInfo.setNum,
+                    setNames: problemInfo.setNames,
+                    setTypes: problemInfo.setTypes,
+                    numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
+                    individualNames: problemInfo.individualNames,
+                    characteristics: problemInfo.characteristics,
+                    individualSetIndexes: problemInfo.individualSetIndexes,
+                    individualCapacities: problemInfo.individualCapacities,
+                    individualProperties: problemInfo.individualProperties,
+                    individualRequirements: problemInfo.individualRequirements,
+                    individualWeights: problemInfo.individualWeights,
+                    individuals: problemInfo.individuals,
+                    fitnessFunction: problemInfo.fitnessFunction,
+                    evaluateFunctions: problemInfo.setEvaluateFunction,
+                  },
+                } :
+                {
+                  isUseParallelDriver: false,
+                  problem: {
+                    nameOfProblem: problemInfo.problemName,
+                    numberOfSets: problemInfo.setNum,
+                    numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
+                    characteristics: problemInfo.characteristics,
+                    individuals: problemInfo.individuals,
+                    fitnessFunction: problemInfo.fitnessFunction,
+                    evaluateFunctions: problemInfo.setEvaluateFunction,
+                  },
+                },
+        );
         navigate('/matching-theory/input-processing');
       };
       reader.readAsBinaryString(file);
@@ -207,7 +230,6 @@ export default function InputPage() {
     return !error;
   };
 
-  //TODO: tách hàm riêng vào src/utils/excel_utils.js
   const downloadExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Problem Information');
@@ -600,6 +622,10 @@ export default function InputPage() {
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleChangeIsUseDriver = () => {
+    setIsUseParallelDriver(!isUseParallelDriver);
   };
 
   return (<>

@@ -100,7 +100,10 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
     individualNum = sheet[`D${currentRow}`]?.v || 0;
 
     for (let i = 0; i < individualNum; i++) {
-      const name = sheet[`A${currentRow + 1}`]?.v || '';
+      let name = sheet[`A${currentRow + 1}`]?.v;
+      if (Object.is(name, undefined) || Object.is(name, null) || Object.is(name, '')) {
+        name = `no_name_${i + 1}`;
+      }
       const properties = [];
       const requirements = [];
       const weights = [];
