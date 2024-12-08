@@ -33,7 +33,7 @@ export const MATCHING_PROBLEM_TYPES = Object.freeze({
   OTM: new MatchingProblemType(
       2,
       'One to Many',
-      '/api/stable-matching-oto-solver',
+      '/api/stable-matching-otm-solver',
       '/api/otm-matching-problem-result-insights',
   ),
   MTM: new MatchingProblemType(
