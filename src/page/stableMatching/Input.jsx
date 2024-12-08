@@ -46,7 +46,6 @@ export default function InputPage() {
 
   const [setMany, setSetMany] = useState(
       Array.from({length: colNums}, () => false));
-  const [isUseParallelDriver, setIsUseParallelDriver] = useState(false);
   const navigate = useNavigate();
 
   // useEffect to validate and read file when it changes
@@ -75,50 +74,28 @@ export default function InputPage() {
         const data = e.target.result;
         const workbook = XLSX.read(data, {type: 'binary'});
 
-        let problemInfo;
-        if (isUseParallelDriver) {
-          problemInfo = await loadProblemDataParallel(workbook,
-              SMT.INDIVIDUAL_SHEET);
-        } else {
-          problemInfo = await loadProblemDataOld(workbook,
-              SMT.INDIVIDUAL_SHEET);
-        }
+        let problemInfo = await loadProblemDataParallel(workbook,
+            SMT.INDIVIDUAL_SHEET);
 
-        setAppData(
-            isUseParallelDriver
-                ? {
-                  isUseParallelDriver: true,
-                  problem: {
-                    nameOfProblem: problemInfo.problemName,
-                    numberOfSets: problemInfo.setNum,
-                    setNames: problemInfo.setNames,
-                    setTypes: problemInfo.setTypes,
-                    numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
-                    individualNames: problemInfo.individualNames,
-                    characteristics: problemInfo.characteristics,
-                    individualSetIndexes: problemInfo.individualSetIndexes,
-                    individualCapacities: problemInfo.individualCapacities,
-                    individualProperties: problemInfo.individualProperties,
-                    individualRequirements: problemInfo.individualRequirements,
-                    individualWeights: problemInfo.individualWeights,
-                    individuals: problemInfo.individuals,
-                    fitnessFunction: problemInfo.fitnessFunction,
-                    evaluateFunctions: problemInfo.setEvaluateFunction,
-                  },
-                } :
-                {
-                  isUseParallelDriver: false,
-                  problem: {
-                    nameOfProblem: problemInfo.problemName,
-                    numberOfSets: problemInfo.setNum,
-                    numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
-                    characteristics: problemInfo.characteristics,
-                    individuals: problemInfo.individuals,
-                    fitnessFunction: problemInfo.fitnessFunction,
-                    evaluateFunctions: problemInfo.setEvaluateFunction,
-                  },
-                },
-        );
+        setAppData({
+          problem: {
+            nameOfProblem: problemInfo.problemName,
+            numberOfSets: problemInfo.setNum,
+            setNames: problemInfo.setNames,
+            setTypes: problemInfo.setTypes,
+            numberOfIndividuals: problemInfo.totalNumberOfIndividuals,
+            individualNames: problemInfo.individualNames,
+            characteristics: problemInfo.characteristics,
+            individualSetIndices: problemInfo.individualSetIndices,
+            individualCapacities: problemInfo.individualCapacities,
+            individualProperties: problemInfo.individualProperties,
+            individualRequirements: problemInfo.individualRequirements,
+            individualWeights: problemInfo.individualWeights,
+            individuals: problemInfo.individuals,
+            fitnessFunction: problemInfo.fitnessFunction,
+            evaluateFunctions: problemInfo.setEvaluateFunction,
+          }
+        })
         navigate('/matching-theory/input-processing');
       };
       reader.readAsBinaryString(file);
@@ -624,10 +601,6 @@ export default function InputPage() {
     setIsExpanded(!isExpanded);
   };
 
-  const handleChangeIsUseDriver = () => {
-    setIsUseParallelDriver(!isUseParallelDriver);
-  };
-
   return (<>
     <div className="input-page">
       <button className="show-guideline-btn" onClick={handleShowGuideline}>
@@ -789,18 +762,6 @@ export default function InputPage() {
         </div>
 
       </div>
-      <div className="d-flex align-items-center">
-        <div className="me-2">
-          Use parallel RBO driver (for development purpose):
-        </div>
-        <Checkbox initialChecked={isUseParallelDriver}
-                  onChange={handleChangeIsUseDriver}/>
-      </div>
-      <div className="btn" onClick={handleGetExcelTemplate}>
-        <p>Get Excel Template</p>
-        <img src={ExcelImage} alt=""/>
-      </div>
-
       <div className="guide-box">
         <p>
           Get the Excel file template, input your data, then drag & drop it to

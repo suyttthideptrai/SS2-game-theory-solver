@@ -121,8 +121,10 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
       individualWeights.push(weights);
 
       // Load capacity
-      const capacityValue = sheet[`C${currentRow + 1}`]?.v || 0;
-      individualCapacities.push(capacityValue);
+      const capacityValue = await sheet[`C${currentRow + 1}`]?.v;
+      if (capacityValue !== undefined && capacityValue !== null) {
+        individualCapacities.push(capacityValue);
+      }
 
       currentRow += 3;
     }
