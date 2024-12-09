@@ -79,7 +79,6 @@ export default function InputProcessingPage() {
               true);
         }
       }
-
       const requestBody = {
         problemName: appData.problem.nameOfProblem,
         numberOfSets: appData.problem.numberOfSets,
@@ -91,8 +90,8 @@ export default function InputProcessingPage() {
         individualRequirements: appData.problem.individualRequirements,
         individualWeights: appData.problem.individualWeights,
         fitnessFunction: appData.problem.fitnessFunction,
+        excludePairs: appData.problem.excludePairs,
         evaluateFunctions: evaluateFunctions,
-
         algorithm: algorithm,
         distributedCores: distributedCoreParam,
         populationSize: populationSizeParam,
