@@ -247,7 +247,7 @@ export default function MatchingOutputPage() {
             individualMatches
           }
         </td>
-        <td>{appData.result.data.setSatisfactions[index].toFixed(3)}</td>
+        <td>{appData.result.data.setSatisfactions[index]?.toFixed(3) || 0}</td>
       </tr>
     );
   })

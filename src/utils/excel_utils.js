@@ -1,5 +1,5 @@
 import * as XLSX from '@e965/xlsx';
-import { MATCHING } from '../const/excel_const';
+import {MATCHING} from '../const/excel_const';
 
 /**
  * Tạo một sheet từ thông tin cấu hình máy tính.
@@ -44,15 +44,15 @@ export const createParameterConfigSheet = (appData) => {
  * @returns {Object} - Dữ liệu bài toán
  */
 export const loadProblemDataParallel = async (workbook, sheetNumber) => {
+
   const sheetName = workbook.SheetNames[sheetNumber];
   const sheet = workbook.Sheets[sheetName];
-  
-  // Đọc các giá trị trong Excel
-  const problemName = sheet['B1']?.v || '';
-  const setNum = Number(sheet['B2']?.v) || 0;
-  const totalNumberOfIndividuals = sheet['B3']?.v || 0;
-  const characteristicNum = sheet['B4']?.v || 0;
-  const fitnessFunction = sheet['B5']?.v || '';
+  const problemName = getCellValueStr(sheet, 'B1');
+  const setNum = Number(sheet['B2'].v);
+  const totalNumberOfIndividuals = sheet['B3'].v;
+  const characteristicNum = sheet['B4'].v;
+  // const fitnessFunction = getCellValueStr(sheet, 'B5');
+  const fitnessFunction = getCellValueStr(sheet, 'B5');
 
   let currentRow = 6 + setNum;
   let characteristics = [];
@@ -63,6 +63,7 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
   for (let i = currentColumnIndex; ; i++) {
     const cellAddress = XLSX.utils.encode_cell({ c: i, r: currentRow - 1 });
     const cell = sheet[cellAddress];
+    // Break if cell is empty or undefined
     if (!cell || !cell.v) {
       break;
     }
@@ -87,7 +88,7 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
 
   // Load evaluate functions for each set
   for (let j = 0; j < setNum; j++) {
-    const evaluateFunction = sheet[`B${6 + j}`]?.v || '';
+    const evaluateFunction = getCellValueStr(sheet, `B${6 + j}`)
     setEvaluateFunction.push(evaluateFunction);
   }
 
@@ -109,9 +110,16 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
       const weights = [];
 
       for (let k = 0; k < characteristicNum; k++) {
-        properties.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow })]?.v || 0);
-        requirements.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 1 })]?.v || 0);
-        weights.push(sheet[XLSX.utils.encode_cell({ c: k + 4, r: currentRow + 2 })]?.v || 0);
+        requirements.push(
+            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow})]?.v
+            || 0);
+        weights.push(
+            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow + 1})]?.v
+            || 0);
+        properties.push(
+            sheet[XLSX.utils.encode_cell({c: k + 4, r: currentRow + 2})]?.v
+            || 0);
+
       }
 
       individualNames.push(name);
@@ -153,15 +161,15 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
 };
 
 /**
- * Tải dữ liệu bài toán cũ từ workbook
- * @param {Object} workbook - Workbook Excel chứa dữ liệu bài toán
- * @param {number} sheetNumber - Số thứ tự sheet cần đọc
- * @returns {Object} - Dữ liệu bài toán
+ * @deprecated
+ * @param workbook
+ * @param sheetNumber
+ * @returns {Promise<{totalNumberOfIndividuals: *, characteristics: *[], setNum: *, fitnessFunction: *, problemName: *, individuals: *[], characteristicNum: *, setEvaluateFunction: *[]}>}
  */
 export const loadProblemDataOld = async (workbook, sheetNumber) => {
   const sheetName = workbook.SheetNames[sheetNumber];
   const sheet = workbook.Sheets[sheetName];
-  
+
   // Đọc các giá trị trong Excel
   const problemName = sheet['B1']?.v || '';
   const setNum = sheet['B2']?.v || 0;
@@ -170,12 +178,18 @@ export const loadProblemDataOld = async (workbook, sheetNumber) => {
   const fitnessFunction = sheet['B5']?.v || '';
 
   let currentRow = 6 + Number(setNum);
+  let currentIndividual = 0;
   let characteristics = [];
   let errorMessage = '';
 
   // LOAD CHARACTERISTICS
   for (let i1 = 4; i1 < characteristicNum + 4; i1++) {
-    const characteristicName = sheet[XLSX.utils.encode_cell({ c: i1, r: currentRow - 1 })];
+    const characteristicName = await sheet[
+        XLSX.utils.encode_cell({
+          c: i1,
+          r: currentRow - 1,
+        })
+        ];
 
     if (characteristicName) {
       characteristics.push(characteristicName['v']);
@@ -185,15 +199,19 @@ export const loadProblemDataOld = async (workbook, sheetNumber) => {
   // LOAD SET
   const individuals = [];
   let setEvaluateFunction = [];
-  let setName = null;
-  let setType = null;
+  const row = characteristicNum;
+  const col = 3;
   let individualNum = null;
+  let argumentCell = null;
   let individualName = null;
+  let setType = null;
   let capacity = null;
+  let setName = null;
 
   // Add evaluate function
   for (let j = 0; j < setNum; j++) {
-    const evaluateFunction = sheet[`B${6 + j}`]?.v || '';
+    // let evaluateFunction = await sheet[`B${6 + j}`]['v'];
+    let evaluateFunction = getCellValueStr(sheet, `B${6 + j}`)
     setEvaluateFunction.push(evaluateFunction);
   }
 
@@ -249,3 +267,37 @@ export const loadProblemDataOld = async (workbook, sheetNumber) => {
     setEvaluateFunction,
   };
 };
+
+/**
+ * get cell value as String
+ *
+ * @param sheet
+ * @param address
+ * @returns {string} empty String if error
+ */
+const getCellValueStr = (sheet, address) => {
+  try {
+    return sheet[address]?.v?.toString() || "";
+  } catch (error) {
+    console.error(error);
+    return "";
+  }
+}
+
+/**
+ * get cell value as Number
+ *
+ * @param sheet
+ * @param address
+ * @returns
+ *
+ * @throws error if error
+ */
+const getCellValueNum = (sheet, address) => {
+  try {
+    return parseInt(sheet[address]?.v);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
