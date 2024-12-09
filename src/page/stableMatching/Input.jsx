@@ -14,7 +14,7 @@ import {SMT} from '../../consts';
 import {validateExcelFile} from '../../utils/file_utils';
 import {
   loadProblemDataParallel,
-  loadProblemDataOld,
+  loadExcludePairs
 } from '../../utils/excel_utils';
 import Checkbox from '../../module/core/component/Checkbox';
 
@@ -76,7 +76,8 @@ export default function InputPage() {
 
         let problemInfo = await loadProblemDataParallel(workbook,
             SMT.INDIVIDUAL_SHEET);
-
+        let excludePairs = await loadExcludePairs(workbook,
+            SMT.EXCLUDE_PAIRS_SHEET);
         setAppData({
           problem: {
             nameOfProblem: problemInfo.problemName,
@@ -94,6 +95,7 @@ export default function InputPage() {
             individuals: problemInfo.individuals,
             fitnessFunction: problemInfo.fitnessFunction,
             evaluateFunctions: problemInfo.setEvaluateFunction,
+            excludePairs
           }
         })
         navigate('/matching-theory/input-processing');
