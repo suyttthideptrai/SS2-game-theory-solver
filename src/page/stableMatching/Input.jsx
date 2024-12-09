@@ -760,7 +760,10 @@ export default function InputPage() {
               // iconStyle={{fontSize: '1.2em', verticalAlign: 'center'}}
           />
         </div>
-
+        <div className="btn" onClick={handleGetExcelTemplate}>
+          <p>Get Excel Template</p>
+          <img src={ExcelImage} alt=""/>
+        </div>
       </div>
       <div className="guide-box">
         <p>
