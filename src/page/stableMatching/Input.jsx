@@ -210,6 +210,7 @@ export default function InputPage() {
   const downloadExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Problem Information');
+    const excludePairsWorksheet  = workbook.addWorksheet("Exclude Pairs");
     const guidelinesWorksheet = workbook.addWorksheet('Guidelines');
 
     // Add "Problem Information" worksheet
@@ -314,6 +315,10 @@ export default function InputPage() {
         }
       }
     }
+
+    // Add header to Exclude Pairs
+    excludePairsWorksheet.getCell('A1').value = 'Individual';
+    excludePairsWorksheet.getCell('B1').value = 'Excluded from';
 
     // Add value to header row and merge cells
     guidelinesWorksheet.mergeCells('A1:C1');
