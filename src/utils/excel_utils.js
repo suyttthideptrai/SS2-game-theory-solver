@@ -164,7 +164,7 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
  * Tải dữ liệu Exclude Pairs từ workbook
  * @param {Object} workbook - Workbook Excel chứa dữ liệu bài toán
  * @param {number} sheetNumber - Số thứ tự sheet cần đọc
- * @returns { int : list<int> } -  Exclude Pairs
+ * @returns {Object} -  Exclude Pairs
  */
 export const loadExcludePairs = async (workbook, sheetNumber) => {
   const sheetName = workbook.SheetNames[sheetNumber];
