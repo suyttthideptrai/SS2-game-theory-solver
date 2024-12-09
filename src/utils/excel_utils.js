@@ -178,7 +178,7 @@ export const loadProblemDataOld = async (workbook, sheetNumber) => {
   const fitnessFunction = sheet['B5']?.v || '';
 
   let currentRow = 6 + Number(setNum);
-  let currentIndividual = 0;
+  // let currentIndividual = 0;
   let characteristics = [];
   let errorMessage = '';
 
@@ -199,10 +199,10 @@ export const loadProblemDataOld = async (workbook, sheetNumber) => {
   // LOAD SET
   const individuals = [];
   let setEvaluateFunction = [];
-  const row = characteristicNum;
-  const col = 3;
+  // const row = characteristicNum;
+  // const col = 3;
   let individualNum = null;
-  let argumentCell = null;
+  // let argumentCell = null;
   let individualName = null;
   let setType = null;
   let capacity = null;
