@@ -18,6 +18,8 @@ import { saveAs } from 'file-saver';
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import {getBackendAddress} from '../../utils/http_utils';
+import { createSystemInfoSheet, createParameterConfigSheet , loadProblemDataOld, loadProblemDataParallel } from '../../utils/excel_utils.js';
+
 
 
 
@@ -83,32 +85,11 @@ export default function MatchingOutputPage() {
         XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
   }})
     // write parameter configurations to sheet 2
-    const numberOfCores =
-      appData.result.params.distributedCoreParam === "all"
-        ? "All available cores"
-        : appData.result.params.distributedCoreParam + " cores";
-    const sheet2 = XLSX.utils.aoa_to_sheet([
-      ["Number of distributed cores", numberOfCores],
-      ["Population size", appData.result.params.populationSizeParam],
-      ["Number of crossover generation", appData.result.params.generationParam],
-      [
-        "Optimization execution max time (in milliseconds)",
-        appData.result.params.maxTimeParam,
-      ],
-    ]);
+    const sheet2 = createParameterConfigSheet(appData);
 
     //TODO: tách thành một hàm riêng vào src/utils/excel_utils.js, sử dụng chung cho bên GT (nhớ test lại)
     // write computer specs to sheet 3
-    const sheet3 = XLSX.utils.aoa_to_sheet([
-      ["Operating System Family", appData.insights?.data?.computerSpecs?.osFamily || "unknown" ],
-      ["Operating System Manufacturer", appData.insights?.data?.computerSpecs?.osManufacturer || "unknown" ],
-      ["Operating System Version", appData.insights?.data?.computerSpecs?.osVersion || "unknown" ],
-      ["CPU Name", appData.insights?.data?.computerSpecs?.cpuName || "unknown" ],
-      ["CPU Physical Cores", appData.insights?.data?.computerSpecs?.cpuPhysicalCores || "unknown" ],
-      ["CPU Logical Cores", appData.insights?.data?.computerSpecs?.cpuLogicalCores || "unknown" ],
-      ["Total Memory", appData.insights?.data?.computerSpecs?.totalMemory || "unknown" ],
-    ]);
-
+    const sheet3 = createSystemInfoSheet(appData);
     // append sheets to workbook
     XLSX.utils.book_append_sheet(workbook, sheet1, "Optiomal solution");
     XLSX.utils.book_append_sheet(workbook, sheet2, "Parameter Configurations");

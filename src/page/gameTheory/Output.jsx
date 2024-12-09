@@ -14,6 +14,8 @@ import Popup from '../../module/core/component/Popup';
 import axios from 'axios'
 import ParamSettingBox from '../../module/core/component/ParamSettingBox';
 import PopupContext from '../../module/core/context/PopupContext'
+import { createSystemInfoSheet, createParameterConfigSheet , loadProblemDataOld, loadProblemDataParallel } from '../../utils/excel_utils.js';
+
 
 import SockJS from 'sockjs-client';
 import { v4 } from 'uuid';
@@ -59,24 +61,12 @@ export default function OutputPage() {
 
 
     // write parameter configurations to sheet 2
-    const numberOfCores = appData.result.params.distributedCoreParam === 'all' ? 'All available cores' : appData.result.params.distributedCoreParam + " cores"
-    const sheet2 = XLSX.utils.aoa_to_sheet([
-      ["Number of distributed cores", numberOfCores],
-      ["Population size", appData.result.params.populationSizeParam],
-      ["Number of crossover generation", appData.result.params.generationParam],
-      ["Optimization execution max time (in milliseconds)", appData.result.params.maxTimeParam],
-    ]);
+    const sheet2 = createParameterConfigSheet(appData);
+
 
     // write computer specs to sheet 3
-    const sheet3 = XLSX.utils.aoa_to_sheet([
-      ["Operating System Family", appData.result.data.computerSpecs.osFamily],
-      ["Operating System Manufacturer", appData.result.data.computerSpecs.osManufacturer],
-      ["Operating System Version", appData.result.data.computerSpecs.osVersion],
-      ["CPU Name", appData.result.data.computerSpecs.cpuName],
-      ["CPU Physical Cores", appData.result.data.computerSpecs.cpuLogicalCores],
-      ["CPU Logical Cores", appData.result.data.computerSpecs.cpuPhysicalCores],
-      ["Total Memory", appData.result.data.computerSpecs.totalMemory],
-    ]);
+    const sheet3 = createSystemInfoSheet(appData);
+
 
     // append sheets to workbook
     XLSX.utils.book_append_sheet(workbook, sheet1, 'Optiomal solution');

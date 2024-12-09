@@ -207,7 +207,6 @@ export default function InputPage() {
     return !error;
   };
 
-  //TODO: tách hàm riêng vào src/utils/excel_utils.js
   const downloadExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Problem Information');
@@ -712,7 +711,6 @@ export default function InputPage() {
         </div>
 
         <div className="row">
-          {/*//TODO: thêm phần limit input cho number of set*/}
           <Input
               message="Number of set"
               type="number"
@@ -728,7 +726,6 @@ export default function InputPage() {
         {setNum ? <div className="table">{generateTable()}</div> : null}
 
         <div className="row">
-          {/*//TODO: tương tự, limit 30 characteristics thôi*/}
           <Input
               message="Number of characteristics"
               text="number"
@@ -737,8 +734,8 @@ export default function InputPage() {
               value={characteristicsNum}
               description="A characteristic is the requirements and the properties that an individuals has that affects their weight during matching"
               guideSectionIndex={3}
+              max={30}
           />
-          {/*//TODO: tương tự, limit 50000 individuals*/}
           <Input
               message="Number of total individuals"
               text="number"
@@ -747,6 +744,7 @@ export default function InputPage() {
               value={totalIndividualsNum}
               description="A positive number that reflects the number of individuals in each set involved to ensure that the resulting is valid"
               guideSectionIndex={4}
+              max={50000}
           />
         </div>
 
@@ -764,11 +762,6 @@ export default function InputPage() {
         </div>
 
       </div>
-      <div className="btn" onClick={handleGetExcelTemplate}>
-        <p>Get Excel Template</p>
-        <img src={ExcelImage} alt=""/>
-      </div>
-
       <div className="guide-box">
         <p>
           Get the Excel file template, input your data, then drag & drop it to
