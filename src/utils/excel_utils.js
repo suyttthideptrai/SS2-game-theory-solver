@@ -168,8 +168,9 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
  */
 export const loadExcludePairs = async (workbook, sheetNumber) => {
   const sheetName = workbook.SheetNames[sheetNumber];
-  const sheet = workbook.Sheets[sheetName];
   const result = {};
+  if (sheetName !== "Exclude Pairs") return result;
+  const sheet = workbook.Sheets[sheetName];
   let index = 2;
   while (getCellValueStr(sheet, ("A" + index)) !== "" && getCellValueStr(sheet, ("B" + index)) !== "") {
     const individual = getCellValueNum(sheet, ("A" + index));
