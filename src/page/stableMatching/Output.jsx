@@ -28,7 +28,6 @@ let stompClient = null;
 export default function MatchingOutputPage() {
   const navigate = useNavigate();
   const { appData, setAppData } = useContext(DataContext);
-  const [problemTypeOrdinal, setProblemTypeOrdinal] = useState(null); // Khai báo problemTypeOrdinal trong state
 
   const isParallel = appData.isUseParallelDriver;
 
@@ -46,12 +45,6 @@ export default function MatchingOutputPage() {
   const [generationParam, setGenerationParam] = useState(100);
   const [maxTimeParam, setMaxTimeParam] = useState(5000);
   const [selectedSet, setSelectedSet] = useState("all");
-  const problemType = appData.problemType;    
-
-
-
-
-
   
   const navigateToHome = () => {
     setAppData(null);
@@ -64,7 +57,6 @@ export default function MatchingOutputPage() {
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
   const inputIndividuals = appData.problem.individuals
-
   // Handle filter change
 const handleSetFilterChange = (event) => {
   setSelectedSet(event.target.value);
@@ -380,7 +372,6 @@ const handleSetFilterChange = (event) => {
 
         <div className="d-flex align-items-center justify-content-center"></div>
         <div className="result-information">
-          <p>Problem Type: {problemType.displayName}</p>
           <p>Fitness Value: {fitnessValue}</p>
           <p>Used Algorithm: {usedAlgorithm}</p>
           <p>Runtime: {runtime} ms</p>
