@@ -293,11 +293,97 @@ const getCellValueStr = (sheet, address) => {
  *
  * @throws error if error
  */
-const getCellValueNum = (sheet, address) => {
+export const getCellValueNum = (sheet, address) => {
   try {
     return parseInt(sheet[address]?.v);
   } catch (error) {
     console.error(error);
     throw error;
   }
+}
+
+/**
+ * 
+ * @param {Map<string, number>} fitnessValues
+ * @param {Map<string, number>} runtimes
+ * @param {Map<string, string>} computerSpecs
+ * @param {Map<string, string>} params
+ * @returns {Blob} Excel file
+ */
+export async function exportInsights(fitnessValues, runtimes, computerSpecs, params) {
+    const workbook = XLSX.utils.book_new();
+
+    const algorithms = Object.keys(fitnessValues);
+
+    const sheet1 = XLSX.utils.aoa_to_sheet([
+        ['Iteration',...algorithms]
+    ]);
+
+    const totalRun = fitnessValues[algorithms[0]].length;
+    for (let i = 0; i < totalRun; i++) {
+        const values = Object.values(fitnessValues)
+            .map((values) => values[i]);
+        const row = [i + 1 , ...values];
+
+        XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
+    }
+
+    // write runtime values to the second sheet
+    const sheet2 = XLSX.utils.aoa_to_sheet([['Iteration', ...algorithms]]);
+    for (let i = 0; i < totalRun; i++) {
+        const values = Object
+            .values(runtimes)
+            .map((value) => value[i]);
+        const row = [i + 1 , ...values];
+
+        XLSX.utils.sheet_add_aoa(sheet2, [row], { origin: -1 });
+    }
+
+    // write parameter configurations to the third sheet
+    const numberOfCores = params.distributedCoreParam === 'all'
+        ? 'All available cores'
+        : params.distributedCoreParam + ' cores';
+    const sheet3 = XLSX.utils.aoa_to_sheet([
+      ['Number of distributed cores', numberOfCores],
+      ['Population size', params.populationSizeParam],
+      [
+        'Number of crossover generation',
+        params.generationParam],
+      [
+        'Optimization execution max time (milliseconds)',
+        params.maxTimeParam],
+    ]);
+
+    // write computer specifications to the fourth sheet
+    const sheet4 = XLSX.utils.aoa_to_sheet([
+      [
+        'Operating System Family',
+        computerSpecs?.osFamily || 'unknown'],
+      [
+        'Operating System Manufacturer',
+        computerSpecs?.osManufacturer || 'unknown'],
+      [
+        'Operating System Version',
+        computerSpecs?.osVersion || 'unknown'],
+      ['CPU Name', computerSpecs?.cpuName || 'unknown'],
+      [
+        'CPU Physical Cores',
+        computerSpecs?.cpuPhysicalCores || 'unknown'],
+      [
+        'CPU Logical Cores',
+        computerSpecs?.cpuLogicalCores || 'unknown'],
+      [
+        'Total Memory',
+        computerSpecs?.totalMemory || 'unknown'],
+    ]);
+
+    // add sheets to the workbook
+    XLSX.utils.book_append_sheet(workbook, sheet1, 'Fitness Values');
+    XLSX.utils.book_append_sheet(workbook, sheet2, 'Runtimes');
+    XLSX.utils.book_append_sheet(workbook, sheet3, 'Parameter Configurations');
+    XLSX.utils.book_append_sheet(workbook, sheet4, 'Computer Specifications');
+
+    // save the workbook
+    const wbout = await XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
+    return new Blob([wbout], {type: 'application/octet-stream'});
 }

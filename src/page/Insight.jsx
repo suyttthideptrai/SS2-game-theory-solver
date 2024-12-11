@@ -12,12 +12,10 @@ import InsightsTable from "../module/core/component/InsightsTable";
 export default function InsightPage() {
     const { appData } = useContext(DataContext);
 
-    console.log("here we go:");
-    console.log(appData.insights);
     Chart.register(...registerables);
 
     const handleExportToExcel = async () => {
-        const blob = exportInsights(
+        const blob = await exportInsights(
             appData.insights.data.fitnessValues,
             appData.insights.data.runtimes,
             appData.insights.data.computerSpecs,
