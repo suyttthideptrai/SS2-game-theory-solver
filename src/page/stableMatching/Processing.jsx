@@ -43,6 +43,12 @@ export default function InputProcessingPage() {
       if (SMT.PROBLEM_TYPES[key].ordinal === ordinal) {
         setProblemTypeOrdinal(ordinal);
         setProblemType(SMT.PROBLEM_TYPES[key]);
+        // Cập nhật appData để lưu lại thông tin problemType
+        setAppData((prevData) => ({
+          ...prevData,
+          problemTypeOrdinal: ordinal,
+          problemType: SMT.PROBLEM_TYPES[key],  // Lưu loại bài toán vào appData
+        }));
         return;
       }
     }

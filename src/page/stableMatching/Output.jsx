@@ -41,7 +41,7 @@ export default function MatchingOutputPage() {
   const [generationParam, setGenerationParam] = useState(100);
   const [maxTimeParam, setMaxTimeParam] = useState(5000);
   const [selectedSet, setSelectedSet] = useState("all");
-
+  const problemType = appData.problemType;  
 
 
 
@@ -361,6 +361,7 @@ const filteredMatches = selectedSet === "all"
 
         <div className="d-flex align-items-center justify-content-center"></div>
         <div className="result-information">
+          <p>Problem Type: {problemType.displayName}</p>
           <p>Fitness Value: {fitnessValue}</p>
           <p>Used Algorithm: {usedAlgorithm}</p>
           <p>Runtime: {runtime} ms</p>
