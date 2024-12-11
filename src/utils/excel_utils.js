@@ -8,7 +8,7 @@ import {MATCHING} from '../const/excel_const';
  */
 export const createSystemInfoSheet = (appData) => {
   // Kiểm tra nếu appData hoặc computerSpecs không tồn tại
-  const computerSpecs = appData?.insights?.data?.computerSpecs || {};
+  const computerSpecs = appData?.result?.data?.computerSpecs || {};
 
   return XLSX.utils.aoa_to_sheet([
     ["Operating System Family", computerSpecs.osFamily || "unknown"],
