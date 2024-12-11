@@ -7,6 +7,7 @@ import { saveAs } from "file-saver";
 import ExcelImage from "../module/core/asset/image/excel.png";
 import { exportInsights } from "../utils/excel_utils";
 import InsightsGraph from "../module/core/component/InsightsGraph";
+import InsightsTable from "../module/core/component/InsightsTable";
 
 export default function InsightPage() {
     const { appData } = useContext(DataContext);
@@ -40,33 +41,7 @@ export default function InsightPage() {
                 </div>
             </div>
             <div className="fitness-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th className="first-col">Iteration</th>
-                            <th>NSGAII</th>
-                            <th>NSGAIII</th>
-                            <th>eMOEA</th>
-                            <th>PESA2</th>
-                            <th>VEGA</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            // loop from 1 to 10
-                            Array.from(Array(10).keys()).map((index) => (
-                                <tr key={index}>
-                                    <td className="first-col">{index + 1}</td>
-                                    <td>{appData.insights.data.fitnessValues.NSGAII[index]}</td>
-                                    <td>{appData.insights.data.fitnessValues.NSGAIII[index]}</td>
-                                    <td>{appData.insights.data.fitnessValues.eMOEA[index]}</td>
-                                    <td>{appData.insights.data.fitnessValues.PESA2[index]}</td>
-                                    <td>{appData.insights.data.fitnessValues.VEGA[index]}</td>
-                                </tr>
-                            ))
-                        }
-                    </tbody>
-                </table>
+                <InsightsTable fitnessValues={appData.insights.data.fitnessValues} />
                 <p className="figure-description">
                     Comparison of Fitness Values across different algorithms
                 </p>
