@@ -17,7 +17,6 @@ import { over } from "stompjs";
 import { saveAs } from 'file-saver';
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-import {isStringNullOrEmpty} from '../../utils/string_utils';
 import {getBackendAddress} from '../../utils/http_utils';
 import { createSystemInfoSheet, createParameterConfigSheet , loadProblemDataOld, loadProblemDataParallel } from '../../utils/excel_utils.js';
 
@@ -28,9 +27,6 @@ let stompClient = null;
 export default function MatchingOutputPage() {
   const navigate = useNavigate();
   const { appData, setAppData } = useContext(DataContext);
-
-  const isParallel = appData.isUseParallelDriver;
-
   const [isLoading, setIsLoading] = useState(false);
   const [isShowPopup, setIsShowPopup] = useState(false);
   const { displayPopup } = useContext(PopupContext);
@@ -44,8 +40,6 @@ export default function MatchingOutputPage() {
   const [populationSizeParam, setPopulationSizeParam] = useState(1000);
   const [generationParam, setGenerationParam] = useState(100);
   const [maxTimeParam, setMaxTimeParam] = useState(5000);
-  const [selectedSet, setSelectedSet] = useState("all");
-  
   const navigateToHome = () => {
     setAppData(null);
     navigate("/");
@@ -56,17 +50,7 @@ export default function MatchingOutputPage() {
   }
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
-  const inputIndividuals = appData.problem.individuals
-  // Handle filter change
-const handleSetFilterChange = (event) => {
-  setSelectedSet(event.target.value);
-};
-    
-
-      // Lọc dữ liệu theo giá trị selectedSet
-  const filteredMatches = selectedSet === "all" 
-  ? matchesArray 
-  : matchesArray.filter((_, index) => inputIndividuals[index].setType === Number(selectedSet));
+  const problemData = appData.problem;
 
   const handleExportToExcel = async () => {
     const workbook = XLSX.utils.book_new();
@@ -84,18 +68,19 @@ const handleSetFilterChange = (event) => {
     //   XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
     // });
     matchesArray.forEach((match, index) => {
-      let individualName = inputIndividuals[index].individualName;
+      let individualName = problemData.individualNames[index]
       let individualMatches = "";
       if (Object.values(match).length===0) {
         individualMatches = "There are no individual matches";
       } else {
         for (let i = 0; i < Object.values(match).length; i++) {
+          let name = problemData.individualNames[Object.values(match)[i]];
           if (i === Object.values(match).length - 1) {
-            individualMatches += inputIndividuals[Object.values(match)[i]].individualName;
+            individualMatches += name;
           }else
-          individualMatches += inputIndividuals[Object.values(match)[i]].individualName + ", ";
+          individualMatches += name + ", ";
         }
-        const row=[individualName,individualMatches,appData.result.data.setSatisfactions[index].toFixed(3)]
+        const row=[individualName, individualMatches, appData.result.data.setSatisfactions[index].toFixed(3)]
         console.log(row);
         XLSX.utils.sheet_add_aoa(sheet1, [row], { origin: -1 });
   }})
@@ -125,47 +110,22 @@ const handleSetFilterChange = (event) => {
 
   const handlePopupOk = async () => {
     try {
-      const evaluateFunction = appData.problem.evaluateFunctions || [];
+      const evaluateFunctions = appData.problem.evaluateFunctions || [];
 
       setIsShowPopup(false);
-      const body = isParallel ? {
+      const body = {
         problemName: appData.problem.nameOfProblem,
         numberOfSets: appData.problem.numberOfSets,
         numberOfIndividuals: appData.problem.numberOfIndividuals,
         numberOfProperty: appData.problem.characteristics.length,
-        individualSetIndexes: appData.problem.individualSetIndexes,
+        individualSetIndices: appData.problem.individualSetIndices,
         individualCapacities: appData.problem.individualCapacities,
         individualProperties: appData.problem.individualProperties,
         individualRequirements: appData.problem.individualRequirements,
         individualWeights: appData.problem.individualWeights,
         fitnessFunction: appData.problem.fitnessFunction,
-        evaluateFunction: evaluateFunction,
+        evaluateFunctions: evaluateFunctions,
 
-        distributedCores: distributedCoreParam,
-        populationSize: populationSizeParam,
-        generation: generationParam,
-        maxTime: maxTimeParam,
-      } : {
-        problemName: appData.problem.nameOfProblem,
-        numberOfSets: appData.problem.numberOfSets,
-        //numberOfSets: appData.stableMatchingProblem.sets.length,
-        numberOfIndividuals: appData.problem.numberOfIndividuals,
-        allPropertyNames: appData.problem.characteristics,
-        // mapping over the individuals directly from appData.stableMatchingProblem
-        // and creating a new array of objects based on the properties of each individual.
-        // This assumes that appData.stableMatchingProblem directly contains an array of individuals
-
-        Individuals: appData.problem.individuals.map((individual) => ({
-          // IndividualSet: individual.set,
-
-          SetType: individual.setType,
-          IndividualName: individual.individualName,
-          Capacity: individual.capacity,
-          Properties: individual.argument.map((arg) => [...arg]),
-        })),
-        fitnessFunction: appData.problem.fitnessFunction,
-        // evaluateFunction: Object.fromEntries(evaluateFunctionStrings),
-        evaluateFunction: evaluateFunction,
         distributedCores: distributedCoreParam,
         populationSize: populationSizeParam,
         generation: generationParam,
@@ -261,49 +221,36 @@ const handleSetFilterChange = (event) => {
 
   // Success couple
   matchesArray.forEach((match, index) => {
-    const individualName = inputIndividuals[index].individualName;
-    const individualSet = inputIndividuals[index].setType; // Lấy giá trị "First Partner Set"
-    let individualMatches = "";
-  
-    // Kiểm tra nếu match là null hoặc undefined
-    const matchValues = Object.values(match || {}); 
-  
-    if (matchValues.length === 0) {
+    let individualName = problemData.individualNames[index];
+    var individualMatches = "";
+    if (Object.values(match).length === 0) {
       individualMatches = "There are no individual matches";
     } else {
-      individualMatches = matchValues
-        .map((matchIndex) => inputIndividuals[matchIndex].individualName)
-        .join(", ");
+      for (let i = 0; i < Object.values(match).length; i++) {
+        let name = problemData.individualNames[Object.values(match)[i]];
+        if (i === Object.values(match).length - 1) {
+          individualMatches += name;
+        }else
+        individualMatches += name + ", ";
+      }
     }
-  
-    // Lấy giá trị satisfaction từ appData, đảm bảo sự tồn tại của appData
-    const satisfaction = (appData.result.data.setSatisfactions && appData.result.data.setSatisfactions[index] !== undefined)
-      ? appData.result.data.setSatisfactions[index]
-      : null;
-  
-    // Debugging: log giá trị satisfaction
-    console.log("Satisfaction for index " + index + ": ", satisfaction);
-  
-    // Chỉ push vào htmlOutput nếu individualSet == selectedSet
-    if (selectedSet === "all" || individualSet === Number(selectedSet) - 1) {
+
+    fileContent += `${individualName} -> ${individualMatches}\n`;
+
     htmlOutput.push(
-        <tr className="table-success" key={"C" + (index + 1)}>
+      <tr className="table-success" key={"C" + (index+1)}>
+        {/* <td>Couple {index + 1}</td> */}
         <td>{individualName}</td>
-          <td>{individualMatches}</td>
-          <td>{(typeof satisfaction === 'number' && !isNaN(satisfaction)) ? satisfaction.toFixed(3) : ""}</td>
-          <td>Set {individualSet + 1}</td> {/* Đảm bảo individualSet hiển thị ở cột cuối */}
+        <td>
+          {
+            // appData.result.data.individuals[Object.values(match)[2]].IndividualName
+            individualMatches
+          }
+        </td>
+        <td>{appData.result.data.setSatisfactions[index]?.toFixed(3) || 0}</td>
       </tr>
     );
-    }
-  });
-  
-  
-  
-
-  
-  
-  
-  
+  })
 
   // LeftOves
   let leftoverArray = [];
@@ -311,12 +258,10 @@ const handleSetFilterChange = (event) => {
     htmlLeftOvers.push(
       <tr className="table-danger" key={"L" + index}>
         <td>{index+1}</td>
-        <td>{inputIndividuals[individual].individualName}</td>
+        <td>{problemData.individualNames[individual]}</td>
       </tr>
     );
-    leftoverArray.push(
-      appData.problem.individuals[individual].IndividualName
-    );
+    leftoverArray.push(problemData.individualNames[individual]);
   });
   fileContent += `Left over = [${leftoverArray}]`;
 
@@ -381,23 +326,6 @@ const handleSetFilterChange = (event) => {
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
           THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
         </h3>
-        <div className="filter-container">
-        <label htmlFor="setFilter">Filter by set: </label>
-        <select
-          id="setFilter"
-          value={selectedSet}
-          onChange={handleSetFilterChange}
-          style={{ marginLeft: 10, marginBottom: 20 }}
-        >
-          <option value="all">All</option>
-          {Array.from({ length: appData.problem.numberOfSets }, (_, i) => (
-            <option key={`set-${i + 1}`} value={i + 1}>
-              Set {i + 1}
-            </option>
-          ))}
-        </select>
-      </div>
-
         <Table striped bordered hover responsive>
           <thead>
             <tr className="table-success">
@@ -405,10 +333,8 @@ const handleSetFilterChange = (event) => {
               <th>First Partner</th>
               <th>Second Partner</th>
               <th>Couple fitness</th>
-              <th>First Partner Set</th> {/* Thêm cột mới */}
             </tr>
           </thead>
-          
           <tbody>{htmlOutput}</tbody>
         </Table>
 
