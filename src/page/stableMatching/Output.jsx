@@ -354,8 +354,8 @@ const filteredMatches = selectedSet === "all"
             setMaxTimeParam={setMaxTimeParam}
           />
           <div className="btn insight-btn" onClick={handleGetMoreInsights}>
-            <p>Get more insights</p>
             <img src={GraphImage} alt="" />
+            <p className="mb-0">Get more insights</p>
           </div>
         </div>
 
@@ -367,85 +367,67 @@ const filteredMatches = selectedSet === "all"
           <p>Runtime: {runtime} ms</p>
         </div>
       </div>
-      <div className="view-1" style={{ display: "block" }}>
-        <h3 style={{ marginBottom: 20, marginTop: 40 }}>
-          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
+      <div className="view-1" style={{display: "block"}}>
+        <div className="d-flex">
+          <Button
+              variant="success"
+              size="md"
+              style={{justifyContent: "center", margin: "auto", width: 150}}
+              onClick={handleExportToExcel}
+          >
+            Export result
+          </Button>
+        </div>
+        <h3 style={{marginBottom: 20, marginTop: 40}}>
+          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM s
         </h3>
         <div className="filter-container">
-        <label htmlFor="setFilter">Filter by set: </label>
-        <select
-          id="setFilter"
-          value={selectedSet}
-          onChange={handleSetFilterChange}
-          style={{ marginLeft: 10, marginBottom: 20 }}
-        >
-          <option value="all">All</option>
-          {Array.from({ length: appData.problem.numberOfSets }, (_, i) => (
-            <option key={`set-${i +1 }`} value={i + 1}>
-              Set {i + 1}
-            </option>
-          ))}
-        </select>
-      </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          <label htmlFor="setFilter">Filter by set: </label>
+          <select
+              id="setFilter"
+              value={selectedSet}
+              onChange={handleSetFilterChange}
+              style={{marginLeft: 10, marginBottom: 20}}
+          >
+            <option value="all">All</option>
+            {Array.from({length: appData.problem.numberOfSets}, (_, i) => (
+                <option key={`set-${i + 1}`} value={i + 1}>
+                  Set {i + 1}
+                </option>
+            ))}
+          </select>
+        </div>
 
 
         <Table striped bordered hover responsive>
           <thead>
-            <tr className="table-success">
-              {/* <th>#</th> */}
-              <th>First Partner</th>
-              <th>Second Partner</th>
-              <th>Couple fitness</th>
-              <th>First Partner Set</th> {/* Thêm cột mới */}
-            </tr>
+          <tr className="table-success">
+            {/* <th>#</th> */}
+            <th>First Partner</th>
+            <th>Second Partner</th>
+            <th>Couple fitness</th>
+            <th>First Partner Set</th>
+            {/* Thêm cột mới */}
+          </tr>
           </thead>
-          
+
           <tbody>{htmlOutput}</tbody>
         </Table>
 
-        <h3 style={{ marginBottom: 20, marginTop: 40 , textAlign:"center"}}>
+        <h3 style={{marginBottom: 20, marginTop: 40, textAlign: "center"}}>
           THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
         </h3>
         <Table striped bordered hover responsive>
           <thead>
-            <tr className="table-danger">
-              <th>No.</th>
-              <th>Name</th>
-            </tr>
+          <tr className="table-danger">
+            <th>No.</th>
+            <th>Name</th>
+          </tr>
           </thead>
           <tbody>{htmlLeftOvers}</tbody>
         </Table>
-        <div className="d-grid gap-2">
-          <Button
-            variant="primary"
-            size="md"
-            style={{ justifyContent: "center", margin: "auto", width: 150 }}
-            onClick={handleExportToExcel}
-          >
-            Get Result
-          </Button>
-        </div>
         {/* {console.log(appData.result.data.individuals)} */}
       </div>
-      </div>
+    </div>
   );
 }
