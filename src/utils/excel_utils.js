@@ -48,10 +48,9 @@ export const loadProblemDataParallel = async (workbook, sheetNumber) => {
   const sheetName = workbook.SheetNames[sheetNumber];
   const sheet = workbook.Sheets[sheetName];
   const problemName = getCellValueStr(sheet, 'B1');
-  const setNum = Number(sheet['B2'].v);
-  const totalNumberOfIndividuals = sheet['B3'].v;
-  const characteristicNum = sheet['B4'].v;
-  // const fitnessFunction = getCellValueStr(sheet, 'B5');
+  const setNum = getCellValueNum(sheet, 'B2');
+  const totalNumberOfIndividuals = getCellValueNum(sheet, 'B3');
+  const characteristicNum = getCellValueNum(sheet, 'B4');
   const fitnessFunction = getCellValueStr(sheet, 'B5');
 
   let currentRow = 6 + setNum;
@@ -300,7 +299,8 @@ const getCellValueStr = (sheet, address) => {
   try {
     return sheet[address]?.v?.toString() || "";
   } catch (error) {
-    console.error(error);
+    console.error('Error parsing string cell value, address: '
+        + address + ' , details: ' + error);
     return "";
   }
 }
@@ -315,12 +315,11 @@ const getCellValueStr = (sheet, address) => {
  * @throws error if error
  */
 export const getCellValueNum = (sheet, address) => {
-  try {
-    return parseInt(sheet[address]?.v);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+    let val = Number(sheet[address]?.v);
+    if (Number.isNaN(val)) {
+      throw TypeError('Invalid number format, cell address: ' + address);
+    }
+    return val;
 }
 
 /**
