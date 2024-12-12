@@ -40,6 +40,13 @@ export default function MatchingOutputPage() {
   const [populationSizeParam, setPopulationSizeParam] = useState(1000);
   const [generationParam, setGenerationParam] = useState(100);
   const [maxTimeParam, setMaxTimeParam] = useState(5000);
+  const [selectedSet, setSelectedSet] = useState("all");
+  const problemType = appData.problemType;  
+
+
+
+
+  
   const navigateToHome = () => {
     setAppData(null);
     navigate("/");
@@ -50,7 +57,22 @@ export default function MatchingOutputPage() {
   }
   const matchesArray = appData.result.data.matches.matches;
   const leftOversArray = appData.result.data.matches.leftOvers;
+  const inputIndividuals = appData.problem.individuals
   const problemData = appData.problem;
+  // Handle filter change
+  const handleSetFilterChange = (event) => {
+    setSelectedSet(event.target.value); // Cập nhật giá trị đã chọn
+  };
+
+// Lọc dữ liệu theo giá trị selectedSet
+const filteredMatches = selectedSet === "all" 
+  ? matchesArray 
+  : matchesArray.filter((_, index) => {
+      const individual = inputIndividuals[index]; // Lấy cá nhân tại chỉ số index
+      return individual?.setType === (Number(selectedSet) - 1); // So sánh với setType - 1
+    });
+
+
 
   const handleExportToExcel = async () => {
     const workbook = XLSX.utils.book_new();
@@ -69,6 +91,7 @@ export default function MatchingOutputPage() {
     // });
     matchesArray.forEach((match, index) => {
       let individualName = problemData.individualNames[index]
+
       let individualMatches = "";
       if (Object.values(match).length===0) {
         individualMatches = "There are no individual matches";
@@ -218,39 +241,60 @@ export default function MatchingOutputPage() {
   // Loop through result
 
   let fileContent = "";
-
+  
   // Success couple
   matchesArray.forEach((match, index) => {
-    let individualName = problemData.individualNames[index];
-    var individualMatches = "";
-    if (Object.values(match).length === 0) {
+    // Lấy individualSet từ individualSetIndices (mặc định là 0 nếu không có)
+    let individualSet = appData.problem.individualSetIndices?.[index] ?? 0;
+  
+    // Kiểm tra nếu set đã chọn không phải là "all" và không khớp với individualSet
+    if (selectedSet !== "all" && individualSet !== (Number(selectedSet) - 1)) {
+      return; // Bỏ qua phần tử không thuộc set đã chọn
+    }
+  
+    // Lấy tên cá nhân
+    let individualName = problemData.individualNames?.[index] || "Unknown";
+  
+    let individualMatches = "";
+  
+    // Kiểm tra nếu match tồn tại và có giá trị
+    if (!match || Object.keys(match).length === 0) {
       individualMatches = "There are no individual matches";
     } else {
-      for (let i = 0; i < Object.values(match).length; i++) {
-        let name = problemData.individualNames[Object.values(match)[i]];
-        if (i === Object.values(match).length - 1) {
-          individualMatches += name;
-        }else
-        individualMatches += name + ", ";
-      }
+      Object.values(match).forEach((matchIndex, i, arr) => {
+        // Lấy tên cá nhân từ individualNames
+        let name = problemData.individualNames?.[matchIndex] || "Unknown";
+        individualMatches += name + (i === arr.length - 1 ? "" : ", ");
+      });
     }
-
+  
+    // Thêm thông tin vào fileContent
     fileContent += `${individualName} -> ${individualMatches}\n`;
-
+  
+    // Đẩy dữ liệu vào htmlOutput
     htmlOutput.push(
-      <tr className="table-success" key={"C" + (index+1)}>
-        {/* <td>Couple {index + 1}</td> */}
+      <tr className="table-success" key={`C${index + 1}`}>
         <td>{individualName}</td>
-        <td>
-          {
-            // appData.result.data.individuals[Object.values(match)[2]].IndividualName
-            individualMatches
-          }
-        </td>
-        <td>{appData.result.data.setSatisfactions[index]?.toFixed(3) || 0}</td>
+        <td>{individualMatches}</td>
+        <td>{appData.result?.data?.setSatisfactions?.[index]?.toFixed(3) || 0}</td>
+        <td>Set {individualSet + 1}</td> {/* Hiển thị set đúng như "Set 1" */}
       </tr>
     );
-  })
+  });
+  
+  
+
+
+
+
+  
+  
+  
+
+  
+  
+  
+  
 
   // LeftOves
   let leftoverArray = [];
@@ -317,6 +361,7 @@ export default function MatchingOutputPage() {
 
         <div className="d-flex align-items-center justify-content-center"></div>
         <div className="result-information">
+          <p>Problem Type: {problemType.displayName}</p>
           <p>Fitness Value: {fitnessValue}</p>
           <p>Used Algorithm: {usedAlgorithm}</p>
           <p>Runtime: {runtime} ms</p>
@@ -326,6 +371,43 @@ export default function MatchingOutputPage() {
         <h3 style={{ marginBottom: 20, marginTop: 40 }}>
           THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
         </h3>
+        <div className="filter-container">
+        <label htmlFor="setFilter">Filter by set: </label>
+        <select
+          id="setFilter"
+          value={selectedSet}
+          onChange={handleSetFilterChange}
+          style={{ marginLeft: 10, marginBottom: 20 }}
+        >
+          <option value="all">All</option>
+          {Array.from({ length: appData.problem.numberOfSets }, (_, i) => (
+            <option key={`set-${i +1 }`} value={i + 1}>
+              Set {i + 1}
+            </option>
+          ))}
+        </select>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <Table striped bordered hover responsive>
           <thead>
             <tr className="table-success">
@@ -333,8 +415,10 @@ export default function MatchingOutputPage() {
               <th>First Partner</th>
               <th>Second Partner</th>
               <th>Couple fitness</th>
+              <th>First Partner Set</th> {/* Thêm cột mới */}
             </tr>
           </thead>
+          
           <tbody>{htmlOutput}</tbody>
         </Table>
 

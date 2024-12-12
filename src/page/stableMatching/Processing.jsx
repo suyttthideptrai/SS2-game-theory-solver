@@ -43,6 +43,12 @@ export default function InputProcessingPage() {
       if (SMT.PROBLEM_TYPES[key].ordinal === ordinal) {
         setProblemTypeOrdinal(ordinal);
         setProblemType(SMT.PROBLEM_TYPES[key]);
+        // Cập nhật appData để lưu lại thông tin problemType
+        setAppData((prevData) => ({
+          ...prevData,
+          problemTypeOrdinal: ordinal,
+          problemType: SMT.PROBLEM_TYPES[key],  // Lưu loại bài toán vào appData
+        }));
         return;
       }
     }
@@ -79,7 +85,6 @@ export default function InputProcessingPage() {
               true);
         }
       }
-
       const requestBody = {
         problemName: appData.problem.nameOfProblem,
         numberOfSets: appData.problem.numberOfSets,
@@ -91,8 +96,8 @@ export default function InputProcessingPage() {
         individualRequirements: appData.problem.individualRequirements,
         individualWeights: appData.problem.individualWeights,
         fitnessFunction: appData.problem.fitnessFunction,
+        excludePairs: appData.problem.excludePairs,
         evaluateFunctions: evaluateFunctions,
-
         algorithm: algorithm,
         distributedCores: distributedCoreParam,
         populationSize: populationSizeParam,
