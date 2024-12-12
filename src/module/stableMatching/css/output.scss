@@ -69,6 +69,24 @@
     gap: 20px;
   }
 
+  .scrollPanel {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 5px;
+    right: 30px;
+    bottom: 20px;
+    position: fixed;
+  }
+
+  .autoscrollButton{
+    padding: .6rem 1.2rem;
+    background: #3d3a3a;
+    color: white;
+    opacity: 0.5;
+    border: none;
+    border-radius: 6px;
+  }
+
   .param-box {
     background: var(--grey);
     display: flex;
