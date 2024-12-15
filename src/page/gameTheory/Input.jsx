@@ -150,8 +150,9 @@ export default function InputPage() {
                 isMaximizing
             }
         } catch (error) {
-            setIsLoading(false)
-            displayPopup("Something went wrong!", "Error when loading the Problem Information sheet", true)
+            console.error(error);
+            setIsLoading(false);
+            displayPopup("Something went wrong!", "Error when loading the Problem Information sheet", true);
         }
     }
 
@@ -173,8 +174,9 @@ export default function InputPage() {
                 weights
             }
         } catch (error) {
-            setIsLoading(false)
-            displayPopup("Something went wrong!", "Error when loading the Special Player sheet", true)
+            console.error(error);
+            setIsLoading(false);
+            displayPopup("Something went wrong!", "Error when loading the Special Player sheet", true);
 
         }
     }
@@ -193,7 +195,8 @@ export default function InputPage() {
                 const playerNameCell = normalPlayerWorkSheet[`A${currentRow}`];
                 const playerName = playerNameCell ? playerNameCell.v : `Player ${currentPlayer + 1}`; // because the player name is optional
                 const strategyNumber = await normalPlayerWorkSheet[`B${currentRow}`].v;
-                
+                // console.log(`name address: A${currentRow}, name value: ${playerName} , strat number: B${currentRow}`);
+
                 if (!strategyNumber || typeof strategyNumber !== 'number') {
                     errorMessage = `Error when loading player#${currentPlayer + 1}, row = ${currentRow} . Number of strategies is invalid`
                     throw new Error()
@@ -256,11 +259,12 @@ export default function InputPage() {
 
             return players
         } catch (error) {
+            console.error(error);
             if (!errorMessage) {
                 errorMessage = `Error when loading Normal Player sheet, row = ${currentRow}.`
             }
-            setIsLoading(false)
-            displayPopup("Something went wrong!", errorMessage, true)
+            setIsLoading(false);
+            displayPopup("Something went wrong!", errorMessage, true);
         }
     }
 
