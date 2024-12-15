@@ -10,7 +10,7 @@ import ParamSettingBox from '../../module/core/component/ParamSettingBox';
 import PopupContext from '../../module/core/context/PopupContext';
 import {SMT, SMT_VALIDATE} from '../../consts';
 import {getBackendAddress} from '../../utils/http_utils';
-import {ALGORITHMS} from '../../const/algorithm_const';
+import {SMT_ALGORITHMS} from '../../const/matching_const';
 
 export default function InputProcessingPage() {
   const navigate = useNavigate();
@@ -238,7 +238,7 @@ export default function InputProcessingPage() {
                   onChange={handleChange}
                   className="algorithm-select"
           >
-            {ALGORITHMS.map(({displayName, value}) => (
+            {SMT_ALGORITHMS.map(({displayName, value}) => (
                 <option key={value} value={value}>
                   {displayName}
                 </option>

@@ -10,7 +10,7 @@ import NothingToShow from '../../module/core/component/NothingToShow';
 import Loading from '../../module/core/component/Loading';
 import ParamSettingBox from '../../module/core/component/ParamSettingBox';
 import PopupContext from '../../module/core/context/PopupContext';
-import {SMT} from '../../consts';
+import {GT_ALGORITHMS} from '../../const/game_theory_const';
 export default function InputProcessingPage() {
     const navigate = useNavigate();
     const {appData, setAppData} = useContext(DataContext);
@@ -107,7 +107,7 @@ export default function InputProcessingPage() {
                 <p className='algorithm-text bold'>Choose an algorithm: </p>
 
                 <select name="" id="" value={algorithm} onChange={handleChange} className='algorithm-select'>
-                    {SMT.ALGORITHMS.map(({displayName, value}) => (
+                    {GT_ALGORITHMS.map(({displayName, value}) => (
                         <option key={value} value={value}>
                             {displayName}
                         </option>
