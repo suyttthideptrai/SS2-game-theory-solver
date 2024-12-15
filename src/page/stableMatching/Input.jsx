@@ -102,10 +102,10 @@ export default function InputPage() {
       };
       reader.readAsBinaryString(file);
     } catch (error) {
-      console.error('Error details:', error); // In ra lỗi chi tiết
+      console.error(error);
       setIsLoading(false);
       displayPopup('Something went wrong!',
-          `Error: ${error.message || 'Unknown error'}. Please check the input file or contact the admin.`, true);
+          'Check the input file again for contact the admin!', true);
     }
   };
 
