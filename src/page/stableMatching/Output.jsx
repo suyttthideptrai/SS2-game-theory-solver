@@ -306,6 +306,7 @@ const filteredMatches = selectedSet === "all"
       <tr className="table-danger" key={"L" + index}>
         <td>{index+1}</td>
         <td>{problemData.individualNames[individual]}</td>
+        <td >Set {problemData.individualSetIndices[individual] + 1}</td> {/* Hiển thị set */}
       </tr>
     );
     leftoverArray.push(problemData.individualNames[individual]);
@@ -401,6 +402,7 @@ const filteredMatches = selectedSet === "all"
                 style={{marginLeft: 10, marginBottom: 20}}
             >
               <option value="all">All</option>
+              <option value="leftovers">LEFTOVERS</option>
               {Array.from({length: appData.problem.numberOfSets}, (_, i) => (
                   <option key={`set-${i + 1}`} value={i + 1}>
                     Set {i + 1}
@@ -433,6 +435,7 @@ const filteredMatches = selectedSet === "all"
             <tr className="table-danger">
               <th>No.</th>
               <th>Name</th>
+              <th>Set</th>
             </tr>
             </thead>
             <tbody>{htmlLeftOvers}</tbody>
