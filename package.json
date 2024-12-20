@@ -39,7 +39,7 @@
     "eject": "react-scripts eject",
 
     "_comment": "For maven to shutdown developement server",
-    "stop": "cross-port-killer 3000"
+    "stop": "npx cross-port-killer 3000"
   },
   "eslintConfig": {
     "extends": [
