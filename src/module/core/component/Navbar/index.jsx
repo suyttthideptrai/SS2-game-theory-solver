@@ -18,7 +18,10 @@ export default function Header() {
         <>
             <header className="Navbar">
             <div className="container">
-                <div className="app-name" onClick={backToHome}>Game Theory & Matching Theory Solver</div>
+                <div className="app-name" onClick={backToHome}>
+                    <img src="/logo.png" className="me-2 logo"/>
+                    Game Theory & Matching Theory Solver
+                </div>
                 <div className="nav-item-container">
                     <Link to='/' className={path == "/" ? "nav-item highlight" : 'nav-item'}>Game Theory</Link> 
                     <Link to='/matching-theory/input' className={path == "/matching-theory/input" ? "nav-item highlight" : 'nav-item'}>Matching Problem</Link>

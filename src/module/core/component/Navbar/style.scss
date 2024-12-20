@@ -3,7 +3,6 @@
     margin: 0;
     background: #20262E;
     color: white;
-    
 
     .container {
         max-width: 1200px;
@@ -13,6 +12,10 @@
         align-items: center;
         margin: 0 auto;
 
+        .logo {
+            filter: invert(100%);
+            width: 25px;
+        }
 
         .app-name {
             font-size: 1.3rem;
