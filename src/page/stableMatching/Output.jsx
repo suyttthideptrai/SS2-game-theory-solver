@@ -72,7 +72,10 @@ const filteredMatches = selectedSet === "all"
       return individual?.setType === (Number(selectedSet) - 1); // So sánh với setType - 1
     });
 
-
+  const scroll = (pos) => {
+    document.body.scrollTop = pos; // For Safari
+    document.documentElement.scrollTop = pos;
+  }
 
   const handleExportToExcel = async () => {
     const workbook = XLSX.utils.book_new();
@@ -303,6 +306,7 @@ const filteredMatches = selectedSet === "all"
       <tr className="table-danger" key={"L" + index}>
         <td>{index+1}</td>
         <td>{problemData.individualNames[individual]}</td>
+        <td >Set {problemData.individualSetIndices[individual] + 1}</td> {/* Hiển thị set */}
       </tr>
     );
     leftoverArray.push(problemData.individualNames[individual]);
@@ -321,131 +325,123 @@ const filteredMatches = selectedSet === "all"
 
     // Define your state variables here
   return (
-    <div className="matching-output-page">
-      <h2 id="head-title">MATCHING THEORY OUTPUT PAGE</h2>
-      <Popup
-        isShow={isShowPopup}
-        setIsShow={setIsShowPopup}
-        title={"Get detailed insights"}
-        // message={`This process can take estimated ${data.estimatedWaitingTime || 1} minute(s) and you will be redirected to another page. Do you want to continue?`}
-        message={`This process can take a while do you to continue?`}
-        okCallback={handlePopupOk}
-      />
+      <div className="matching-output-page">
+        <div className="scrollPanel">
+          <button className="autoscrollButton" onClick={() => scroll(0)}>
+            &#11165;
+          </button>
+          <button className="autoscrollButton" onClick={() => scroll(document.body.scrollHeight)}>
+            &#11167;
+          </button>
+        </div>
+        <h2 id="head-title">MATCHING THEORY OUTPUT PAGE</h2>
+        <Popup
+            isShow={isShowPopup}
+            setIsShow={setIsShowPopup}
+            title={"Get detailed insights"}
+            // message={`This process can take estimated ${data.estimatedWaitingTime || 1} minute(s) and you will be redirected to another page. Do you want to continue?`}
+            message={`This process can take a while do you to continue?`}
+            okCallback={handlePopupOk}
+        />
 
-      {/* <Loading isLoading={isLoading} message={`Get more detailed insights. This can take estimated ${data.estimatedWaitingTime || 1} minute(s)...`} /> */}
-      <Loading
-        isLoading={isLoading}
-        percentage={loadingPercentage}
-        estimatedTime={loadingEstimatedTime}
-        message={loadingMessage}
-      />
-      <br />
-      <p className="below-headertext">Optimal solution</p>
-      <div className="output-container">
-        <div className="param-box">
-          <ParamSettingBox
-            distributedCoreParam={distributedCoreParam}
-            setDistributedCoreParam={setDistributedCoreParam}
-            generationParam={generationParam}
-            setGenerationParam={setGenerationParam}
-            populationSizeParam={populationSizeParam}
-            setPopulationSizeParam={setPopulationSizeParam}
-            maxTimeParam={maxTimeParam}
-            setMaxTimeParam={setMaxTimeParam}
-          />
-          <div className="btn insight-btn" onClick={handleGetMoreInsights}>
-            <p>Get more insights</p>
-            <img src={GraphImage} alt="" />
+        {/* <Loading isLoading={isLoading} message={`Get more detailed insights. This can take estimated ${data.estimatedWaitingTime || 1} minute(s)...`} /> */}
+        <Loading
+            isLoading={isLoading}
+            percentage={loadingPercentage}
+            estimatedTime={loadingEstimatedTime}
+            message={loadingMessage}
+        />
+        <br/>
+        <p className="below-headertext">Optimal solution</p>
+        <div className="output-container">
+          <div className="param-box">
+            <ParamSettingBox
+                distributedCoreParam={distributedCoreParam}
+                setDistributedCoreParam={setDistributedCoreParam}
+                generationParam={generationParam}
+                setGenerationParam={setGenerationParam}
+                populationSizeParam={populationSizeParam}
+                setPopulationSizeParam={setPopulationSizeParam}
+                maxTimeParam={maxTimeParam}
+                setMaxTimeParam={setMaxTimeParam}
+            />
+            <div className="btn insight-btn" onClick={handleGetMoreInsights}>
+              <img src={GraphImage} alt=""/>
+              <p className="mb-0">Get more insights</p>
+            </div>
+          </div>
+
+          <div className="d-flex align-items-center justify-content-center"></div>
+          <div className="result-information">
+            <p>Problem Type: {problemType.displayName}</p>
+            <p>Fitness Value: {fitnessValue}</p>
+            <p>Used Algorithm: {usedAlgorithm}</p>
+            <p>Runtime: {runtime} ms</p>
           </div>
         </div>
-
-        <div className="d-flex align-items-center justify-content-center"></div>
-        <div className="result-information">
-          <p>Problem Type: {problemType.displayName}</p>
-          <p>Fitness Value: {fitnessValue}</p>
-          <p>Used Algorithm: {usedAlgorithm}</p>
-          <p>Runtime: {runtime} ms</p>
-        </div>
-      </div>
-      <div className="view-1" style={{ display: "block" }}>
-        <h3 style={{ marginBottom: 20, marginTop: 40 }}>
-          THE COUPLES AFTER GALE-SHAPLEY ALGORITHM
-        </h3>
-        <div className="filter-container">
-        <label htmlFor="setFilter">Filter by set: </label>
-        <select
-          id="setFilter"
-          value={selectedSet}
-          onChange={handleSetFilterChange}
-          style={{ marginLeft: 10, marginBottom: 20 }}
-        >
-          <option value="all">All</option>
-          {Array.from({ length: appData.problem.numberOfSets }, (_, i) => (
-            <option key={`set-${i +1 }`} value={i + 1}>
-              Set {i + 1}
-            </option>
-          ))}
-        </select>
-      </div>
-
-
-
-
+        <div className="view-1" style={{display: "block"}}>
+          <div className="d-flex">
+            <Button
+                variant="success"
+                size="md"
+                style={{justifyContent: "center", margin: "auto", width: 150}}
+                onClick={handleExportToExcel}
+            >
+              Export result
+            </Button>
+          </div>
+          <h3 style={{marginBottom: 20, marginTop: 40}}>
+            THE COUPLES AFTER GALE-SHAPLEY ALGORITHM s
+          </h3>
+          <div className="filter-container">
+            <label htmlFor="setFilter">Filter by set: </label>
+            <select
+                id="setFilter"
+                value={selectedSet}
+                onChange={handleSetFilterChange}
+                style={{marginLeft: 10, marginBottom: 20}}
+            >
+              <option value="all">All</option>
+              <option value="leftovers">LEFTOVERS</option>
+              {Array.from({length: appData.problem.numberOfSets}, (_, i) => (
+                  <option key={`set-${i + 1}`} value={i + 1}>
+                    Set {i + 1}
+                  </option>
+              ))}
+            </select>
+          </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <Table striped bordered hover responsive>
-          <thead>
+          <Table striped bordered hover responsive>
+            <thead>
             <tr className="table-success">
               {/* <th>#</th> */}
               <th>First Partner</th>
               <th>Second Partner</th>
               <th>Couple fitness</th>
-              <th>First Partner Set</th> {/* Thêm cột mới */}
+              <th>First Partner Set</th>
+              {/* Thêm cột mới */}
             </tr>
-          </thead>
-          
-          <tbody>{htmlOutput}</tbody>
-        </Table>
+            </thead>
 
-        <h3 style={{ marginBottom: 20, marginTop: 40 , textAlign:"center"}}>
-          THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
-        </h3>
-        <Table striped bordered hover responsive>
-          <thead>
+            <tbody>{htmlOutput}</tbody>
+          </Table>
+
+          <h3 style={{marginBottom: 20, marginTop: 40, textAlign: "center"}}>
+            THE LEFTOVERS AFTER GALE-SHAPLEY ALGORITHM
+          </h3>
+          <Table striped bordered hover responsive>
+            <thead>
             <tr className="table-danger">
               <th>No.</th>
               <th>Name</th>
+              <th>Set</th>
             </tr>
-          </thead>
-          <tbody>{htmlLeftOvers}</tbody>
-        </Table>
-        <div className="d-grid gap-2">
-          <Button
-            variant="primary"
-            size="md"
-            style={{ justifyContent: "center", margin: "auto", width: 150 }}
-            onClick={handleExportToExcel}
-          >
-            Get Result
-          </Button>
+            </thead>
+            <tbody>{htmlLeftOvers}</tbody>
+          </Table>
+          {/* {console.log(appData.result.data.individuals)} */}
         </div>
-        {/* {console.log(appData.result.data.individuals)} */}
-      </div>
       </div>
   );
 }

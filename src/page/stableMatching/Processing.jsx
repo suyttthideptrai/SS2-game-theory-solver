@@ -149,7 +149,13 @@ export default function InputProcessingPage() {
 
         if (err.response) {
           title = `Server responded with status ${err.response.status}`;
-          message = `Error: ${err.response.data.error}`;
+          message = (
+            <div>
+              <strong>Error: </strong>{err.response.data.error}
+              <br />
+              <strong>Chi tiết lỗi: </strong>{err.response.data.message}
+            </div>
+          );
         } else if (err.request) {
           title = 'No response received';
           message = 'Server maybe down at the moment!';
