@@ -1,17 +1,19 @@
-FROM node:alpine
+FROM node:alpine as build
 
-# For compiling static resources
+# For compiling static resources for proxy server
 
 #WORKDIR /app
-#USER spring:spring
-#COPY package.json .
+#COPY package*.json .
 #RUN npm i -f
+#COPY . .
 #RUN npm run build
-#RUN rm -rf /usr/share/nginx/html/*
-#COPY build/* /usr/share/nginx/html
+#
+#FROM node:alpine
+#WORKDIR /app
+#COPY --from=build /app/build /build
 
 
-# For starting node server
+# For starting node server at local port
 
 WORKDIR /app
 COPY package.json .

@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom'
 import Loading from '../../module/core/component/Loading';
 import MaxMinCheckbox from '../../module/core/component/MaxMinCheckbox'
 import PopupContext from '../../module/core/context/PopupContext';
+import { PSP_CHEAT_CODE, PSP_PROBLEM_TYPE } from '../../const/game_theory_const';
 export default function InputPage() {
     //initialize form data
     const [excelFile, setExcelFile] = useState(null);
@@ -96,6 +97,13 @@ export default function InputPage() {
                     if (!conflictSet) return // stop processing in case of error
                 }
 
+                // TODO: Better handle this type of problem later 
+                let problemType = "";
+                if (problemName.includes(PSP_CHEAT_CODE)) {
+                    problemType = PSP_PROBLEM_TYPE;
+                }
+
+
                 setAppData({
                     problem: {
                         name: problemInfo.problemName,
@@ -108,7 +116,8 @@ export default function InputPage() {
                         isMaximizing: problemInfo.isMaximizing,
                         specialPlayer: specialPlayers,
                         players: players,
-                        conflictSet: conflictSet
+                        conflictSet: conflictSet,
+                        problemType: problemType
                     },
                 })
 

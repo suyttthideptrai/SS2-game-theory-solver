@@ -13,3 +13,8 @@ export const GT_ALGORITHMS = Object.freeze(
         ALGORITHMS.SMPSO
     ]
 );
+
+//TODO: better handle problem type
+
+export const PSP_PROBLEM_TYPE = "PSP";
+export const PSP_CHEAT_CODE = "HelloWorld";

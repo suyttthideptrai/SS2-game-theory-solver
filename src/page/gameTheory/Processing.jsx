@@ -40,6 +40,7 @@ export default function InputProcessingPage() {
     const handleSolveNow = async () => {
         try {
             const body = {
+                problemName: appData.problem.name,
                 specialPlayer: appData.problem.specialPlayer,
                 normalPlayers: appData.problem.players,
                 fitnessFunction: appData.problem.fitnessFunction,

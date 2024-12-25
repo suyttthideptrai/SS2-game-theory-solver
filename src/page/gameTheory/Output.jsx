@@ -88,6 +88,7 @@ export default function OutputPage() {
     try {
       setIsShowPopup(false);
       const body = {
+        problemName: appData.problem.name,
         specialPlayer: appData.problem.specialPlayer,
         normalPlayers: appData.problem.players,
         fitnessFunction: appData.problem.fitnessFunction,
