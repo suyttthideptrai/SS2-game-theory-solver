@@ -16,7 +16,6 @@ import {
   loadProblemDataParallel,
   loadExcludePairs
 } from '../../utils/excel_utils';
-import Checkbox from '../../module/core/component/Checkbox';
 
 export default function InputPage() {
   //initialize from data
@@ -73,11 +72,22 @@ export default function InputPage() {
       reader.onload = async (e) => {
         const data = e.target.result;
         const workbook = XLSX.read(data, {type: 'binary'});
-
-        let problemInfo = await loadProblemDataParallel(workbook,
+        
+        let problemInfo;
+        let excludePairs;
+        try {
+          problemInfo = await loadProblemDataParallel(workbook,
             SMT.INDIVIDUAL_SHEET);
-        let excludePairs = await loadExcludePairs(workbook,
-            SMT.EXCLUDE_PAIRS_SHEET);
+          excludePairs = await loadExcludePairs(workbook,
+              SMT.EXCLUDE_PAIRS_SHEET);
+          console.log(problemInfo);
+        } catch (error) {
+          console.error(error);
+          setExcelFile(null);
+          setIsLoading(false);
+          displayPopup('Excel Error: ',error.message ,true);
+          return;
+        }
         setAppData({
           problem: {
             nameOfProblem: problemInfo.problemName,
@@ -103,6 +113,7 @@ export default function InputPage() {
       reader.readAsBinaryString(file);
     } catch (error) {
       console.error(error);
+      setExcelFile(null);
       setIsLoading(false);
       displayPopup('Something went wrong!',
           'Check the input file again for contact the admin!', true);
